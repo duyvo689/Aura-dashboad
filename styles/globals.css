@@ -1,9 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: "Inter", sans-serif;
+  height: 100vh;
+}
+
+#__next {
+  height: 100%;
 }
 
 a {
@@ -15,12 +23,108 @@ a {
   box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: black;
+.bg-sign {
+  background-color: #f1f0ee;
+}
+
+.info-absolute {
+  will-change: transform;
+  top: 25px;
+  right: 0px;
+}
+
+.required::after {
+  content: " *";
+  color: red;
+}
+
+.bg-primary {
+  background-color: rgb(0, 178, 94);
+}
+
+.bg-primary:hover {
+  background-color: rgb(0, 149, 79);
+}
+
+.text-primary {
+  color: rgb(0, 178, 94);
+}
+
+.text-primary:hover {
+  color: rgb(0, 149, 79);
+}
+
+.bg-hover:hover,
+.border-hover:hover {
+  background-color: rgba(0, 178, 94, 0.1);
+}
+
+video {
+  object-fit: initial;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+}
+
+.video-react-controls-enabled {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 6px;
+}
+
+.video-react-control-bar-auto-hide {
+  display: none !important;
+}
+
+.backgroud-cover::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  position: absolute;
+  z-index: 100;
+  opacity: 0;
+}
+
+.top-100 {
+  top: 100%;
+}
+
+.bottom-100 {
+  bottom: 100%;
+}
+
+.max-h-select {
+  max-height: 300px;
+}
+
+.bg-primary-100 {
+  background-color: rgba(0, 178, 94, 0.1);
+}
+
+.border-primary-300 {
+  background-color: rgba(0, 178, 94, 0.3);
+}
+
+.slick-prev:before,
+.slick-next:before {
+  color: black !important;
+}
+
+.colleciton-witdh {
+  min-width: 0px !important;
+}
+
+.wallet-adapter-button-trigger {
+  background-color: rgb(0, 178, 94) !important;
+}
+
+.wallet-adapter-button-trigger:hover {
+  background-color: rgb(0, 149, 79) !important;
+}
+
+@media only screen and (min-width: 480px) {
+  .colleciton-witdh {
+    min-width: 720px !important;
   }
 }

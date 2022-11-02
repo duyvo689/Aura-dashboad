@@ -1,0 +1,101 @@
+.p-17 {
+    padding: 13px 0px 13px 17px;
+}
+
+.icon-google svg {
+    width: 16px;
+    height: 16px;
+}
+
+.icon-google path {
+    fill: rgba(255, 255, 255, 0.8);
+}
+
+.icon-google::after {
+    content: "";
+    border-right: 1px solid rgba(255, 255, 255, 0.8);
+    margin-left: 17px;
+}
+
+.button-default {
+    padding: 12px 32px;
+}
+
+.button-default:hover {
+    background-color: rgb(0, 100, 218);
+}
+
+.btn-chat {
+    bottom: 20px;
+    right: 24px;
+}
+
+.btn-bg-chat {
+    background-color: rgb(25, 114, 245);
+}
+
+.btn-chat svg {
+    color: #fff;
+    font-size: 30px;
+}
+
+.btn-default {
+    padding: 0.75rem 2rem;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 4%), 0 4px 6px -2px rgb(0 0 0 / 2%);
+}
+
+.record-btn {
+    width: 80px;
+    height: 80px;
+    background-color: red;
+    border: 0;
+    margin: 18px;
+    outline: none;
+    border-radius: 50%;
+}
+
+@media only screen and (max-width: 512px) {
+    .record-btn {
+        width: 50px;
+        height: 50px;
+        background-color: red;
+        border: 0;
+        margin: 18px;
+        outline: none;
+        border-radius: 50%;
+    }
+}
+
+.no-rec {
+    background-color: darkred;
+}
+
+.rec {
+    animation-name: record;
+    animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.absolute-center {
+    bottom: 10px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@keyframes record {
+    0% {
+        box-shadow: 0px 0px 5px 0px rgba(173, 0, 0, 0.3);
+    }
+
+    65% {
+        box-shadow: 0px 0px 5px 13px rgba(173, 0, 0, 0.3);
+    }
+
+    90% {
+        box-shadow: 0px 0px 5px 13px rgba(173, 0, 0, 0);
+    }
+}

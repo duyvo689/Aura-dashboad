@@ -1,0 +1,47 @@
+.sign-label {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.16px;
+    line-height: 21px;
+}
+
+.sign-input {
+    border: 1px solid #dfdfdf;
+}
+
+.mes-input {
+    padding-left: 22px;
+    padding-right: 61px;
+}
+
+.mes-input textarea::placeholder {
+    color: rgb(110, 152, 222);
+}
+
+.mes-textarea {
+    height: 56px !important;
+    font-size: 13.6px !important;
+    line-height: 18px !important;
+    letter-spacing: 0.15px !important;
+    border-bottom: 0 none !important;
+    padding: 17px 0 20px !important;
+    overflow: hidden !important;
+    resize: none !important;
+}
+
+.mes-icon-emoji {
+    top: 15px;
+    right: 48px;
+}
+
+.mes-icon-upload {
+    top: 15px;
+    right: 17px;
+}
+
+.mes-icon-emoji svg,
+.mes-icon-upload svg {
+    width: 25px;
+    height: 25px;
+    color: rgb(25, 113, 244);
+}
