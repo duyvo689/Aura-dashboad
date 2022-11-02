@@ -3,6 +3,7 @@ import {
   UsersIcon,
   PhotoIcon,
   UserPlusIcon,
+  MapPinIcon,
 } from "@heroicons/react/24/outline";
 import mainLogo from "../public/images/mainlogo.svg";
 import Link from "next/link";
@@ -26,6 +27,12 @@ const navigation = [
     href: "/dashboard/banners",
     icon: PhotoIcon,
     pathName: "banners",
+  },
+  {
+    name: "Clinics",
+    href: "/dashboard/clinics",
+    icon: MapPinIcon,
+    pathName: "clinics",
   },
   //   { name: "Documents", href: "#", icon: InboxIcon, pathName: "banners" },
   //   { name: "Reports", href: "#", icon: ChartBarIcon },
@@ -62,7 +69,7 @@ function SideBar() {
                 <item.icon
                   className={classNames(
                     pathname.split("/")[2] === item.pathName
-                      ? "text-gray-500"
+                      ? "bg-gray-100 text-gray-900"
                       : "text-gray-400 group-hover:text-gray-500",
                     "mr-3 flex-shrink-0 h-6 w-6"
                   )}

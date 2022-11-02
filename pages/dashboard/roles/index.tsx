@@ -44,13 +44,6 @@ function RolePage() {
       </Head>
       <main className="h-full">
         <div className="h-full p-4 bg-white block border-gray-200 lg:mt-1.5">
-          <div className="mb-1 w-full">
-            <div className="mb-4">
-              <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-                All Roles
-              </h1>
-            </div>
-          </div>
           <div className="mt-5">
             <div className="w-full md:grid md:grid-cols-2 grid-cols-1 gap-4 relative">
               <div className="relative">

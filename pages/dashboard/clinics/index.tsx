@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 // import { RootState } from "../../../redux/reducers";
 // import { Banner } from "../../../types/types";
 
-function BannerPage() {
+function ClinicPage() {
   //   const banners: Banner[] = useSelector((state: RootState) => state.banners);
   //   const dispatch = useDispatch();
   const [index, setIndex] = useState<number>(0);
@@ -50,13 +50,13 @@ function BannerPage() {
                   <div className="mt-1 relative lg:w-64 xl:w-96">
                     <input
                       className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                      placeholder="Search for banners"
+                      placeholder="Search for clinics"
                     />
                   </div>
                 </form>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3 ml-auto">
-                <Link href="/dashboard/banner/create-banner">
+                <Link href="/dashboard/banners/create-banner">
                   <button className="w-1/2 text-white bg-primary focus:ring-4 focus:ring-green-200 font-medium inline-flex items-center justify-center rounded-lg text-sm px-3 py-2 text-center sm:w-auto">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -72,7 +72,7 @@ function BannerPage() {
                         d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                       />
                     </svg>
-                    Add New Banner
+                    Add New Clinic
                   </button>
                 </Link>
               </div>
@@ -148,4 +148,4 @@ function BannerPage() {
     </div>
   );
 }
-export default BannerPage;
+export default ClinicPage;

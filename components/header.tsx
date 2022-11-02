@@ -35,7 +35,7 @@ function HeaderDashboard() {
     }
   };
   return (
-    <div className="w-full flex flex-col md:px-4 xl:px-4 ">
+    <div className="w-full flex flex-col md:px-4 xl:px-4 my-4">
       <div className="sticky py-2 top-0 z-10 flex flex-shrink-0 border-b border-gray-200 bg-white">
         <button
           type="button"

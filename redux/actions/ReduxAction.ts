@@ -1,8 +1,14 @@
-import { Role } from "../../utils/types";
+import { Role, User } from "../../utils/types";
 const rolesAction = (type: any, roles: Role[] | null) => {
   return {
     type,
     roles,
+  };
+};
+const usersAction = (type: any, users: User[] | null) => {
+  return {
+    type,
+    users,
   };
 };
 const bannersAction = (type: any, banners: any[] | null) => {
