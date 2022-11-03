@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { supabase } from "../../../../services/supaBaseClient";
+import { supabase } from "../../services/supaBaseClient";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { Role } from "../../../../utils/types";
-import { RootState } from "../../../../redux/reducers";
-import { rolesAction } from "../../../../redux/actions/ReduxAction";
+import { Role } from "../../utils/types";
+import { RootState } from "../../redux/reducers";
+import { rolesAction } from "../../redux/actions/ReduxAction";
 const ROLES_MAPPING = [
   { name: "Doctor", value: "doctor" },
   { name: "Staff", value: "staff" },

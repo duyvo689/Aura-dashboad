@@ -49,39 +49,17 @@ function ButtonLoadding({ title }: any) {
     </div>
   );
 }
-
-function ButtonChangeImageAndVideo({
-  title,
-  setFeature,
-  setFileFeature,
-  setBackground,
-  setFileBackGround,
-  setAvatar,
-  setFileAvatar,
-  setCollectionImage,
-  setCollectionFile,
-  setNftImage,
-  setNftImageFile,
-}: any) {
-  const uploadToClient = (e: any) => {
+interface Props {
+  setImage: any;
+  setFileImage: any;
+  title: string;
+}
+function ButtonChangeImageAndVideo({ title, setImage, setFileImage }: Props) {
+  const changeBannerHandler = (e: any) => {
     if (e.target.files && e.target.files[0]) {
       const i = e.target.files[0];
-      if (title === "Change Backgroud") {
-        setFileBackGround(i);
-        setBackground(URL.createObjectURL(i));
-      } else if (title === "Change Avatar") {
-        setFileAvatar(i);
-        setAvatar(URL.createObjectURL(i));
-      } else if (title === "Change Collection") {
-        setCollectionFile(i);
-        setCollectionImage(URL.createObjectURL(i));
-      } else if (title === "Change NFT Image") {
-        setNftImage(i);
-        setNftImageFile(URL.createObjectURL(i));
-      } else {
-        setFileFeature(i);
-        setFeature(URL.createObjectURL(i));
-      }
+      setFileImage(i);
+      setImage(URL.createObjectURL(i));
     }
   };
   return (
@@ -94,15 +72,12 @@ function ButtonChangeImageAndVideo({
       <input
         id={title}
         type="file"
-        onChange={uploadToClient}
-        accept={
-          title !== "Change Backgroud"
-            ? "image/png, image/jpeg, image/jpg, image/webp, image/gif"
-            : "image/png, image/jpeg, image/jpg, video/mp4, video/ogg"
-        }
+        onChange={changeBannerHandler}
+        accept="image/png, image/jpeg, image/jpg, image/webp, image/gif"
         className="hidden"
       />
     </div>
   );
 }
+
 export { ButtonDefault, ButtonLoadding, ButtonChangeImageAndVideo };

@@ -2,47 +2,54 @@ import { Table } from "flowbite-react";
 import Head from "next/head";
 import Link from "next/link";
 import react, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-// import { BannerAPI } from "../../../services/api/index";
-// import ItemBanner from "../../../components/itemBanner";
-// import { bannersAction } from "../../../redux/actions/ReduxAction";
-// import { RootState } from "../../../redux/reducers";
-// import { Banner } from "../../../types/types";
+import ItemClinic from "../../../components/Clinics/ItemClinic";
+import { clinicsAction } from "../../../redux/actions/ReduxAction";
+import { RootState } from "../../../redux/reducers";
+import { supabase } from "../../../services/supaBaseClient";
+import { Clinic } from "../../../utils/types";
 
 function ClinicPage() {
-  //   const banners: Banner[] = useSelector((state: RootState) => state.banners);
-  //   const dispatch = useDispatch();
+  const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
+  const dispatch = useDispatch();
   const [index, setIndex] = useState<number>(0);
 
-  //   const getAllGame = async () => {
-  //     if (!banners) {
-  //       const response = await BannerAPI.getAllBanner();
-  //       if (response && response.data.status === "Success") {
-  //         dispatch(bannersAction("banner", response.data.data));
-  //       }
-  //     }
-  //   };
+  const getAllClinic = async () => {
+    if (!clinics) {
+      const { data: allClinic, error } = await supabase
+        .from(" clinic")
+        .select("*");
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      if (allClinic && allClinic.length > 0) {
+        dispatch(clinicsAction("clinics", allClinic));
+      }
+    }
+  };
 
-  //   useEffect(() => {
-  //     getAllGame();
-  //   }, []);
-  //   useEffect(() => {}, [banners]);
+  useEffect(() => {
+    getAllClinic();
+  }, []);
+  useEffect(() => {}, [clinics]);
   return (
     <div className="h-full w-full bg-gray-50 relative overflow-y-auto ">
       <Head>
-        <title>Banner List</title>
+        <title>Clinic List</title>
         <meta property="og:title" content="Banner List" key="title" />
       </Head>
       <main>
         <div className="p-4 bg-white block sm:flex items-center justify-between border-b border-gray-200 lg:mt-1.5">
           <div className="mb-1 w-full">
-            {/* <div className="mb-4">
-              {banners && (
+            <div className="mb-4">
+              {clinics && (
                 <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-                  {`All Banners (${banners.length})`}
+                  {`All Clinics (${clinics.length})`}
                 </h1>
               )}
-            </div> */}
+            </div>
             <div className="sm:flex">
               <div className="hidden sm:flex items-center sm:divide-x sm:divide-gray-100 mb-3 sm:mb-0">
                 <form className="lg:pr-3">
@@ -56,7 +63,7 @@ function ClinicPage() {
                 </form>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3 ml-auto">
-                <Link href="/dashboard/banners/create-banner">
+                <Link href="/dashboard/clinics/create-clinic">
                   <button className="w-1/2 text-white bg-primary focus:ring-4 focus:ring-green-200 font-medium inline-flex items-center justify-center rounded-lg text-sm px-3 py-2 text-center sm:w-auto">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -82,43 +89,43 @@ function ClinicPage() {
         <Table>
           <Table.Head>
             <Table.HeadCell>STT</Table.HeadCell>
-            <Table.HeadCell>THUMBNAIL</Table.HeadCell>
             <Table.HeadCell>NAME</Table.HeadCell>
+            <Table.HeadCell>ADDRESS</Table.HeadCell>
             <Table.HeadCell>DESCRIPTION</Table.HeadCell>
-            <Table.HeadCell>STATUS</Table.HeadCell>
+            <Table.HeadCell>ẢNH ĐẠI DIỆN</Table.HeadCell>
             <Table.HeadCell className="flex justify-end">
               ACTIONS
             </Table.HeadCell>
           </Table.Head>
-          {/* <Table.Body className="divide-y">
-            {banners
-              ? banners
+          <Table.Body className="divide-y">
+            {clinics
+              ? clinics
                   .slice(index * 10, 10 + index * 10)
-                  .map((banner: Banner, _index: number) => {
+                  .map((clinic: Clinic, _index: number) => {
                     return (
-                      <ItemBanner
-                        banner={banner}
+                      <ItemClinic
+                        item={clinic}
                         key={_index + index * 10}
-                        index={index}
+                        index={_index}
                       />
                     );
                   })
               : null}
-          </Table.Body> */}
+          </Table.Body>
         </Table>
         <div className="bg-white sticky sm:flex items-center w-full sm:justify-end bottom-0 right-0 border-t border-gray-200 p-4">
           <div className="flex items-center space-x-3">
-            {/* <span className="text-sm font-normal text-gray-500">
+            <span className="text-sm font-normal text-gray-500">
               {`Showing `}
               <span className="text-gray-900 font-semibold">
                 {index * 10 + 1}-{10 * index + 10}
               </span>
               {` of `}
               <span className="text-gray-900 font-semibold">
-                {banners?.length}
+                {clinics?.length}
               </span>
-            </span> */}
-            {/* <button
+            </span>
+            <button
               className={
                 index === 0
                   ? "opacity-70 cursor-default bg-primary flex-1 text-white font-medium inline-flex items-center justify-center rounded-lg text-sm px-3 py-2 text-center"
@@ -132,16 +139,16 @@ function ClinicPage() {
             </button>
             <button
               className={
-                index * 10 + 10 > banners?.length
+                index * 10 + 10 > clinics?.length
                   ? "opacity-70 cursor-default bg-primary flex-1 text-white font-medium inline-flex items-center justify-center rounded-lg text-sm px-3 py-2 text-center"
                   : "flex-1 text-white bg-primary focus:ring-4 focus:ring-green-200 font-medium inline-flex items-center justify-center rounded-lg text-sm px-3 py-2 text-center"
               }
               onClick={() => {
-                index * 10 + 10 > banners?.length ? null : setIndex(index + 1);
+                index * 10 + 10 > clinics?.length ? null : setIndex(index + 1);
               }}
             >
               Next
-            </button> */}
+            </button>
           </div>
         </div>
       </main>

@@ -1,25 +1,20 @@
 import { Table } from "flowbite-react";
 import Link from "next/link";
-import { User } from "../utils/types";
+import { Role } from "../../utils/types";
 
 interface Props {
   index: number;
-  item: User;
+  item: Role;
 }
+
 function ItemRole({ index, item }: Props) {
   return (
     <Table.Row className="bg-white text-center ">
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900">
         {index + 1}
       </Table.Cell>
-      <Table.Cell>{item.id}</Table.Cell>
-      <Table.Cell>{item.name}</Table.Cell>
       <Table.Cell>{item.phone}</Table.Cell>
-      <Table.Cell>
-        <div className="flex justify-center">
-          <img className="w-10 h-10" src={item.avatar} />
-        </div>
-      </Table.Cell>
+      <Table.Cell>{item.position}</Table.Cell>
       {/* <Table.Cell>
         <div className="flex gap-1 justify-end">
           <button

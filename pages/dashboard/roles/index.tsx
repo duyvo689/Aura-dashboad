@@ -6,10 +6,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
 import { Role } from "../../../utils/types";
-import FormRole from "./create-roles/index";
+import FormRole from "../../../components/Roles/create-role";
+import ItemRole from "../../../components/Roles/ItemRole";
 import { rolesAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
-import ItemRole from "../../../components/ItemRole";
 function RolePage() {
   const roles: Role[] = useSelector((state: RootState) => state.roles);
   const dispatch = useDispatch();

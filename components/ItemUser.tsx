@@ -7,7 +7,7 @@ interface Props {
   item: User;
 }
 
-function ItemRole({ index, item }: Props) {
+function ItemUser({ index, item }: Props) {
   return (
     <Table.Row className="bg-white text-center ">
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900">
@@ -74,4 +74,4 @@ function ItemRole({ index, item }: Props) {
     </Table.Row>
   );
 }
-export default ItemRole;
+export default ItemUser;

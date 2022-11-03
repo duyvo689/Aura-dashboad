@@ -1,4 +1,4 @@
-import { Role, User } from "../../utils/types";
+import { Role, User, Clinic } from "../../utils/types";
 const rolesAction = (type: any, roles: Role[] | null) => {
   return {
     type,
@@ -9,6 +9,12 @@ const usersAction = (type: any, users: User[] | null) => {
   return {
     type,
     users,
+  };
+};
+const clinicsAction = (type: any, clinics: Clinic[] | null) => {
+  return {
+    type,
+    clinics,
   };
 };
 const bannersAction = (type: any, banners: any[] | null) => {
@@ -24,4 +30,4 @@ const adminAction = (type: any, admin: any | null) => {
   };
 };
 
-export { bannersAction, adminAction, rolesAction };
+export { bannersAction, adminAction, rolesAction, clinicsAction };

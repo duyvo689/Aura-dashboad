@@ -1,21 +1,24 @@
 import { Table } from "flowbite-react";
 import Link from "next/link";
-import { Role } from "../utils/types";
+import { Banner } from "../../utils/types";
 
 interface Props {
   index: number;
-  item: Role;
+  item: Banner;
 }
-
-function ItemRole({ index, item }: Props) {
+function ItemBanner({ index, item }: Props) {
   return (
     <Table.Row className="bg-white text-center ">
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900">
         {index + 1}
       </Table.Cell>
-      <Table.Cell>{item.phone}</Table.Cell>
-      <Table.Cell>{item.position}</Table.Cell>
-      {/* <Table.Cell>
+      <Table.Cell>
+        <div className="flex justify-center">
+          <img className="w-10 h-10" src={item.image_url} />
+        </div>
+      </Table.Cell>
+      <Table.Cell>{item.order}</Table.Cell>
+      <Table.Cell>
         <div className="flex gap-1 justify-end">
           <button
             className="text-primary"
@@ -64,8 +67,8 @@ function ItemRole({ index, item }: Props) {
             </svg>
           </button>
         </div>
-      </Table.Cell> */}
+      </Table.Cell>
     </Table.Row>
   );
 }
-export default ItemRole;
+export default ItemBanner;
