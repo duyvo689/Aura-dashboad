@@ -1,7 +1,7 @@
 import { Table } from "flowbite-react";
 import Link from "next/link";
 import { Role } from "../../utils/types";
-
+import { formatPhoneNumber } from "../../utils/helpers/formatPhoneNumber";
 interface Props {
   index: number;
   item: Role;
@@ -13,7 +13,7 @@ function ItemRole({ index, item }: Props) {
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900">
         {index + 1}
       </Table.Cell>
-      <Table.Cell>{item.phone}</Table.Cell>
+      <Table.Cell>{formatPhoneNumber(item.phone)}</Table.Cell>
       <Table.Cell>{item.position}</Table.Cell>
       {/* <Table.Cell>
         <div className="flex gap-1 justify-end">

@@ -20,10 +20,18 @@ interface Banner {
 interface Clinic {
   id: string;
   created_at: string;
-  name_clinic: string;
+  name: string;
   avatar: string;
   address: string;
   description: string;
 }
+interface Service {
+  id: string;
+  created_at: string;
+  name: string;
+  price: number;
+  image: string;
+  description: string;
+}
 
-export type { Role, User, Banner, Clinic };
+export type { Role, User, Banner, Clinic, Service };

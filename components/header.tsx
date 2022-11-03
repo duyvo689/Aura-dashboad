@@ -14,9 +14,9 @@ import router from "next/router";
 import { RootState } from "../redux/reducers";
 import { useDispatch, useSelector } from "react-redux";
 const userNavigation = [
-  { name: "Your Profile", href: "/dashboard/roles" },
-  { name: "Settings", href: "/dashboard/roles" },
-  { name: "Sign out", href: "/" },
+  { name: "Tài khoản", href: "/dashboard/roles" },
+  { name: "Cài đặt", href: "/dashboard/roles" },
+  { name: "Đăng xuất", href: "/" },
 ];
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
@@ -37,17 +37,9 @@ function HeaderDashboard() {
   return (
     <div className="w-full flex flex-col md:px-4 xl:px-4 my-2">
       <div className="sticky py-2 top-0 z-10 flex flex-shrink-0 border-b border-gray-200 bg-white">
-        <button
-          type="button"
-          className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
-          onClick={() => setSidebarOpen(true)}
-        >
-          <span className="sr-only">Open sidebar</span>
-          <Bars3BottomLeftIcon className="h-6 w-6" aria-hidden="true" />
-        </button>
         <div className="flex flex-1 justify-between px-4 md:px-0">
           <div className="flex flex-1">
-            <form className="flex w-full md:ml-0" action="#" method="GET">
+            {/* <form className="flex w-full md:ml-0" action="#" method="GET">
               <label htmlFor="search-field" className="sr-only">
                 Search
               </label>
@@ -63,10 +55,10 @@ function HeaderDashboard() {
                   name="search"
                 />
               </div>
-            </form>
+            </form> */}
           </div>
           <div className="ml-4 flex items-center  md:ml-6">
-            <div>Hi, {admin?.user_metadata?.user_name}</div>
+            <div>Chào, {admin?.user_metadata?.user_name}</div>
             <button
               type="button"
               className="rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"

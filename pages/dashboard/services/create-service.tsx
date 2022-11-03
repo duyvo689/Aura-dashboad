@@ -7,23 +7,24 @@ import { InputFileImage } from "../../../components/InputFileImage";
 import Head from "next/head";
 import { supabase } from "../../../services/supaBaseClient";
 import toast from "react-hot-toast";
-import { Clinic } from "../../../utils/types";
+import { Clinic, Service } from "../../../utils/types";
 import { RootState } from "../../../redux/reducers";
-import { clinicsAction } from "../../../redux/actions/ReduxAction";
+import { servicesAction } from "../../../redux/actions/ReduxAction";
 
 function CreateClinic() {
-  const [avatar, setAvatar] = useState<string | null>(null);
-  const [fileAvatar, setFileAvatar] = useState<File | null>(null);
+  const [serviceImage, setServiceImage] = useState<string | null>(null);
+  const [serviceFile, setServiceFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<boolean | null>(null);
   const BASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const IMAGE_BASE_URL: string = `${BASE_URL}/storage/v1/object/public/avatar/avatar_clinic/`;
+  const IMAGE_BASE_URL: string = `${BASE_URL}/storage/v1/object/public/services/`;
+  //redux
   const addMore = async () => {
     window.location.reload();
   };
   const upLoadFile = async (file: File) => {
     const { data, error } = await supabase.storage
-      .from("/avatar/avatar_clinic")
+      .from("/services/")
       .upload(`/${file.name}`, file, {
         upsert: true,
       });
@@ -37,27 +38,30 @@ function CreateClinic() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
-    if (!fileAvatar) {
+    if (!serviceFile) {
       toast.error("Error");
       return;
     }
-    const imageSrc = await upLoadFile(fileAvatar);
+    const imageSrc = await upLoadFile(serviceFile);
     if (!imageSrc) {
       toast.error("Error");
       return;
     }
-    const { data, error } = await supabase.from(" clinics").insert([
-      {
-        name: e.target.name.value,
-        avatar: IMAGE_BASE_URL + imageSrc,
-        address: e.target.address.value,
-        description: e.target.discription.value,
-      },
-    ]);
+    const { data, error } = await supabase
+      .from("services")
+      .insert([
+        {
+          name: e.target.name.value,
+          image: IMAGE_BASE_URL + imageSrc,
+          price: e.target.price.value,
+          description: e.target.discription.value,
+        },
+      ])
+      .select();
     if (error) {
       toast.error(error.message);
       setMessage(false);
-    } else {
+    } else if (data) {
       setMessage(true);
     }
     setIsLoading(false);
@@ -72,7 +76,7 @@ function CreateClinic() {
         <div className="px-4 bg-white block ">
           <form onSubmit={handleSubmit}>
             <div className="relative">
-              {avatar ? (
+              {serviceImage ? (
                 <div
                   className="relative block"
                   style={{
@@ -80,22 +84,22 @@ function CreateClinic() {
                   }}
                 >
                   <img
-                    src={avatar}
+                    src={serviceImage}
                     alt="backGround"
                     className="flex flex-col absolute top-0 w-full h-full justify-center items-center bg-gray-50 rounded-lg"
                   />
                   <ButtonChangeImageAndVideo
                     title={"Đổi ảnh"}
-                    setFileImage={setFileAvatar}
-                    setImage={setAvatar}
+                    setFileImage={setServiceFile}
+                    setImage={setServiceImage}
                   />
                 </div>
               ) : (
                 <>
                   <InputFileImage
-                    title="clinic cover"
-                    setImage={setAvatar}
-                    setFileImage={setFileAvatar}
+                    title="service image"
+                    setFileImage={setServiceFile}
+                    setImage={setServiceImage}
                   />
                 </>
               )}
@@ -106,28 +110,28 @@ function CreateClinic() {
                   htmlFor="name"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 required"
                 >
-                  Tên Phòng Khám
+                  Tên Dịch Vụ
                 </label>
                 <input
                   type="text"
                   id="name"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                  placeholder="Vd: Aura Cơ Sở 1"
+                  placeholder="Vd: Kiểm tra răng"
                   required
                 />
               </div>
               <div className="mb-4">
                 <label
-                  htmlFor="address"
+                  htmlFor="price"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 required"
                 >
-                  Địa Chỉ
+                  Giá
                 </label>
                 <input
-                  type="text"
-                  id="address"
+                  type="number"
+                  id="price"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                  placeholder="Vd: Quận 3, Tp.HCM"
+                  placeholder="Vd: 1000000"
                   required
                 />
               </div>

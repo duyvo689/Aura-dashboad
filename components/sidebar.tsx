@@ -4,6 +4,7 @@ import {
   PhotoIcon,
   UserPlusIcon,
   MapPinIcon,
+  NewspaperIcon,
 } from "@heroicons/react/24/outline";
 import mainLogo from "../public/images/mainlogo.svg";
 import Link from "next/link";
@@ -11,28 +12,34 @@ import Link from "next/link";
 const navigation = [
   // { name: "Home", href: "/", icon: HomeIcon, pathName: "home" },
   {
-    name: "Roles",
+    name: "Quản lý nhân sự",
     href: "/dashboard/roles",
     icon: UserPlusIcon,
     pathName: "roles",
   },
   {
-    name: "Users",
+    name: "Quản lý người dùng",
     href: "/dashboard/users",
     icon: UsersIcon,
     pathName: "users",
   },
   {
-    name: "Banners",
+    name: "Quản lý banner",
     href: "/dashboard/banners",
     icon: PhotoIcon,
     pathName: "banners",
   },
   {
-    name: "Clinics",
+    name: " Quản lý phòng khám",
     href: "/dashboard/clinics",
     icon: MapPinIcon,
     pathName: "clinics",
+  },
+  {
+    name: "Quản lý dịch vụ",
+    href: "/dashboard/services",
+    icon: NewspaperIcon,
+    pathName: "services",
   },
   //   { name: "Documents", href: "#", icon: InboxIcon, pathName: "banners" },
   //   { name: "Reports", href: "#", icon: ChartBarIcon },

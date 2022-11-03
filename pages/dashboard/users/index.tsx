@@ -5,26 +5,19 @@ import react, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import ItemUser from "../../../components/ItemUser";
-// import { BannerAPI } from "../../../services/api/index";
-// import ItemBanner from "../../../components/itemBanner";
-// import { bannersAction } from "../../../redux/actions/ReduxAction";
-// import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
 import { User } from "../../../utils/types";
-
 function UserPage() {
   const [users, setUsers] = useState<User[] | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [index, setIndex] = useState<number>(0);
   const getAllUser = async () => {
-    console.log("hello");
     setLoading(true);
     const { data: users, error } = await supabase.from("users").select("*");
     if (error) {
       toast.error(error.message);
       return;
     }
-    console.log(users);
     if (users) {
       setUsers(users);
     }
@@ -51,7 +44,7 @@ function UserPage() {
             <div className="mb-4">
               {users && (
                 <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-                  {`All Users (${users.length})`}
+                  {`Người dùng (${users.length})`}
                 </h1>
               )}
             </div>
@@ -62,7 +55,7 @@ function UserPage() {
                   <div className="mt-1 relative lg:w-64 xl:w-96">
                     <input
                       className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                      placeholder="Search for users"
+                      placeholder=" Tìm kiếm "
                     />
                   </div>
                 </form>
@@ -73,13 +66,13 @@ function UserPage() {
         <Table>
           <Table.Head>
             <Table.HeadCell>STT</Table.HeadCell>
-            <Table.HeadCell>USER ID</Table.HeadCell>
-            <Table.HeadCell>NAME</Table.HeadCell>
-            <Table.HeadCell>PHONE</Table.HeadCell>
-            <Table.HeadCell>AVATAR</Table.HeadCell>
-            <Table.HeadCell className="flex justify-end">
+            <Table.HeadCell>Mã NGƯỜI DÙNG</Table.HeadCell>
+            <Table.HeadCell>TÊN</Table.HeadCell>
+            <Table.HeadCell>SỐ ĐIỆN THOẠI</Table.HeadCell>
+            <Table.HeadCell>ẢNH ĐẠI DIỆN</Table.HeadCell>
+            {/* <Table.HeadCell className="flex justify-end">
               ACTIONS
-            </Table.HeadCell>
+            </Table.HeadCell> */}
           </Table.Head>
           <Table.Body className="divide-y">
             {users

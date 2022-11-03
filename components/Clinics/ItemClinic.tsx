@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { Clinic } from "../../utils/types";
 import ModalDelete from "../ModalDelete";
-
 interface Props {
   index: number;
   item: Clinic;
@@ -25,7 +24,7 @@ function ItemRole({ index, item }: Props) {
         <Table.Cell className="whitespace-nowrap font-medium text-gray-900">
           {index + 1}
         </Table.Cell>
-        <Table.Cell>{item.name_clinic}</Table.Cell>
+        <Table.Cell>{item.name}</Table.Cell>
         <Table.Cell>{item.address}</Table.Cell>
         <Table.Cell>{item.description}</Table.Cell>
         <Table.Cell>
@@ -54,7 +53,7 @@ function ItemRole({ index, item }: Props) {
                 />
               </svg>
             </Link>
-            <button
+            {/* <button
               className="text-red-500 hover:text-red-700 cursor-pointer"
               onClick={() => {
                 setOpenModalDelete(true);
@@ -74,7 +73,7 @@ function ItemRole({ index, item }: Props) {
                   d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                 />
               </svg>
-            </button>
+            </button> */}
           </div>
         </Table.Cell>
       </Table.Row>

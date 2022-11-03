@@ -1,5 +1,6 @@
 import { Table } from "flowbite-react";
 import Link from "next/link";
+import { formatPhoneNumber } from "../utils/helpers/formatPhoneNumber";
 import { User } from "../utils/types";
 
 interface Props {
@@ -15,7 +16,7 @@ function ItemUser({ index, item }: Props) {
       </Table.Cell>
       <Table.Cell>{item.id}</Table.Cell>
       <Table.Cell>{item.name}</Table.Cell>
-      <Table.Cell>{item.phone}</Table.Cell>
+      <Table.Cell>{formatPhoneNumber(item.phone)}</Table.Cell>
       <Table.Cell>
         <div className="flex justify-center">
           <img className="w-10 h-10" src={item.avatar} />

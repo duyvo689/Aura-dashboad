@@ -18,7 +18,7 @@ function ClinicPage() {
   const getAllClinic = async () => {
     if (!clinics) {
       const { data: allClinic, error } = await supabase
-        .from(" clinic")
+        .from(" clinics")
         .select("*");
       if (error) {
         toast.error(error.message);
@@ -46,18 +46,18 @@ function ClinicPage() {
             <div className="mb-4">
               {clinics && (
                 <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-                  {`All Clinics (${clinics.length})`}
+                  {`Phòng khám (${clinics.length})`}
                 </h1>
               )}
             </div>
             <div className="sm:flex">
               <div className="hidden sm:flex items-center sm:divide-x sm:divide-gray-100 mb-3 sm:mb-0">
                 <form className="lg:pr-3">
-                  <label className="sr-only">Search</label>
+                  <label className="sr-only">Tìm kiếm</label>
                   <div className="mt-1 relative lg:w-64 xl:w-96">
                     <input
                       className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                      placeholder="Search for clinics"
+                      placeholder="Tìm kiếm"
                     />
                   </div>
                 </form>
@@ -79,7 +79,7 @@ function ClinicPage() {
                         d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                       />
                     </svg>
-                    Add New Clinic
+                    Thêm mới
                   </button>
                 </Link>
               </div>
@@ -89,12 +89,12 @@ function ClinicPage() {
         <Table>
           <Table.Head>
             <Table.HeadCell>STT</Table.HeadCell>
-            <Table.HeadCell>NAME</Table.HeadCell>
-            <Table.HeadCell>ADDRESS</Table.HeadCell>
-            <Table.HeadCell>DESCRIPTION</Table.HeadCell>
+            <Table.HeadCell>TÊN</Table.HeadCell>
+            <Table.HeadCell>ĐỊA CHỈ</Table.HeadCell>
+            <Table.HeadCell>MÔ TẢ</Table.HeadCell>
             <Table.HeadCell>ẢNH ĐẠI DIỆN</Table.HeadCell>
             <Table.HeadCell className="flex justify-end">
-              ACTIONS
+              THAO TÁC
             </Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
@@ -116,11 +116,11 @@ function ClinicPage() {
         <div className="bg-white sticky sm:flex items-center w-full sm:justify-end bottom-0 right-0 border-t border-gray-200 p-4">
           <div className="flex items-center space-x-3">
             <span className="text-sm font-normal text-gray-500">
-              {`Showing `}
+              {`Hiển thị `}
               <span className="text-gray-900 font-semibold">
                 {index * 10 + 1}-{10 * index + 10}
               </span>
-              {` of `}
+              {` trên `}
               <span className="text-gray-900 font-semibold">
                 {clinics?.length}
               </span>
@@ -135,7 +135,7 @@ function ClinicPage() {
                 index === 0 ? null : setIndex(index - 1);
               }}
             >
-              Previous
+              Trước
             </button>
             <button
               className={
@@ -147,7 +147,7 @@ function ClinicPage() {
                 index * 10 + 10 > clinics?.length ? null : setIndex(index + 1);
               }}
             >
-              Next
+              Sau
             </button>
           </div>
         </div>

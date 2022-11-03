@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Role } from "../../utils/types";
 import { RootState } from "../../redux/reducers";
 import { rolesAction } from "../../redux/actions/ReduxAction";
+import { formatPhoneNumber } from "../../utils/helpers/formatPhoneNumber";
+
 const ROLES_MAPPING = [
   { name: "Doctor", value: "doctor" },
   { name: "Staff", value: "staff" },
@@ -26,17 +28,16 @@ function FormRole({ roles, setRender }: Props) {
       .insert([{ phone: e.target.phone.value, position: e.target.role.value }]);
     if (error) {
       toast.error(error.message);
+      setMessage(false);
       return;
     }
-    console.log(data);
     roles.push({
       phone: e.target.phone.value,
       position: e.target.role.value!,
     });
     setRender(Math.random());
     dispatch(rolesAction("roles", roles));
-    toast.success("Add new role sucessfully");
-    setPhone("");
+    setMessage(true);
   };
   return (
     <div className="h-full w-full bg-gray-50 overflow-y-auto p-4 ">
@@ -46,7 +47,7 @@ function FormRole({ roles, setRender }: Props) {
             htmlFor="phone"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 required"
           >
-            Phone
+            Số điện thoại
           </label>
           <input
             type="text"
@@ -54,9 +55,9 @@ function FormRole({ roles, setRender }: Props) {
             name="phone"
             value={phone}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-            placeholder="Phone Number"
+            placeholder="Số điện thoại Vd: 09211xxx"
             onChange={(e) => {
-              setPhone(e.target.value);
+              setPhone(formatPhoneNumber(e.target.value));
             }}
             required
           />
@@ -64,7 +65,7 @@ function FormRole({ roles, setRender }: Props) {
             htmlFor="role"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 required"
           >
-            Position
+            Ví trí
           </label>
           <select
             name="role"
@@ -86,27 +87,26 @@ function FormRole({ roles, setRender }: Props) {
             className="p-4 my-4 text-sm text-primary bg-green-100 rounded-lg "
             role="alert"
           >
-            <span className="font-bold">Sucessfuly</span> Create Chain
+            <span className="font-bold">Thành công!!!</span> Thêm mới thành công
           </div>
         ) : (
           <div
             className="p-4 my-4 text-sm text-red-500 bg-red-100 rounded-lg "
             role="alert"
           >
-            <span className="font-bold">Fail !!! </span>Create Role
+            <span className="font-bold">Thất bại!!! </span>Thêm mới thất bại
           </div>
         )}
         <div className="flex justify-end">
           {message !== null ? (
             <div
               className="cursor-pointer flex items-center text-white bg-primary focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none"
-              // onClick={() => {
-              //     setMessage(null);
-              //     setNameChain(undefined);
-              //     setCode(undefined);
-              // }}
+              onClick={() => {
+                setMessage(null);
+                setPhone("");
+              }}
             >
-              Add More
+              Thêm mới
             </div>
           ) : isLoading ? (
             <div className="mt-4 flex items-center text-white bg-primary focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none">
@@ -127,14 +127,14 @@ function FormRole({ roles, setRender }: Props) {
                   fill="currentColor"
                 />
               </svg>
-              Creating...
+              Đang tạo...
             </div>
           ) : (
             <button
               type="submit"
               className="mt-4 text-white bg-primary focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none"
             >
-              Create Role
+              Tạo mới
             </button>
           )}
         </div>

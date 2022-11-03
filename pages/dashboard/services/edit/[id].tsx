@@ -3,44 +3,41 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { ButtonChangeImageAndVideo } from "../../../../components/button";
-import { InputFileImage } from "../../../../components/InputFileImage";
 import Head from "next/head";
 import { supabase } from "../../../../services/supaBaseClient";
 import toast from "react-hot-toast";
-import { Clinic } from "../../../../utils/types";
+import { Service } from "../../../../utils/types";
 import { RootState } from "../../../../redux/reducers";
-import { clinicsAction } from "../../../../redux/actions/ReduxAction";
+import { servicesAction } from "../../../../redux/actions/ReduxAction";
 import { useRouter } from "next/router";
 const BASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const IMAGE_BASE_URL: string = `${BASE_URL}/storage/v1/object/public/avatar/avatar_clinic/`;
-function EditClinic() {
+const IMAGE_BASE_URL: string = `${BASE_URL}/storage/v1/object/public/services/`;
+function EditService() {
   const { id } = useRouter().query;
-  const [clinic, setClinic] = useState<Clinic | null>(null);
-  const [avatar, setAvatar] = useState<string | null>(null);
-  const [fileAvatar, setFileAvatar] = useState<File | null>(null);
+  const [service, setService] = useState<Service | null>(null);
+  const [serviceImage, setServiceImage] = useState<string | null>(null);
+  const [serviceFile, setServiceFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<boolean | null>(null);
   //redux
-  const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
+  const services: Service[] = useSelector((state: RootState) => state.services);
   const dispatch = useDispatch();
-  const fetchClinic = async (id: string) => {
-    const { data: clinic, error } = await supabase
-      .from(" clinics")
+  const fetchService = async (id: string) => {
+    const { data: service, error } = await supabase
+      .from("services")
       .select("*")
       .eq("id", id);
-    console.log(clinic);
     if (error) {
-      console.log(error.message);
       toast.error(error.message);
       return;
-    } else if (clinic) {
-      setClinic(clinic[0]);
-      setAvatar(clinic[0].avatar);
+    } else if (service) {
+      setService(service[0]);
+      setServiceImage(service[0].image);
     }
   };
   const upLoadFile = async (file: File) => {
     const { data, error } = await supabase.storage
-      .from("/avatar/avatar_clinic")
+      .from("/services")
       .upload(`/${file.name}`, file, {
         upsert: true,
       });
@@ -53,12 +50,12 @@ function EditClinic() {
   };
   const handleUpdate = async (e: any) => {
     e.preventDefault();
-    if (!clinic) return;
+    if (!service) return;
     setIsLoading(true);
     //check if change avatar
-    let avatar = clinic?.avatar;
-    if (fileAvatar) {
-      const imageSrc = await upLoadFile(fileAvatar);
+    let avatar = service.image;
+    if (serviceFile) {
+      const imageSrc = await upLoadFile(serviceFile);
       if (!imageSrc) {
         toast.error("Error. Upload Image Failed");
         return;
@@ -66,48 +63,49 @@ function EditClinic() {
       avatar = IMAGE_BASE_URL + imageSrc;
     }
 
-    let { data: newClinic, error } = await supabase
-      .from(" clinics")
+    let { data: newService, error } = await supabase
+      .from("services")
       .update({
         name: e.target.name.value,
-        avatar: avatar,
-        address: e.target.address.value,
+        image: avatar,
+        price: e.target.price.value,
         description: e.target.discription.value,
       })
-      .eq("id", clinic.id)
+      .eq("id", service.id)
       .select();
     // check if update false
     if (error) {
       toast.error(error.message);
       setMessage(false);
-    } else if (newClinic) {
-      setClinic(newClinic[0]);
-      let tmpClinics: any = clinics.filter(
-        (item: Clinic) => item.id !== clinic.id
+    } else if (newService) {
+      setService(newService[0]);
+      let tmpClinics: any = services.filter(
+        (item: Service) => item.id !== service.id
       );
-      tmpClinics.push(newClinic[0]);
-      dispatch(clinicsAction("clinics", tmpClinics));
+      tmpClinics.push(newService[0]);
+      dispatch(servicesAction("services", tmpClinics));
       setMessage(true);
     }
+
     setIsLoading(false);
   };
 
   useEffect(() => {
     if (!id) return;
-    fetchClinic(id as string);
+    fetchService(id as string);
   }, [id]);
   return (
     <div className="w-full bg-gray-50 relative overflow-y-auto ">
       <Head>
-        <title>Update Clinic</title>
+        <title>Create Clinic </title>
         <meta property="og:title" content="Create Banner" key="title" />
       </Head>
-      {clinic ? (
+      {service ? (
         <main>
           <div className="px-4 bg-white block ">
             <form onSubmit={handleUpdate}>
               <div className="relative">
-                {avatar && (
+                {serviceImage && (
                   <div
                     className="relative block"
                     style={{
@@ -115,14 +113,14 @@ function EditClinic() {
                     }}
                   >
                     <img
-                      src={avatar}
+                      src={serviceImage}
                       alt="backGround"
                       className="flex flex-col absolute top-0 w-full h-full justify-center items-center bg-gray-50 rounded-lg"
                     />
                     <ButtonChangeImageAndVideo
-                      title={"Change Clinic Avatar"}
-                      setFileImage={setFileAvatar}
-                      setImage={setAvatar}
+                      title={"Đổi ảnh"}
+                      setFileImage={setServiceFile}
+                      setImage={setServiceImage}
                     />
                   </div>
                 )}
@@ -133,30 +131,30 @@ function EditClinic() {
                     htmlFor="name"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 required"
                   >
-                    Tên Phòng Khám
+                    Tên Dịch Vụ
                   </label>
                   <input
                     type="text"
                     id="name"
-                    defaultValue={clinic.name}
+                    defaultValue={service.name}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                    placeholder="Vd: Aura Cơ sở 1"
+                    placeholder="Vd: Kiểm tra răng"
                     required
                   />
                 </div>
                 <div className="mb-4">
                   <label
-                    htmlFor="address"
+                    htmlFor="price"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 required"
                   >
-                    Địa Chỉ
+                    Giá
                   </label>
                   <input
-                    type="text"
-                    id="address"
-                    defaultValue={clinic?.address}
+                    type="number"
+                    id="price"
+                    defaultValue={service.price}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                    placeholder="Vd: Quận 3, Tp.HCM"
+                    placeholder="Vd: 100000"
                     required
                   />
                 </div>
@@ -167,8 +165,8 @@ function EditClinic() {
                   <textarea
                     id="discription"
                     name="discription"
-                    defaultValue={clinic?.description}
                     rows={8}
+                    defaultValue={service.description}
                     className="block px-0 w-full text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:outline-none  dark:text-white dark:placeholder-gray-400"
                     placeholder="Thông tin mô tả"
                     required
@@ -198,7 +196,7 @@ function EditClinic() {
                     className="cursor-pointer flex items-center text-white bg-primary focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none"
                     type="submit"
                   >
-                    Cập nhật lại
+                    Cập nhật mới
                   </button>
                 ) : isLoading ? (
                   <div className="mt-4 flex items-center text-white bg-primary focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none">
@@ -239,4 +237,4 @@ function EditClinic() {
     </div>
   );
 }
-export default EditClinic;
+export default EditService;
