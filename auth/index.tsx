@@ -20,10 +20,9 @@ function AuthRoute({ children }: any) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      console.log(user);
       setAuth(true);
       dispatch(adminAction("admin", user));
-      // router.push(`/dashboard/roles`);
+      router.push(`/dashboard/roles`);
     } else {
       router.push("/");
     }

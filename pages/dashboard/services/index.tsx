@@ -93,8 +93,8 @@ function ServicePage() {
               <Table.HeadCell>STT</Table.HeadCell>
               <Table.HeadCell>TÊN</Table.HeadCell>
               <Table.HeadCell>GIÁ TIỀN</Table.HeadCell>
-              <Table.HeadCell>ẢNH ĐẠI DIỆN</Table.HeadCell>
               <Table.HeadCell>MÔ TẢ</Table.HeadCell>
+              <Table.HeadCell>ẢNH ĐẠI DIỆN</Table.HeadCell>
               <Table.HeadCell className="flex justify-end">
                 THAO TÁC
               </Table.HeadCell>
