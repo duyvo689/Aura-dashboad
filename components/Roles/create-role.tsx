@@ -17,22 +17,24 @@ interface Props {
 }
 function FormRole({ roles, setRender }: Props) {
   const [phone, setPhone] = useState("");
-  const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<boolean | null>(null);
   const dispatch = useDispatch();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const { data, error } = await supabase
-      .from("roles")
-      .insert([{ phone: e.target.phone.value, position: e.target.role.value }]);
+    const { data, error } = await supabase.from("roles").insert([
+      {
+        phone: phone.replace(/-/g, ""),
+        position: e.target.role.value,
+      },
+    ]);
     if (error) {
       toast.error(error.message);
       setMessage(false);
       return;
     }
     roles.push({
-      phone: e.target.phone.value,
+      phone: phone,
       position: e.target.role.value!,
     });
     setRender(Math.random());
@@ -53,7 +55,7 @@ function FormRole({ roles, setRender }: Props) {
             type="text"
             id="phone"
             name="phone"
-            value={phone}
+            value={formatPhoneNumber(phone)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
             placeholder="Số điện thoại Vd: 09211xxx"
             onChange={(e) => {
