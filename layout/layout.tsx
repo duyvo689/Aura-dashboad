@@ -13,7 +13,16 @@ export default function Layout({ children }: any) {
           <Sidebar />
           <div className="md:pl-64 flex flex-col">
             <HeaderDashboard />
-            {children}
+            <div
+              style={{
+                maxWidth: "1440px",
+                margin: "auto",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              {children}
+            </div>
           </div>
         </>
       ) : (

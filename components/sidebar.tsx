@@ -41,8 +41,12 @@ const navigation = [
     icon: NewspaperIcon,
     pathName: "services",
   },
-  //   { name: "Documents", href: "#", icon: InboxIcon, pathName: "banners" },
-  //   { name: "Reports", href: "#", icon: ChartBarIcon },
+   {
+    name: "Quản lý danh mục",
+    href: "/dashboard/category",
+    icon: NewspaperIcon,
+    pathName: "category",
+  },
 ];
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");

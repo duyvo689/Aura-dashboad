@@ -34,4 +34,10 @@ interface Service {
   description: string;
 }
 
-export type { Role, User, Banner, Clinic, Service };
+interface Category {
+  id: string;
+  created_at: string;
+  name: string;
+}
+
+export type { Role, User, Banner, Clinic, Service ,Category};
