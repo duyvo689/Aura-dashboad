@@ -92,7 +92,7 @@ function CategoryPage() {
           <form onSubmit={addNewCategory}>
             <label
               htmlFor="helper-text"
-              className="block mb-2 text-sm font-bold text-gray-900 dark:text-white"
+              className="block mb-4 text-sm font-bold text-gray-900 dark:text-white"
             >
               THÊM DANH MỤC
             </label>
@@ -126,11 +126,14 @@ function CategoryPage() {
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="py-3 px-6">
+                <th scope="col" className="py-3  text-center px-6">
                   STT
                 </th>
                 <th scope="col" className="py-3 px-6">
                   TÊN DANH MỤC
+                </th>
+                <th scope="col" className="py-3 text-right px-6">
+                  HÀNH ĐỘNG
                 </th>
               </tr>
             </thead>
@@ -142,7 +145,7 @@ function CategoryPage() {
                     key={item.id}
                     className="bg-white hover:bg-gray-100 border-b dark:bg-gray-900 dark:border-gray-700"
                   >
-                    <td className="py-4 px-6">{index}</td>
+                    <td className="py-4 text-center px-6">{index}</td>
                     {index == toggle.index && toggle.isEdit ? (
                       <th
                         scope="row"
@@ -204,6 +207,11 @@ function CategoryPage() {
                         </th>
                       </Tippy>
                     )}
+                    <td className="py-4 px-6 text-right text-white">
+                      <button className="bg-red-500 px-3 py-[2px] rounded text-[12px] font-bold">
+                        Xoá
+                      </button>
+                    </td>
                   </tr>
                 ))}
             </tbody>

@@ -206,7 +206,7 @@ function CategoryPage() {
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="py-3 px-6">
+                <th scope="col" className="py-3 text-center px-6">
                   STT
                 </th>
                 <th scope="col" className="py-3 px-6">
@@ -214,6 +214,9 @@ function CategoryPage() {
                 </th>
                 <th scope="col" className="py-3 px-6">
                   TÊN DANH MỤC
+                </th>
+                <th scope="col" className="py-3 text-right px-6">
+                  HÀNH ĐỘNG
                 </th>
               </tr>
             </thead>
@@ -225,7 +228,7 @@ function CategoryPage() {
                     key={item.id}
                     className="bg-white cursor-pointer  hover:bg-gray-100 border-b dark:bg-gray-900 dark:border-gray-700"
                   >
-                    <td className="py-4 px-6">{index}</td>
+                    <td className="py-4 text-center px-6">{index}</td>
                     <td className="py-4 px-6">
                       <img
                         src={item.image}
@@ -293,6 +296,11 @@ function CategoryPage() {
                         </th>
                       </Tippy>
                     )}
+                    <td className="py-4 px-6 text-right text-white">
+                      <button className="bg-red-500 px-3 py-[2px] rounded text-[12px] font-bold">
+                        Xoá
+                      </button>
+                    </td>
                   </tr>
                 ))}
             </tbody>

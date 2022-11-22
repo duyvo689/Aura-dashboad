@@ -85,7 +85,7 @@ function CustomerPage() {
   return (
     <>
       <Head>
-        <title>Danh Mục</title>
+        <title>Khách Hàng</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
       <div className="flex gap-6 mt-4">
@@ -93,7 +93,7 @@ function CustomerPage() {
           <form onSubmit={addNewCustomers}>
             <label
               htmlFor="helper-text"
-              className="block mb-2 text-sm font-bold text-gray-900 dark:text-white"
+              className="block mb-4 text-sm font-bold text-gray-900 dark:text-white "
             >
               THÊM NGUỒN KHÁCH HÀNG
             </label>
@@ -104,7 +104,7 @@ function CustomerPage() {
               value={name}
               aria-describedby="helper-text-explanation"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Tên danh mục"
+              placeholder="Nguồn khách hàng"
               onChange={(e) => setName(e.target.value)}
             />
             <div className="justify-end flex mt-4">
@@ -127,11 +127,14 @@ function CustomerPage() {
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="py-3 px-6">
+                <th scope="col" className="py-3 text-center px-6">
                   STT
                 </th>
                 <th scope="col" className="py-3 px-6">
                   TÊN NGUỒN KHÁCH HÀNG
+                </th>
+                <th scope="col" className="py-3 text-right px-6">
+                  HÀNH ĐỘNG
                 </th>
               </tr>
             </thead>
@@ -143,7 +146,7 @@ function CustomerPage() {
                     key={item.id}
                     className="bg-white hover:bg-gray-100 border-b dark:bg-gray-900 dark:border-gray-700"
                   >
-                    <td className="py-4 px-6">{index}</td>
+                    <td className="py-4 text-center px-6">{index}</td>
                     {index == toggle.index && toggle.isEdit ? (
                       <th
                         scope="row"
@@ -205,6 +208,11 @@ function CustomerPage() {
                         </th>
                       </Tippy>
                     )}
+                    <td className="py-4 px-6 text-right text-white">
+                      <button className="bg-red-500 px-3 py-[2px] rounded text-[12px] font-bold">
+                        Xoá
+                      </button>
+                    </td>
                   </tr>
                 ))}
             </tbody>
