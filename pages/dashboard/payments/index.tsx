@@ -3,8 +3,10 @@ import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../../../services/supaBaseClient";
 import { Payment } from "../../../utils/types";
-import { categoryAction, paymentAction } from "../../../redux/actions/ReduxAction";
+import { paymentAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
+import Tippy from "@tippyjs/react";
+
 interface Toggle {
   index: number;
   isEdit: boolean;
@@ -221,7 +223,7 @@ function CategoryPage() {
                 payments.map((item, index) => (
                   <tr
                     key={item.id}
-                    className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
+                    className="bg-white cursor-pointer  hover:bg-gray-100 border-b dark:bg-gray-900 dark:border-gray-700"
                   >
                     <td className="py-4 px-6">{index}</td>
                     <td className="py-4 px-6">
@@ -260,14 +262,14 @@ function CategoryPage() {
                               ) : (
                                 <button
                                   type="submit"
-                                  className="border h-[30px] border-gray-400 flex items-center rounded px-4 text-white bg-red-600"
+                                  className="border h-[30px] cursor-pointer hover:bg-red-500 border-gray-400 flex items-center rounded px-4 text-white bg-red-600"
                                 >
                                   Sửa
                                 </button>
                               )}
 
                               <span
-                                className="border h-[30px] border-gray-400 flex items-center rounded px-4 bg-gray-200"
+                                className="border cursor-pointer hover:bg-gray-300 h-[30px] border-gray-400 flex items-center rounded px-4 bg-gray-200"
                                 onClick={() =>
                                   setToggle({ index: -1, isEdit: false, value: "" })
                                 }
@@ -279,15 +281,17 @@ function CategoryPage() {
                         </form>
                       </th>
                     ) : (
-                      <th
-                        scope="row"
-                        className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                        onDoubleClick={() =>
-                          setToggle({ index: index, isEdit: true, value: item.name })
-                        }
-                      >
-                        {item.name}
-                      </th>
+                      <Tippy content="Nháy đúp chuột để chỉnh sửa">
+                        <th
+                          scope="row"
+                          className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                          onDoubleClick={() =>
+                            setToggle({ index: index, isEdit: true, value: item.name })
+                          }
+                        >
+                          {item.name}
+                        </th>
+                      </Tippy>
                     )}
                   </tr>
                 ))}

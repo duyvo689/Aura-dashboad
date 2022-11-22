@@ -5,6 +5,8 @@ import { supabase } from "../../../services/supaBaseClient";
 import { Customer } from "../../../utils/types";
 import { customerAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
+import Tippy from "@tippyjs/react";
+
 interface Toggle {
   index: number;
   isEdit: boolean;
@@ -139,7 +141,7 @@ function CustomerPage() {
                 customers.map((item, index) => (
                   <tr
                     key={item.id}
-                    className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
+                    className="bg-white hover:bg-gray-100 border-b dark:bg-gray-900 dark:border-gray-700"
                   >
                     <td className="py-4 px-6">{index}</td>
                     {index == toggle.index && toggle.isEdit ? (
@@ -172,14 +174,14 @@ function CustomerPage() {
                               ) : (
                                 <button
                                   type="submit"
-                                  className="border h-[30px] border-gray-400 flex items-center rounded px-4 text-white bg-red-600"
+                                  className="border h-[30px] cursor-pointer  hover:bg-red-500 border-gray-400 flex items-center rounded px-4 text-white bg-red-600"
                                 >
                                   Sửa
                                 </button>
                               )}
 
                               <span
-                                className="border h-[30px] border-gray-400 flex items-center rounded px-4 bg-gray-200"
+                                className="border h-[30px] cursor-pointer  hover:bg-gray-300 border-gray-400 flex items-center rounded px-4 bg-gray-200"
                                 onClick={() =>
                                   setToggle({ index: -1, isEdit: false, value: "" })
                                 }
@@ -191,15 +193,17 @@ function CustomerPage() {
                         </form>
                       </th>
                     ) : (
-                      <th
-                        scope="row"
-                        className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                        onDoubleClick={() =>
-                          setToggle({ index: index, isEdit: true, value: item.name })
-                        }
-                      >
-                        {item.name}
-                      </th>
+                      <Tippy content="Nháy đúp chuột để chỉnh sửa">
+                        <th
+                          scope="row"
+                          className="py-4 px-6 cursor-pointer font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                          onDoubleClick={() =>
+                            setToggle({ index: index, isEdit: true, value: item.name })
+                          }
+                        >
+                          {item.name}
+                        </th>
+                      </Tippy>
                     )}
                   </tr>
                 ))}
