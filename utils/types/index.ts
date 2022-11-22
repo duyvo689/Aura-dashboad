@@ -39,5 +39,10 @@ interface Category {
   created_at: string;
   name: string;
 }
-
-export type { Role, User, Banner, Clinic, Service ,Category};
+interface Payment {
+  id: string;
+  created_at: string;
+  name: string;
+  image: string;
+}
+export type { Role, User, Banner, Clinic, Service ,Category,Payment};

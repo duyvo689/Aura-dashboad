@@ -1,4 +1,4 @@
-import { Role, User, Clinic, Service, Category } from "../../utils/types";
+import { Role, User, Clinic, Service, Category, Payment } from "../../utils/types";
 const rolesAction = (type: any, roles: Role[] | null) => {
   return {
     type,
@@ -42,11 +42,18 @@ const categoryAction = (type: any, category: Category[] | null) => {
     category,
   };
 };
+const paymentAction = (type: any, payments: Payment[] | null) => {
+  return {
+    type,
+    payments,
+  };
+};
 export {
   bannersAction,
   adminAction,
   rolesAction,
   clinicsAction,
   servicesAction,
-  categoryAction
+  categoryAction,
+  paymentAction
 };

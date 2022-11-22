@@ -41,11 +41,17 @@ const navigation = [
     icon: NewspaperIcon,
     pathName: "services",
   },
-   {
+  {
     name: "Quản lý danh mục",
     href: "/dashboard/category",
     icon: NewspaperIcon,
     pathName: "category",
+  },
+  {
+    name: "Phương thức thanh toán",
+    href: "/dashboard/payments",
+    icon: NewspaperIcon,
+    pathName: "payments",
   },
 ];
 function classNames(...classes: any[]) {
@@ -58,11 +64,7 @@ function SideBar() {
     <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
       <div className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5">
         <div className="flex flex-shrink-0 items-center px-4">
-          <img
-            className="h-8 w-auto"
-            src={mainLogo.src}
-            alt="Aura Group Logo"
-          />
+          <img className="h-8 w-auto" src={mainLogo.src} alt="Aura Group Logo" />
         </div>
         <div className="mt-5 flex flex-grow flex-col">
           <nav className="flex-1 space-y-1 px-2 pb-4">
