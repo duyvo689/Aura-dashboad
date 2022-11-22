@@ -24,7 +24,7 @@ function CategoryPage() {
       toast(error.message);
       return;
     }
-    if (data) {
+    if (data && data.length > 0) {
       dispatch(categoryAction("category", data));
     }
   };
@@ -106,7 +106,7 @@ function CategoryPage() {
             />
             <div className="justify-end flex mt-4">
               {!name ? (
-                <p className="text-white bg-gray-500 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">
+                <p className="text-white bg-gray-400 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">
                   THÊM DANH MỤC
                 </p>
               ) : (

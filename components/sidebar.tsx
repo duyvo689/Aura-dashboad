@@ -53,6 +53,12 @@ const navigation = [
     icon: NewspaperIcon,
     pathName: "payments",
   },
+  {
+    name: "Nguồn khách hàng",
+    href: "/dashboard/customer-resources",
+    icon: NewspaperIcon,
+    pathName: "customer-resources",
+  },
 ];
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");

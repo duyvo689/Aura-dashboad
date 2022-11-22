@@ -45,4 +45,9 @@ interface Payment {
   name: string;
   image: string;
 }
-export type { Role, User, Banner, Clinic, Service ,Category,Payment};
+interface Customer {
+  id: string;
+  created_at: string;
+  name: string;
+}
+export type { Role, User, Banner, Clinic, Service ,Category,Payment,Customer};

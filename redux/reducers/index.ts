@@ -7,6 +7,7 @@ import clinicRedux from "./clinicRedux";
 import serviceRedux from "./serviceRedux";
 import categoryRedux from "./categoryRedux"
 import paymentyRedux from "./paymentyRedux";
+import customerRedux from "./customerRedux";
 const rootReducer = combineReducers({
   admin: adminRedux,
   roles: roleRedux,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   services: serviceRedux,
   category: categoryRedux,
   payments: paymentyRedux,
+  customers: customerRedux,
 });
 export type RootState = ReturnType<typeof rootReducer>;
 

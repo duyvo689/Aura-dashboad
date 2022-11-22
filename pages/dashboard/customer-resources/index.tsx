@@ -1,88 +1,54 @@
 import Head from "next/head";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../../../services/supaBaseClient";
-import { Payment } from "../../../utils/types";
-import { categoryAction, paymentAction } from "../../../redux/actions/ReduxAction";
+import { Customer } from "../../../utils/types";
+import { customerAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
 interface Toggle {
   index: number;
   isEdit: boolean;
   value: string;
 }
-function CategoryPage() {
+function CustomerPage() {
   const [name, setName] = useState<string>();
   const [load, setLoad] = useState<boolean>(false);
   const [toggle, setToggle] = useState<Toggle>({ index: -1, isEdit: false, value: "" });
 
-  const upImg = useRef<any>(null);
-  const [image, setImage] = useState<any>();
-
-  const payments: Payment[] = useSelector((state: any) => state.payments);
+  const customers: Customer[] = useSelector((state: any) => state.customers);
   const dispatch = useDispatch();
-
-  const getAllPayment = async () => {
-    let { data: payments, error } = await supabase.from("payments").select("*");
+  console.log(customers);
+  const getAllCustomers = async () => {
+    let { data, error } = await supabase.from("customer_resources").select("*");
     if (error) {
       toast(error.message);
       return;
     }
-    if (payments && payments.length > 0) {
-      dispatch(paymentAction("payments", payments));
+    if (data && data.length > 0) {
+      dispatch(customerAction("customers", data));
     }
   };
   useEffect(() => {
-    getAllPayment();
+    getAllCustomers();
   }, []);
 
-  const createImgId = () => {
-    var result = "";
-    var characters = "abcdefgh0123456789";
-    var charactersLength = characters.length;
-    for (var i = 0; i < 20; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  };
-
-  const uploadImageProduct = async (image: any) => {
-    try {
-      if (image) {
-        const fileExt = image.name.split(".").pop();
-        const filePath = `${createImgId()}.${fileExt}`;
-        let { error: uploadError } = await supabase.storage
-          .from("services")
-          .upload(filePath, image, { upsert: true });
-        if (uploadError) {
-          console.log(uploadError);
-        }
-        const publicUrl = await supabase.storage.from("services").getPublicUrl(filePath);
-        return publicUrl.data.publicUrl;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const addNewPayment = async (event: any) => {
+  const addNewCustomers = async (event: any) => {
     try {
       setLoad(true);
       event.preventDefault();
       const name = event.target.elements.name.value;
-      const _urlImg = await uploadImageProduct(image);
-      console.log(_urlImg);
+      console.log(name);
       const { data, error } = await supabase
-        .from("payments")
-        .insert([{ name: name, image: _urlImg }])
+        .from("customer_resources")
+        .insert([{ name: name }])
         .select()
         .single();
       if (error != null) {
         toast.error(error.message);
       } else {
-        payments.push(data);
+        customers.push(data);
         toast.success(`Đã thêm ${name}`);
         setName("");
-        setImage(null);
       }
     } catch (error) {
       console.log(error);
@@ -91,12 +57,12 @@ function CategoryPage() {
     }
   };
 
-  const updatePayment = async (event: any, id: string) => {
+  const updateCustomer = async (event: any, id: string) => {
     try {
       event.preventDefault();
       const name = event.target.elements.newName.value;
       const { data, error } = await supabase
-        .from("categories")
+        .from("customer_resources")
         .update({ name: name })
         .eq("id", id)
         .select()
@@ -104,8 +70,8 @@ function CategoryPage() {
       if (error != null) {
         toast.error(error.message);
       } else {
-        let index = payments.findIndex((item) => item.id == id);
-        payments[index] = data;
+        let index = customers.findIndex((item) => item.id == id);
+        customers[index] = data;
         toast.success(`Đã sửa ${name}`);
         setToggle({ index: -1, isEdit: false, value: "" });
       }
@@ -114,24 +80,20 @@ function CategoryPage() {
     } finally {
     }
   };
-
-  const handleClick = () => {
-    upImg.current.click();
-  };
   return (
     <>
       <Head>
-        <title>Thanh Toán</title>
+        <title>Danh Mục</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
       <div className="flex gap-6 mt-4">
         <div className="flex-1">
-          <form onSubmit={addNewPayment}>
+          <form onSubmit={addNewCustomers}>
             <label
               htmlFor="helper-text"
               className="block mb-2 text-sm font-bold text-gray-900 dark:text-white"
             >
-              THÊM PHƯƠNG THỨC THANH TOÁN
+              THÊM NGUỒN KHÁCH HÀNG
             </label>
             <input
               type="text"
@@ -139,62 +101,21 @@ function CategoryPage() {
               name="name"
               value={name}
               aria-describedby="helper-text-explanation"
-              className="bg-gray-50 mt-4 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Tên phương thức thanh toán"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Tên danh mục"
               onChange={(e) => setName(e.target.value)}
             />
-
-            <div className="sm:col-span-6 mt-4">
-              <label
-                htmlFor="photo"
-                className="block text-sm font-bold text-gray-700 mb-4"
-              >
-                THÊM HÌNH
-              </label>
-              <div className="mt-1 flex items-center">
-                <span className="h-16 w-16 overflow-hidden rounded-full bg-gray-100">
-                  {image ? (
-                    <img
-                      src={URL.createObjectURL(image)}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <svg
-                      className="h-full w-full text-gray-300"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                  )}
-                </span>
-                <button
-                  onClick={handleClick}
-                  type="button"
-                  className="ml-5 rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                  Thay Đổi
-                </button>
-                <input
-                  ref={upImg}
-                  type="file"
-                  hidden
-                  multiple
-                  onChange={(e) => e.target.files && setImage(e.target.files[0])}
-                />
-              </div>
-            </div>
             <div className="justify-end flex mt-4">
-              {!name || !image ? (
+              {!name ? (
                 <p className="text-white bg-gray-400 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">
-                  THÊM THANH TOÁN
+                  THÊM NGUỒN KHÁCH HÀNG
                 </p>
               ) : (
                 <button
                   type={"submit"}
                   className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                 >
-                  {load ? "ĐANG THÊM..." : "THÊM THANH TOÁN"}
+                  {load ? "ĐANG THÊM..." : "THÊM NGUỒN KHÁCH HÀNG"}
                 </button>
               )}
             </div>
@@ -208,34 +129,25 @@ function CategoryPage() {
                   STT
                 </th>
                 <th scope="col" className="py-3 px-6">
-                  HÌNH
-                </th>
-                <th scope="col" className="py-3 px-6">
-                  TÊN DANH MỤC
+                  TÊN NGUỒN KHÁCH HÀNG
                 </th>
               </tr>
             </thead>
             <tbody>
-              {payments &&
-                payments.length > 0 &&
-                payments.map((item, index) => (
+              {customers &&
+                customers.length > 0 &&
+                customers.map((item, index) => (
                   <tr
                     key={item.id}
                     className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
                   >
                     <td className="py-4 px-6">{index}</td>
-                    <td className="py-4 px-6">
-                      <img
-                        src={item.image}
-                        className="h-12 w-12 rounded-md object-cover"
-                      />
-                    </td>
                     {index == toggle.index && toggle.isEdit ? (
                       <th
                         scope="row"
                         className="py-2 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                        <form onSubmit={(e) => updatePayment(e, item.id)}>
+                        <form onSubmit={(e) => updateCustomer(e, item.id)}>
                           <div className="flex">
                             <input
                               autoFocus
@@ -298,4 +210,4 @@ function CategoryPage() {
     </>
   );
 }
-export default CategoryPage;
+export default CustomerPage;
