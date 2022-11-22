@@ -1,212 +1,252 @@
-/* eslint-disable @next/next/no-img-element */
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
-import { ButtonChangeImageAndVideo } from "../../../components/button";
-import { InputFileImage } from "../../../components/InputFileImage";
-import Head from "next/head";
-import { supabase } from "../../../services/supaBaseClient";
+import { Button } from "flowbite-react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Clinic, Service } from "../../../utils/types";
-import { RootState } from "../../../redux/reducers";
-import { servicesAction } from "../../../redux/actions/ReduxAction";
+import { useDispatch, useSelector } from "react-redux";
+import { categoryAction, paymentAction } from "../../../redux/actions/ReduxAction";
+import { supabase } from "../../../services/supaBaseClient";
+import { Category } from "../../../utils/types";
+import { XCircleIcon, ArrowSmallLeftIcon } from "@heroicons/react/24/outline";
+import Head from "next/head";
+import Link from "next/link";
+import { createImgId, uploadImageProduct } from "../../../utils/funtions";
 
-function CreateClinic() {
-  const [serviceImage, setServiceImage] = useState<string | null>(null);
-  const [serviceFile, setServiceFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<boolean | null>(null);
-  const BASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const IMAGE_BASE_URL: string = `${BASE_URL}/storage/v1/object/public/services/`;
-  //redux
-  const addMore = async () => {
-    window.location.reload();
+export default function CreateService() {
+  const [image, setImage] = useState<any>();
+  const category: Category[] = useSelector((state: any) => state.category);
+  const dispatch = useDispatch();
+  const [load, setLoad] = useState<boolean>(false);
+
+  const addNewService = async (event: any) => {
+    try {
+      event.preventDefault();
+      setLoad(true);
+      const _urlImg = await uploadImageProduct(image, "services");
+      const _name = event.target.elements.name.value;
+      const _price = event.target.elements.price.value;
+      const _category = event.target.elements.category.value;
+      const _description = event.target.elements.description.value;
+      let _serviceInfo = {
+        name: _name,
+        price: _price,
+        category_id: _category,
+        description: _description,
+        image: _urlImg,
+      };
+      const { data, error } = await supabase
+        .from("services")
+        .insert([_serviceInfo])
+        .select()
+        .single();
+      if (error != null) {
+        toast.error(error.message);
+      } else {
+        toast.success(`Đã thêm thành công`);
+        setImage(null);
+        event.target.reset();
+        console.log(data);
+        category.push(data);
+      }
+      console.log(data, error);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoad(false);
+    }
   };
-  const upLoadFile = async (file: File) => {
-    const { data, error } = await supabase.storage
-      .from("/services/")
-      .upload(`/${file.name}`, file, {
-        upsert: true,
-      });
+
+  const getAllCategory = async () => {
+    let { data, error } = await supabase.from("categories").select("*");
     if (error) {
-      toast.error(error.message);
+      toast(error.message);
       return;
-    } else if (data) {
-      return data.path;
+    }
+    if (data && data.length > 0) {
+      dispatch(categoryAction("category", data));
     }
   };
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    setIsLoading(true);
-    if (!serviceFile) {
-      toast.error("Error");
-      return;
-    }
-    const imageSrc = await upLoadFile(serviceFile);
-    if (!imageSrc) {
-      toast.error("Error");
-      return;
-    }
-    const { data, error } = await supabase
-      .from("services")
-      .insert([
-        {
-          name: e.target.name.value,
-          image: IMAGE_BASE_URL + imageSrc,
-          price: e.target.price.value,
-          description: e.target.discription.value,
-        },
-      ])
-      .select();
-    if (error) {
-      toast.error(error.message);
-      setMessage(false);
-    } else if (data) {
-      setMessage(true);
-    }
-    setIsLoading(false);
-  };
+  useEffect(() => {
+    getAllCategory();
+  }, []);
+
   return (
-    <div className="w-full bg-gray-50 relative overflow-y-auto ">
+    <>
       <Head>
-        <title>Create Clinic </title>
-        <meta property="og:title" content="Create Banner" key="title" />
+        <title>Thêm Dịch Vụ </title>
+        <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      <main>
-        <div className="px-4 bg-white block ">
-          <form onSubmit={handleSubmit}>
-            <div className="relative">
-              {serviceImage ? (
-                <div
-                  className="relative block"
-                  style={{
-                    paddingTop: "56.25%",
-                  }}
-                >
-                  <img
-                    src={serviceImage}
-                    alt="backGround"
-                    className="flex flex-col absolute top-0 w-full h-full justify-center items-center bg-gray-50 rounded-lg"
-                  />
-                  <ButtonChangeImageAndVideo
-                    title={"Đổi ảnh"}
-                    setFileImage={setServiceFile}
-                    setImage={setServiceImage}
-                  />
-                </div>
-              ) : (
-                <>
-                  <InputFileImage
-                    title="service image"
-                    setFileImage={setServiceFile}
-                    setImage={setServiceImage}
-                  />
-                </>
-              )}
-            </div>
-            <div className="mt-4  grid md:grid-cols-2 grid-cols-1 gap-4">
-              <div className="mb-4">
+      <div className="sm:flex sm:items-center max-w-[860px] m-auto">
+        <div className="sm:flex-auto">
+          <h1 className="text-xl font-semibold text-gray-900">THÊM DỊCH VỤ MỚI</h1>
+          <p className="mt-2 text-sm text-gray-700">
+            Nhập đầy đủ các thông tin để thêm mới một dịch vụ ở Aura ID.
+          </p>
+        </div>
+        <Link href="/dashboard/services">
+          <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+            >
+              TRỞ LẠI TRANG TRƯỚC
+            </button>
+          </div>
+        </Link>
+      </div>
+      <form
+        id="myForm"
+        className="space-y-8 divide-gray-200 mb-20 max-w-[860px] m-auto"
+        onSubmit={addNewService}
+      >
+        <div className="space-y-8 divide-gray-200">
+          <div>
+            <div className="pt-6">
+              <div className="sm:col-span-3">
                 <label
-                  htmlFor="name"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 required"
+                  htmlFor="first-name"
+                  className="block text-sm font-medium text-gray-700"
                 >
                   Tên Dịch Vụ
                 </label>
-                <input
-                  type="text"
-                  id="name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                  placeholder="Vd: Kiểm tra răng"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="price"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 required"
-                >
-                  Giá
-                </label>
-                <input
-                  type="number"
-                  id="price"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                  placeholder="Vd: 1000000"
-                  required
-                />
-              </div>
-            </div>
-            <div className="mt-4 required">Mô tả</div>
-            <div className="mb-4 w-full bg-gray-50 rounded-lg border border-gray-200">
-              <div className="py-2 px-4 bg-white rounded-b-lg dark:bg-gray-800">
-                <textarea
-                  id="discription"
-                  name="discription"
-                  rows={8}
-                  className="block px-0 w-full text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:outline-none  dark:text-white dark:placeholder-gray-400"
-                  placeholder="Thông tin mô tả"
-                  required
-                ></textarea>
-              </div>
-            </div>
-            {message === null ? null : message ? (
-              <div
-                className="p-4 my-4 text-sm text-primary bg-green-100 rounded-lg "
-                role="alert"
-              >
-                <span className="font-bold">Thành công!!!</span> Tạo mới thành
-                công
-              </div>
-            ) : (
-              <div
-                className="p-4 my-4 text-sm text-red-500 bg-red-100 rounded-lg "
-                role="alert"
-              >
-                <span className="font-bold">Thất bại!!!</span> Tạo mới thất bại
-              </div>
-            )}
-            <div className="flex justify-end">
-              {message !== null ? (
-                <div
-                  className="cursor-pointer flex items-center text-white bg-primary focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none"
-                  onClick={addMore}
-                >
-                  Thêm mới
+                <div className="mt-1">
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    autoComplete="given-name"
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  />
                 </div>
-              ) : isLoading ? (
-                <div className="mt-4 flex items-center text-white bg-primary focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none">
-                  <svg
-                    aria-hidden="true"
-                    role="status"
-                    className="inline mr-1 w-4 h-4 text-white animate-spin"
-                    viewBox="0 0 100 101"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+              </div>
+              <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <div className="sm:col-span-3">
+                  <label
+                    htmlFor="price"
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    <path
-                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                      fill="#E5E7EB"
+                    Nhập Giá Dịch Vụ
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="number"
+                      name="price"
+                      id="price"
+                      autoComplete="family-name"
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
-                    <path
-                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  Đang tạo...
+                  </div>
                 </div>
-              ) : (
-                <button
-                  type="submit"
-                  className="mt-4 text-white bg-primary focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none"
-                >
-                  Tạo mới
-                </button>
-              )}
+
+                <div className="sm:col-span-3">
+                  <label
+                    htmlFor="category"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Chọn Danh Mục
+                  </label>
+                  <div className="mt-1">
+                    <select
+                      id="category"
+                      name="category"
+                      autoComplete="country-name"
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    >
+                      {category &&
+                        category.length > 0 &&
+                        category.map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {item.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
             </div>
-          </form>
+          </div>
+          <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+            <div className="sm:col-span-6">
+              <label htmlFor="about" className="block text-sm font-medium text-gray-700">
+                Mô Tả Dịch Vụ
+              </label>
+              <div className="mt-1">
+                <textarea
+                  id="description"
+                  name="description"
+                  rows={3}
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  defaultValue={""}
+                />
+              </div>
+            </div>
+
+            <div className="sm:col-span-6">
+              <label
+                htmlFor="cover-photo"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Thêm Hình Ảnh Dịch Vụ
+              </label>
+              <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
+                {image ? (
+                  <div className="h-24 relative">
+                    <img
+                      src={URL.createObjectURL(image)}
+                      className="h-full w-full rounded-lg  object-cover"
+                    />
+                    <div
+                      className="absolute h-7 w-7 -top-4 -right-4"
+                      onClick={() => setImage(null)}
+                    >
+                      <XCircleIcon />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-1 text-center ">
+                    <svg
+                      className="mx-auto h-12 w-12 text-gray-400"
+                      stroke="currentColor"
+                      fill="none"
+                      viewBox="0 0 48 48"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <div className="flex text-sm text-gray-600">
+                      <label
+                        htmlFor="file-upload"
+                        className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
+                      >
+                        <span>Upload a file</span>
+                        <input
+                          id="file-upload"
+                          name="file-upload"
+                          type="file"
+                          multiple
+                          className="sr-only"
+                          onChange={(e) => e.target.files && setImage(e.target.files[0])}
+                        />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+        <button
+          className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+          type="submit"
+        >
+          {load ? "ĐANG THÊM..." : "THÊM SẢN PHẨM"}
+        </button>
+      </form>
+    </>
   );
 }
-export default CreateClinic;

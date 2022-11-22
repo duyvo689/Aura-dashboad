@@ -6,19 +6,32 @@ import { Payment } from "../../../utils/types";
 import { paymentAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
 import Tippy from "@tippyjs/react";
+import moment from "moment";
+import { uploadImageProduct } from "../../../utils/funtions";
 
 interface Toggle {
   index: number;
   isEdit: boolean;
-  value: string;
+  value: {
+    img: string;
+    name: string;
+  };
 }
 function CategoryPage() {
   const [name, setName] = useState<string>();
   const [load, setLoad] = useState<boolean>(false);
-  const [toggle, setToggle] = useState<Toggle>({ index: -1, isEdit: false, value: "" });
+  const [toggle, setToggle] = useState<Toggle>({
+    index: -1,
+    isEdit: false,
+    value: {
+      img: "",
+      name: "",
+    },
+  });
 
   const upImg = useRef<any>(null);
   const [image, setImage] = useState<any>();
+  const [file, setFile] = useState<any>();
 
   const payments: Payment[] = useSelector((state: any) => state.payments);
   const dispatch = useDispatch();
@@ -37,41 +50,12 @@ function CategoryPage() {
     getAllPayment();
   }, []);
 
-  const createImgId = () => {
-    var result = "";
-    var characters = "abcdefgh0123456789";
-    var charactersLength = characters.length;
-    for (var i = 0; i < 20; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  };
-
-  const uploadImageProduct = async (image: any) => {
-    try {
-      if (image) {
-        const fileExt = image.name.split(".").pop();
-        const filePath = `${createImgId()}.${fileExt}`;
-        let { error: uploadError } = await supabase.storage
-          .from("services")
-          .upload(filePath, image, { upsert: true });
-        if (uploadError) {
-          console.log(uploadError);
-        }
-        const publicUrl = await supabase.storage.from("services").getPublicUrl(filePath);
-        return publicUrl.data.publicUrl;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const addNewPayment = async (event: any) => {
     try {
       setLoad(true);
       event.preventDefault();
       const name = event.target.elements.name.value;
-      const _urlImg = await uploadImageProduct(image);
+      const _urlImg = await uploadImageProduct(image, "services");
       console.log(_urlImg);
       const { data, error } = await supabase
         .from("payments")
@@ -96,10 +80,14 @@ function CategoryPage() {
   const updatePayment = async (event: any, id: string) => {
     try {
       event.preventDefault();
-      const name = event.target.elements.newName.value;
+      const _name = event.target.elements.newName.value;
+      let _image = toggle.value.img;
+      if (file) {
+        _image = (await uploadImageProduct(file, "services")) as string;
+      }
       const { data, error } = await supabase
-        .from("categories")
-        .update({ name: name })
+        .from("payments")
+        .update({ name: _name, image: _image })
         .eq("id", id)
         .select()
         .single();
@@ -108,8 +96,16 @@ function CategoryPage() {
       } else {
         let index = payments.findIndex((item) => item.id == id);
         payments[index] = data;
-        toast.success(`Đã sửa ${name}`);
-        setToggle({ index: -1, isEdit: false, value: "" });
+        toast.success(`Đã sửa ${_name}`);
+        setToggle({
+          index: -1,
+          isEdit: false,
+          value: {
+            img: "",
+            name: "",
+          },
+        });
+        setFile(null);
       }
     } catch (error) {
       console.log(error);
@@ -126,7 +122,7 @@ function CategoryPage() {
         <title>Thanh Toán</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      <div className="flex gap-6 mt-4">
+      <div className="flex gap-6 mt-4 mx-6">
         <div className="flex-1">
           <form onSubmit={addNewPayment}>
             <label
@@ -215,6 +211,9 @@ function CategoryPage() {
                 <th scope="col" className="py-3 px-6">
                   TÊN DANH MỤC
                 </th>
+                <th scope="col" className="py-3 px-6">
+                  NGÀY TẠO
+                </th>
                 <th scope="col" className="py-3 text-right px-6">
                   HÀNH ĐỘNG
                 </th>
@@ -230,10 +229,44 @@ function CategoryPage() {
                   >
                     <td className="py-4 text-center px-6">{index}</td>
                     <td className="py-4 px-6">
-                      <img
-                        src={item.image}
-                        className="h-12 w-12 rounded-md object-cover"
-                      />
+                      {index == toggle.index && toggle.isEdit ? (
+                        <>
+                          <Tippy content="Nháy chuột để chỉnh sửa ảnh">
+                            <div className="h-10 w-12 cursor-pointer">
+                              <img
+                                onClick={handleClick}
+                                className="w-full h-full rounded-md object-cover"
+                                src={file ? URL.createObjectURL(file) : item.image}
+                              />
+                            </div>
+                          </Tippy>
+                          <input
+                            ref={upImg}
+                            type="file"
+                            hidden
+                            multiple
+                            onChange={(e) => e.target.files && setFile(e.target.files[0])}
+                          />
+                        </>
+                      ) : (
+                        <Tippy content="Nháy đúp chuột để chỉnh sửa">
+                          <img
+                            src={item.image}
+                            className="h-10 w-12 rounded-md object-cover"
+                            onDoubleClick={() =>
+                              setToggle({
+                                index: index,
+                                isEdit: true,
+                                value: {
+                                  ...toggle.value,
+                                  img: item.image,
+                                  name: item.name,
+                                },
+                              })
+                            }
+                          />
+                        </Tippy>
+                      )}
                     </td>
                     {index == toggle.index && toggle.isEdit ? (
                       <th
@@ -247,35 +280,39 @@ function CategoryPage() {
                               type="text"
                               id="newName"
                               name="newName"
-                              value={toggle.value}
+                              value={toggle.value.name}
                               aria-describedby="helper-text-explanation"
-                              className="border rounded border-gray-300 text-gray-900 text-sm focus:ring-blue-400 focus:border-blue-400 block w-full"
+                              className="border rounded border-gray-300  text-gray-900 text-sm focus:ring-blue-400 focus:border-blue-400 block w-full min-w-[150px]"
                               placeholder="Tên danh mục"
                               onChange={(e) =>
                                 setToggle({
                                   index: index,
                                   isEdit: true,
-                                  value: e.target.value,
+                                  value: { ...toggle.value, name: e.target.value },
                                 })
                               }
                             />
                             <span className="flex gap-2 ml-2 items-center">
-                              {item.name == toggle.value ? (
-                                <></>
-                              ) : (
-                                <button
-                                  type="submit"
-                                  className="border h-[30px] cursor-pointer hover:bg-red-500 border-gray-400 flex items-center rounded px-4 text-white bg-red-600"
-                                >
-                                  Sửa
-                                </button>
-                              )}
+                              <button
+                                type="submit"
+                                className="h-[30px] cursor-pointer hover:bg-red-500 border-gray-400 flex items-center rounded px-4 text-white bg-red-600"
+                              >
+                                Sửa
+                              </button>
 
                               <span
-                                className="border cursor-pointer hover:bg-gray-300 h-[30px] border-gray-400 flex items-center rounded px-4 bg-gray-200"
-                                onClick={() =>
-                                  setToggle({ index: -1, isEdit: false, value: "" })
-                                }
+                                className="cursor-pointer hover:bg-gray-300 h-[30px] border-gray-400 flex items-center rounded px-4 bg-gray-200"
+                                onClick={() => {
+                                  setToggle({
+                                    index: -1,
+                                    isEdit: false,
+                                    value: {
+                                      img: "",
+                                      name: "",
+                                    },
+                                  });
+                                  setFile(null);
+                                }}
                               >
                                 Huỷ
                               </span>
@@ -287,15 +324,26 @@ function CategoryPage() {
                       <Tippy content="Nháy đúp chuột để chỉnh sửa">
                         <th
                           scope="row"
-                          className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                          className="py-4 px-6 font-medium text-gray-900 whitespace-wrap dark:text-white"
                           onDoubleClick={() =>
-                            setToggle({ index: index, isEdit: true, value: item.name })
+                            setToggle({
+                              index: index,
+                              isEdit: true,
+                              value: {
+                                ...toggle.value,
+                                name: item.name,
+                                img: item.image,
+                              },
+                            })
                           }
                         >
                           {item.name}
                         </th>
                       </Tippy>
                     )}
+                    <td className="py-4  px-6">
+                      {moment(item.created_at).format("DD/MM/YYYY")}
+                    </td>
                     <td className="py-4 px-6 text-right text-white">
                       <button className="bg-red-500 px-3 py-[2px] rounded text-[12px] font-bold">
                         Xoá

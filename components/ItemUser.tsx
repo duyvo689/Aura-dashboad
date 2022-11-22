@@ -16,7 +16,7 @@ function ItemUser({ index, item }: Props) {
       </Table.Cell>
       <Table.Cell>{item.id}</Table.Cell>
       <Table.Cell>{item.name}</Table.Cell>
-      <Table.Cell>{formatPhoneNumber(item.phone)}</Table.Cell>
+      <Table.Cell>{item.phone ? formatPhoneNumber(item.phone) : "..."}</Table.Cell>
       <Table.Cell>
         <div className="flex justify-center">
           <img className="w-10 h-10" src={item.avatar} />

@@ -5,6 +5,9 @@ import {
   UserPlusIcon,
   MapPinIcon,
   NewspaperIcon,
+  BanknotesIcon,
+  IdentificationIcon,
+  ClipboardDocumentCheckIcon,
 } from "@heroicons/react/24/outline";
 import mainLogo from "../public/images/mainlogo.svg";
 import Link from "next/link";
@@ -38,7 +41,7 @@ const navigation = [
   {
     name: "Quản lý dịch vụ",
     href: "/dashboard/services",
-    icon: NewspaperIcon,
+    icon: ClipboardDocumentCheckIcon,
     pathName: "services",
   },
   {
@@ -50,13 +53,13 @@ const navigation = [
   {
     name: "Phương thức thanh toán",
     href: "/dashboard/payments",
-    icon: NewspaperIcon,
+    icon: BanknotesIcon,
     pathName: "payments",
   },
   {
     name: "Nguồn khách hàng",
     href: "/dashboard/customer-resources",
-    icon: NewspaperIcon,
+    icon: IdentificationIcon,
     pathName: "customer-resources",
   },
 ];

@@ -6,6 +6,7 @@ import { Customer } from "../../../utils/types";
 import { customerAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
 import Tippy from "@tippyjs/react";
+import moment from "moment";
 
 interface Toggle {
   index: number;
@@ -88,7 +89,7 @@ function CustomerPage() {
         <title>Khách Hàng</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      <div className="flex gap-6 mt-4">
+      <div className="flex gap-6 mt-4 mx-6">
         <div className="flex-1">
           <form onSubmit={addNewCustomers}>
             <label
@@ -133,6 +134,9 @@ function CustomerPage() {
                 <th scope="col" className="py-3 px-6">
                   TÊN NGUỒN KHÁCH HÀNG
                 </th>
+                <th scope="col" className="py-3 px-6">
+                  NGÀY TẠO
+                </th>
                 <th scope="col" className="py-3 text-right px-6">
                   HÀNH ĐỘNG
                 </th>
@@ -161,7 +165,7 @@ function CustomerPage() {
                               name="newName"
                               value={toggle.value}
                               aria-describedby="helper-text-explanation"
-                              className="border rounded border-gray-300 text-gray-900 text-sm focus:ring-blue-400 focus:border-blue-400 block w-full"
+                              className="border rounded border-gray-300 text-gray-900 text-sm focus:ring-blue-400 focus:border-blue-400 block w-full min-w-[150px]"
                               placeholder="Tên danh mục"
                               onChange={(e) =>
                                 setToggle({
@@ -173,7 +177,9 @@ function CustomerPage() {
                             />
                             <span className="flex gap-2 ml-2 items-center">
                               {item.name == toggle.value ? (
-                                <></>
+                                <span className="border h-[30px]  border-gray-400 flex items-center rounded px-4 text-white bg-gray-400">
+                                  Sửa
+                                </span>
                               ) : (
                                 <button
                                   type="submit"
@@ -208,6 +214,9 @@ function CustomerPage() {
                         </th>
                       </Tippy>
                     )}
+                    <td className="py-4  px-6">
+                      {moment(item.created_at).format("DD/MM/YYYY")}
+                    </td>
                     <td className="py-4 px-6 text-right text-white">
                       <button className="bg-red-500 px-3 py-[2px] rounded text-[12px] font-bold">
                         Xoá

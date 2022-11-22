@@ -9,18 +9,26 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^2.0.12",
+    "@mui/material": "^5.10.15",
+    "@mui/styled-engine-sc": "^5.10.14",
+    "@mui/x-data-grid": "^5.17.12",
+    "@mui/x-data-grid-generator": "^5.17.12",
     "@supabase/supabase-js": "^2.0.4",
     "@tippyjs/react": "^4.2.6",
     "flowbite": "^1.5.4",
     "flowbite-react": "^0.3.5",
+    "moment": "^2.29.4",
     "next": "13.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
     "react-redux": "^8.0.4",
-    "redux": "^4.2.0"
+    "redux": "^4.2.0",
+    "styled-components": "^5.3.6"
   },
   "devDependencies": {
     "@types/node": "18.11.8",

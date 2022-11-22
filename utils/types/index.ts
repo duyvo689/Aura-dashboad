@@ -32,6 +32,7 @@ interface Service {
   price: number;
   image: string;
   description: string;
+  category_id: string;
 }
 
 interface Category {
