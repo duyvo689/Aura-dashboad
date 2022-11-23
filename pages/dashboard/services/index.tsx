@@ -164,7 +164,7 @@ export default function Example() {
                   {services &&
                     services.length > 0 &&
                     services.map((service, serviceIdx) => (
-                      <tr>
+                      <tr key={service.id}>
                         <td
                           className={classNames(
                             serviceIdx !== services.length - 1
