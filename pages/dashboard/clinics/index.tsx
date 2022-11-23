@@ -9,7 +9,8 @@ import { clinicsAction } from "../../../redux/actions/ReduxAction";
 import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
 import { uploadImageProduct } from "../../../utils/funtions";
-import { Clinic } from "../../../utils/types";
+import { Clinic, OpenModal } from "../../../utils/types";
+import ModalDelete from "../services/modal-delete";
 
 interface Toggle {
   index: number;
@@ -37,19 +38,42 @@ export default function ClinicPage() {
 
   const [image, setImage] = useState<any>();
   const upImg = useRef<any>(null);
+  const [open, setOpen] = useState<OpenModal>({ isOpen: false, id: "", name: "" });
 
+  const updateActive = async (id: string) => {
+    try {
+      const { data, error } = await supabase
+        .from(" clinics")
+        .update({ active: false })
+        .eq("id", id)
+        .select();
+      if (error != null) {
+        toast.error(error.message);
+      } else {
+        toast.success(`Đã xoá cơ sở`);
+        let newClinics = clinics.filter((item) => item.id !== id);
+        dispatch(clinicsAction("clinics", newClinics));
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setOpen({ isOpen: false, id: "", name: "" });
+    }
+  };
   const handleClick = () => {
     upImg.current.click();
   };
 
   const getAllClinic = async () => {
-    let { data: clinics, error } = await supabase.from(" clinics").select("*");
+    let { data: clinics, error } = await supabase
+      .from(" clinics")
+      .select("*")
+      .eq("active", true);
 
     if (error) {
       toast(error.message);
       return;
     }
-    console.log(clinics, error);
     if (clinics && clinics.length > 0) {
       dispatch(clinicsAction("clinics", clinics));
     }
@@ -65,7 +89,6 @@ export default function ClinicPage() {
       const _address = toggle.value.address;
       let _image = toggle.value.image;
 
-      console.log(toggle.value, id);
       if (image) {
         _image = (await uploadImageProduct(image, "clinics")) as string;
       }
@@ -81,7 +104,6 @@ export default function ClinicPage() {
         .select()
         .single();
 
-      console.log(data, error);
       if (error != null) {
         toast.error(error.message);
       } else {
@@ -330,7 +352,16 @@ export default function ClinicPage() {
                             </span>
                           ) : (
                             <>
-                              <span className="text-red-700 cursor-pointer hover:text-indigo-900">
+                              <span
+                                onClick={() =>
+                                  setOpen({
+                                    isOpen: true,
+                                    id: clinic.id,
+                                    name: clinic.name,
+                                  })
+                                }
+                                className="text-red-700 cursor-pointer hover:text-indigo-900"
+                              >
                                 Xoá
                               </span>
                               <span
@@ -382,6 +413,7 @@ export default function ClinicPage() {
           </div>
         </div>
       </div>
+      <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} />
     </div>
   );
 }

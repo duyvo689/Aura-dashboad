@@ -2,12 +2,13 @@ import Head from "next/head";
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../../../services/supaBaseClient";
-import { Payment } from "../../../utils/types";
+import { OpenModal, Payment } from "../../../utils/types";
 import { paymentAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
 import Tippy from "@tippyjs/react";
 import moment from "moment";
 import { uploadImageProduct } from "../../../utils/funtions";
+import ModalDelete from "../services/modal-delete";
 
 interface Toggle {
   index: number;
@@ -36,8 +37,33 @@ function CategoryPage() {
   const payments: Payment[] = useSelector((state: any) => state.payments);
   const dispatch = useDispatch();
 
+  const [open, setOpen] = useState<OpenModal>({ isOpen: false, id: "", name: "" });
+
+  const updateActive = async (id: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("payments")
+        .update({ active: false })
+        .eq("id", id)
+        .select();
+      if (error != null) {
+        toast.error(error.message);
+      } else {
+        toast.success(`Đã xoá phương thức thanh toán`);
+        let newPayments = payments.filter((item) => item.id !== id);
+        dispatch(paymentAction("payments", newPayments));
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setOpen({ isOpen: false, id: "", name: "" });
+    }
+  };
   const getAllPayment = async () => {
-    let { data: payments, error } = await supabase.from("payments").select("*");
+    let { data: payments, error } = await supabase
+      .from("payments")
+      .select("*")
+      .eq("active", true);
     if (error) {
       toast(error.message);
       return;
@@ -56,7 +82,6 @@ function CategoryPage() {
       event.preventDefault();
       const name = event.target.elements.name.value;
       const _urlImg = await uploadImageProduct(image, "services");
-      console.log(_urlImg);
       const { data, error } = await supabase
         .from("payments")
         .insert([{ name: name, image: _urlImg }])
@@ -345,7 +370,12 @@ function CategoryPage() {
                       {moment(item.created_at).format("DD/MM/YYYY")}
                     </td>
                     <td className="py-4 px-6 text-right text-white">
-                      <button className="bg-red-500 px-3 py-[2px] rounded text-[12px] font-bold">
+                      <button
+                        onClick={() =>
+                          setOpen({ isOpen: true, id: item.id, name: item.name })
+                        }
+                        className="bg-red-500 px-3 py-[2px] rounded text-[12px] font-bold"
+                      >
                         Xoá
                       </button>
                     </td>
@@ -355,6 +385,7 @@ function CategoryPage() {
           </table>
         </div>
       </div>
+      <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} />
     </>
   );
 }

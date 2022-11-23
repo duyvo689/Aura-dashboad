@@ -9,7 +9,8 @@ import { servicesAction } from "../../../redux/actions/ReduxAction";
 import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
 import { uploadImageProduct } from "../../../utils/funtions";
-import { Service } from "../../../utils/types";
+import { OpenModal, Service } from "../../../utils/types";
+import ModalDelete from "./modal-delete";
 
 interface Toggle {
   index: number;
@@ -33,16 +34,38 @@ export default function Example() {
     isEdit: false,
     value: { name: "", description: "", image: "" },
   });
-  console.log(toggle.value);
+
   const [image, setImage] = useState<any>();
   const upImg = useRef<any>(null);
+  const [open, setOpen] = useState<OpenModal>({ isOpen: false, id: "", name: "" });
+
+  const updateActive = async (id: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("services")
+        .update({ active: false })
+        .eq("id", id)
+        .select();
+      if (error != null) {
+        toast.error(error.message);
+      } else {
+        toast.success(`Đã xoá dịch vụ`);
+        let newServices = services.filter((item) => item.id !== id);
+        dispatch(servicesAction("services", newServices));
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setOpen({ isOpen: false, id: "", name: "" });
+    }
+  };
 
   const handleClick = () => {
     upImg.current.click();
   };
 
   const getAllService = async () => {
-    let { data, error } = await supabase.from("services").select("*");
+    let { data, error } = await supabase.from("services").select("*").eq("active", true);
     if (error) {
       toast(error.message);
       return;
@@ -60,8 +83,6 @@ export default function Example() {
       const _name = toggle.value.name;
       const _description = toggle.value.description;
       let _image = toggle.value.image;
-
-      console.log(toggle.value, id);
       if (image) {
         _image = (await uploadImageProduct(image, "services")) as string;
       }
@@ -287,9 +308,20 @@ export default function Example() {
                             </span>
                           ) : (
                             <>
-                              <span className="text-red-700 cursor-pointer hover:text-indigo-900">
+                              <button
+                                onClick={() =>
+                                  setOpen({
+                                    isOpen: true,
+                                    id: service.id,
+                                    name: service.name,
+                                  })
+                                }
+                                type="button"
+                                data-modal-toggle="popup-modal"
+                                className="text-red-700 cursor-pointer hover:text-indigo-900"
+                              >
                                 Xoá
-                              </span>
+                              </button>
                               <span
                                 onClick={() =>
                                   setToggle({
@@ -333,6 +365,7 @@ export default function Example() {
           </div>
         </div>
       </div>
+      <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} />
     </div>
   );
 }

@@ -37,7 +37,6 @@ function BannerPage() {
       link: "",
     },
   });
-  console.log(toggle.value);
   const upImg = useRef<any>(null);
   const [image, setImage] = useState<any>();
   const [file, setFile] = useState<any>();
@@ -100,7 +99,6 @@ function BannerPage() {
         .eq("id", id)
         .select()
         .single();
-      console.log(data, error);
       if (error != null) {
         toast.error(error.message);
       } else {
@@ -145,7 +143,6 @@ function BannerPage() {
       dispatch(bannersAction("banners", newBanners));
     }
   };
-  console.log(banners);
   return (
     <>
       <Head>

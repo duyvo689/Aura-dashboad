@@ -2,11 +2,12 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../../../services/supaBaseClient";
-import { Customer } from "../../../utils/types";
+import { Customer, OpenModal } from "../../../utils/types";
 import { customerAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
 import Tippy from "@tippyjs/react";
 import moment from "moment";
+import ModalDelete from "../services/modal-delete";
 
 interface Toggle {
   index: number;
@@ -20,9 +21,34 @@ function CustomerPage() {
 
   const customers: Customer[] = useSelector((state: any) => state.customers);
   const dispatch = useDispatch();
-  console.log(customers);
+
+  const [open, setOpen] = useState<OpenModal>({ isOpen: false, id: "", name: "" });
+
+  const updateActive = async (id: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("customer_resources")
+        .update({ active: false })
+        .eq("id", id)
+        .select();
+      if (error != null) {
+        toast.error(error.message);
+      } else {
+        toast.success(`Đã xoá nguồn khách hàng`);
+        let newCustomers = customers.filter((item) => item.id !== id);
+        dispatch(customerAction("customers", newCustomers));
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setOpen({ isOpen: false, id: "", name: "" });
+    }
+  };
   const getAllCustomers = async () => {
-    let { data, error } = await supabase.from("customer_resources").select("*");
+    let { data, error } = await supabase
+      .from("customer_resources")
+      .select("*")
+      .eq("active", true);
     if (error) {
       toast(error.message);
       return;
@@ -40,7 +66,6 @@ function CustomerPage() {
       setLoad(true);
       event.preventDefault();
       const name = event.target.elements.name.value;
-      console.log(name);
       const { data, error } = await supabase
         .from("customer_resources")
         .insert([{ name: name }])
@@ -218,7 +243,12 @@ function CustomerPage() {
                       {moment(item.created_at).format("DD/MM/YYYY")}
                     </td>
                     <td className="py-4 px-6 text-right text-white">
-                      <button className="bg-red-500 px-3 py-[2px] rounded text-[12px] font-bold">
+                      <button
+                        onClick={() =>
+                          setOpen({ isOpen: true, id: item.id, name: item.name })
+                        }
+                        className="bg-red-500 px-3 py-[2px] rounded text-[12px] font-bold"
+                      >
                         Xoá
                       </button>
                     </td>
@@ -228,6 +258,7 @@ function CustomerPage() {
           </table>
         </div>
       </div>
+      <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} />
     </>
   );
 }

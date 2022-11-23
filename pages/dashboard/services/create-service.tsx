@@ -69,10 +69,8 @@ export default function CreateService() {
         toast.success(`Đã thêm thành công`);
         setImage(null);
         event.target.reset();
-        console.log(data);
         category.push(data);
       }
-      console.log(data, error);
     } catch (error) {
       console.log(error);
     } finally {

@@ -52,4 +52,10 @@ interface Customer {
   created_at: string;
   name: string;
 }
-export type { Role, User, Banner, Clinic, Service ,Category,Payment,Customer};
+
+interface OpenModal {
+  isOpen: boolean;
+  id: string;
+  name: string;
+}
+export type { Role, User, Banner, Clinic, Service ,Category,Payment,Customer,OpenModal};
