@@ -22,7 +22,6 @@ function AuthRoute({ children }: any) {
       } = await supabase.auth.getUser();
       setAuth(true);
       dispatch(adminAction("admin", user));
-      router.push(`/dashboard/roles`);
     } else {
       router.push("/");
     }

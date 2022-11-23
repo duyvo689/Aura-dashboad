@@ -215,13 +215,11 @@ export default function Example() {
                           )}
                         >
                           {serviceIdx == toggle.index && toggle.isEdit ? (
-                            <input
-                              autoFocus
-                              type="text"
+                            <textarea
+                              rows={4}
                               id="newName"
                               name="newName"
-                              aria-describedby="helper-text-explanation"
-                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm min-w-[100px]"
                               value={toggle.value.name}
                               onChange={(e) =>
                                 setToggle({
@@ -285,7 +283,7 @@ export default function Example() {
                               onClick={() => updateService(service.id)}
                               className="text-red-600  cursor-pointer hover:text-indigo-900"
                             >
-                              Sửa
+                              Lưu Lại
                             </span>
                           ) : (
                             <>

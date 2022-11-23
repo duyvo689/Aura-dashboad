@@ -17,7 +17,7 @@ function ItemBanner({ index, item }: Props) {
           <img className="w-10 h-10" src={item.image_url} />
         </div>
       </Table.Cell>
-      <Table.Cell>{item.order}</Table.Cell>
+      {/* <Table.Cell>{item.order}</Table.Cell> */}
       {/* <Table.Cell>
         <div className="flex gap-1 justify-end">
           <button

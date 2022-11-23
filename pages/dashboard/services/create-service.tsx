@@ -16,6 +16,30 @@ export default function CreateService() {
   const dispatch = useDispatch();
   const [load, setLoad] = useState<boolean>(false);
 
+  const fieldsOfForm: any = {
+    name: "Tên Dịch Vụ!",
+    description: "Mô Tả Dịch Vụ!",
+    price: "Giá Dịch Vụ!",
+    category_id: "Danh Mục Dịch Vụ!",
+    image: "Hình Ảnh Dịch Vụ!",
+  };
+
+  // Check validate
+  function validateForm(form: any) {
+    let fields = ["name", "price", "category_id", "description", "image"];
+    let i,
+      l = fields.length;
+    let fieldname;
+    for (i = 0; i < l; i++) {
+      fieldname = fields[i];
+      if (!form[fieldname]) {
+        toast.error(`Thiếu thông tin ${fieldsOfForm[fieldname]}`);
+        return false;
+      }
+    }
+    return true;
+  }
+
   const addNewService = async (event: any) => {
     try {
       event.preventDefault();
@@ -32,6 +56,8 @@ export default function CreateService() {
         description: _description,
         image: _urlImg,
       };
+      let isValid = validateForm(_serviceInfo);
+      if (!isValid) return;
       const { data, error } = await supabase
         .from("services")
         .insert([_serviceInfo])
@@ -74,7 +100,7 @@ export default function CreateService() {
         <title>Thêm Dịch Vụ </title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      <div className="sm:flex sm:items-center max-w-[860px] m-auto">
+      <div className="sm:flex sm:items-center max-w-[860px] m-auto mt-6">
         <div className="sm:flex-auto">
           <h1 className="text-xl font-semibold text-gray-900">THÊM DỊCH VỤ MỚI</h1>
           <p className="mt-2 text-sm text-gray-700">
@@ -240,12 +266,17 @@ export default function CreateService() {
             </div>
           </div>
         </div>
-        <button
-          className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-          type="submit"
-        >
-          {load ? "ĐANG THÊM..." : "THÊM SẢN PHẨM"}
-        </button>
+        <div className="flex gap-4 items-end">
+          <button
+            className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+            type="submit"
+          >
+            {load ? "ĐANG THÊM..." : "THÊM SẢN PHẨM"}
+          </button>
+          <p className="text-red-600 text-[12px] font-[600]">
+            *Lưu ý chọn Danh Mục cho dịch vụ!
+          </p>
+        </div>
       </form>
     </>
   );

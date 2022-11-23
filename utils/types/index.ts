@@ -15,6 +15,7 @@ interface Banner {
   id: string;
   created_at: string;
   image_url: string;
+  link: string;
   order: number;
 }
 interface Clinic {
