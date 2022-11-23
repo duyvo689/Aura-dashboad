@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import Tippy from "@tippyjs/react";
 import moment from "moment";
 import { uploadImageProduct } from "../../../utils/funtions";
-import ModalDelete from "../services/modal-delete";
+import NewModalDelete from "../services/modal-delete";
 
 interface Toggle {
   index: number;
