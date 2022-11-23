@@ -5,7 +5,7 @@ import { OpenModal } from "../../../utils/types";
 
 interface Props {
   open: OpenModal;
-  setOpen: ({ isOpen, id, name }: OpenModal) => void;
+  setOpen: any;
   updateActive: (id: string) => void;
 }
 export default function ModalDelete({ open, setOpen, updateActive }: Props) {
