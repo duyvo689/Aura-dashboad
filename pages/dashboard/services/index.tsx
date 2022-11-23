@@ -21,11 +21,9 @@ interface Toggle {
     image: string;
   };
 }
-
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
-
 export default function Example() {
   const services: Service[] = useSelector((state: RootState) => state.services);
   const dispatch = useDispatch();
@@ -34,7 +32,6 @@ export default function Example() {
     isEdit: false,
     value: { name: "", description: "", image: "" },
   });
-
   const [image, setImage] = useState<any>();
   const upImg = useRef<any>(null);
   const [open, setOpen] = useState({ isOpen: false, id: "", name: "" });
@@ -365,7 +362,7 @@ export default function Example() {
           </div>
         </div>
       </div>
-      <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} />
+      {/* <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} /> */}
     </div>
   );
 }

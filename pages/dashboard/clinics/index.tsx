@@ -413,7 +413,7 @@ export default function ClinicPage() {
           </div>
         </div>
       </div>
-      <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} />
+      {/* <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} /> */}
     </div>
   );
 }

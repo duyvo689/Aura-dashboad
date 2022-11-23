@@ -258,7 +258,7 @@ function CustomerPage() {
           </table>
         </div>
       </div>
-      <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} />
+      {/* <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} /> */}
     </>
   );
 }
