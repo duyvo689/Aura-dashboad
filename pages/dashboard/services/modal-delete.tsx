@@ -9,9 +9,10 @@ interface Props {
   updateActive: (id: string) => void;
 }
 export default function ModalDelete({ open, setOpen, updateActive }: Props) {
+  let isLive = open && open?.id && open.id != null ? open.isOpen : false;
   const cancelButtonRef = useRef(null);
   return (
-    <Transition.Root show={open.isOpen} as={Fragment}>
+    <Transition.Root show={isLive} as={Fragment}>
       <Dialog
         as="div"
         className="relative z-10"
