@@ -224,11 +224,15 @@ export default function ClinicPage() {
                           {clinicIdx == toggle.index && toggle.isEdit ? (
                             <>
                               <Tippy content="Nháy chuột để chỉnh sửa ảnh">
-                                <img
-                                  onClick={handleClick}
-                                  className="w-10 h-10 cursor-pointer"
-                                  src={image ? URL.createObjectURL(image) : clinic.avatar}
-                                />
+                                <div className="w-24 h-16 ">
+                                  <img
+                                    onClick={handleClick}
+                                    className="w-full h-full rounded cursor-pointer"
+                                    src={
+                                      image ? URL.createObjectURL(image) : clinic.avatar
+                                    }
+                                  />
+                                </div>
                               </Tippy>
                               <input
                                 ref={upImg}
@@ -241,7 +245,12 @@ export default function ClinicPage() {
                               />
                             </>
                           ) : (
-                            <img className="w-10 h-10" src={clinic.avatar} />
+                            <div className="w-16 h-14">
+                              <img
+                                className="w-full h-full rounded"
+                                src={clinic.avatar}
+                              />
+                            </div>
                           )}
                         </td>
                         <td

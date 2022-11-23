@@ -204,11 +204,15 @@ export default function Example() {
                           {serviceIdx == toggle.index && toggle.isEdit ? (
                             <>
                               <Tippy content="Nháy chuột để chỉnh sửa ảnh">
-                                <img
-                                  onClick={handleClick}
-                                  className="w-10 h-10 cursor-pointer"
-                                  src={image ? URL.createObjectURL(image) : service.image}
-                                />
+                                <div className="w-24 h-16 ">
+                                  <img
+                                    onClick={handleClick}
+                                    className="w-full h-full  rounded cursor-pointer"
+                                    src={
+                                      image ? URL.createObjectURL(image) : service.image
+                                    }
+                                  />
+                                </div>
                               </Tippy>
                               <input
                                 ref={upImg}
@@ -221,7 +225,12 @@ export default function Example() {
                               />
                             </>
                           ) : (
-                            <img className="w-10 h-10" src={service.image} />
+                            <div className="w-16 h-14">
+                              <img
+                                className="w-full h-full rounded"
+                                src={service.image}
+                              />
+                            </div>
                           )}
                         </td>
                         <td

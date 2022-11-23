@@ -280,10 +280,10 @@ function BannerPage() {
                       {index == toggle.index && toggle.isEdit ? (
                         <>
                           <Tippy content="Nháy chuột để chỉnh sửa ảnh">
-                            <div className="h-10 w-12 cursor-pointer">
+                            <div className="h-14 w-16 cursor-pointer">
                               <img
                                 onClick={handleClick}
-                                className="w-full h-full rounded-md object-cover"
+                                className="w-full h-full rounded-md"
                                 src={file ? URL.createObjectURL(file) : item.image_url}
                               />
                             </div>
@@ -298,21 +298,23 @@ function BannerPage() {
                         </>
                       ) : (
                         <Tippy content="Nháy đúp chuột để chỉnh sửa">
-                          <img
-                            src={item.image_url}
-                            className="h-10 w-12 rounded-md object-cover"
-                            onDoubleClick={() =>
-                              setToggle({
-                                index: index,
-                                isEdit: true,
-                                value: {
-                                  ...toggle.value,
-                                  img: item.image_url,
-                                  link: item.link,
-                                },
-                              })
-                            }
-                          />
+                          <div className="w-16 h-14">
+                            <img
+                              src={item.image_url}
+                              className="w-full h-full rounded"
+                              onDoubleClick={() =>
+                                setToggle({
+                                  index: index,
+                                  isEdit: true,
+                                  value: {
+                                    ...toggle.value,
+                                    img: item.image_url,
+                                    link: item.link,
+                                  },
+                                })
+                              }
+                            />
+                          </div>
                         </Tippy>
                       )}
                     </td>
