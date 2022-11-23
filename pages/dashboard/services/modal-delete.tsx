@@ -10,6 +10,8 @@ interface Props {
 }
 export default function NewModalDelete({ open, setOpen, updateActive }: Props) {
   let isLive = open && open?.id && open.id != null ? open.isOpen : false;
+  let name =
+    open && open?.name && open.name != null && open.name != "" ? open.name : "...";
   const cancelButtonRef = useRef(null);
   return (
     <Transition.Root show={isLive} as={Fragment}>
@@ -61,7 +63,7 @@ export default function NewModalDelete({ open, setOpen, updateActive }: Props) {
                       <p className="text-[14px] text-gray-500">
                         Bạn có chắc chắn muốn xoá{" "}
                         <span className="text-indigo-600 font-[500] text-[16px]">
-                          {open.name}
+                          {name}
                         </span>{" "}
                         của AURA không? Các dữ liệu này sẽ bị xóa vĩnh viễn khỏi máy chủ
                         của AURA. Hành động này không thể được hoàn tác.
