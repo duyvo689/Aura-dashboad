@@ -37,7 +37,7 @@ export default function Example() {
 
   const [image, setImage] = useState<any>();
   const upImg = useRef<any>(null);
-  const [open, setOpen] = useState<OpenModal>({ isOpen: false, id: "", name: "" });
+  const [open, setOpen] = useState({ isOpen: false, id: "", name: "" });
 
   const updateActive = async (id: string) => {
     try {
