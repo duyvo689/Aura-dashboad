@@ -1,7 +1,7 @@
 import { Table } from "flowbite-react";
 import Head from "next/head";
 import Link from "next/link";
-import react, { ReactElement, useEffect, useRef, useState } from "react";
+import react, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
@@ -9,7 +9,6 @@ import { Banner } from "../../../utils/types";
 import FormBanner from "../../../components/Banners/create-banner";
 import { bannersAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
-import ItemRole from "../../../components/Roles/ItemRole";
 import ItemBanner from "../../../components/Banners/ItemBanner";
 function RolePage() {
   const banners: Banner[] = useSelector((state: RootState) => state.banners);
@@ -52,9 +51,7 @@ function RolePage() {
                     <div className="p-4">
                       <div className="mb-1 w-full">
                         <div className="mb-4">
-                          <h1 className="text-lg font-bold text-gray-900">
-                            Thêm Banner
-                          </h1>
+                          <h1 className="text-lg font-bold text-gray-900">Thêm Banner</h1>
                         </div>
                       </div>
                       <FormBanner banners={banners} />
@@ -118,9 +115,7 @@ function RolePage() {
                             : "flex-1 text-white bg-primary focus:ring-4 focus:ring-green-200 font-medium inline-flex items-center justify-center rounded-lg text-sm px-3 py-2 text-center"
                         }
                         onClick={() => {
-                          index * 8 + 8 > banners?.length
-                            ? null
-                            : setIndex(index + 1);
+                          index * 8 + 8 > banners?.length ? null : setIndex(index + 1);
                         }}
                       >
                         Sau
