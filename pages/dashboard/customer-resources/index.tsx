@@ -7,7 +7,7 @@ import { customerAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
 import Tippy from "@tippyjs/react";
 import moment from "moment";
-import ModalDelete from "../services/modal-delete";
+import NewModalDelete from "../services/modal-delete";
 
 interface Toggle {
   index: number;
@@ -258,7 +258,7 @@ function CustomerPage() {
           </table>
         </div>
       </div>
-      {/* <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} /> */}
+      <NewModalDelete open={open} setOpen={setOpen} updateActive={updateActive} />
     </>
   );
 }

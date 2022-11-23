@@ -10,7 +10,7 @@ import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
 import { uploadImageProduct } from "../../../utils/funtions";
 import { Clinic, OpenModal } from "../../../utils/types";
-import ModalDelete from "../services/modal-delete";
+import NewModalDelete from "../services/modal-delete";
 
 interface Toggle {
   index: number;
@@ -413,7 +413,7 @@ export default function ClinicPage() {
           </div>
         </div>
       </div>
-      {/* <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} /> */}
+      <NewModalDelete open={open} setOpen={setOpen} updateActive={updateActive} />
     </div>
   );
 }

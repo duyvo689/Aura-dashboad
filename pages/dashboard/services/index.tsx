@@ -10,7 +10,7 @@ import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
 import { uploadImageProduct } from "../../../utils/funtions";
 import { OpenModal, Service } from "../../../utils/types";
-import ModalDelete from "./modal-delete";
+import NewModalDelete from "./modal-delete";
 
 interface Toggle {
   index: number;
@@ -362,7 +362,7 @@ export default function Example() {
           </div>
         </div>
       </div>
-      {/* <ModalDelete open={open} setOpen={setOpen} updateActive={updateActive} /> */}
+      <NewModalDelete open={open} setOpen={setOpen} updateActive={updateActive} />
     </div>
   );
 }

@@ -8,7 +8,7 @@ interface Props {
   setOpen: ({ isOpen, id, name }: OpenModal) => void;
   updateActive: (id: string) => void;
 }
-export default function ModalDelete({ open, setOpen, updateActive }: Props) {
+export default function NewModalDelete({ open, setOpen, updateActive }: Props) {
   let isLive = open && open?.id && open.id != null ? open.isOpen : false;
   const cancelButtonRef = useRef(null);
   return (
