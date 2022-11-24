@@ -233,7 +233,7 @@ function RolesPage() {
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
       <div className="flex gap-6 mt-4 mx-6">
-        <div className="w-[40%]">
+        <div className="w-[30%]">
           <form onSubmit={addNewRoles}>
             <label
               htmlFor="helper-text"
@@ -307,7 +307,7 @@ function RolesPage() {
             </div>
           </form>
         </div>
-        <div className="w-[60%]">
+        <div className="w-[70%]">
           <div className="mb-6">
             <div className="relative mt-1 rounded-md shadow-sm">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"></div>
@@ -363,25 +363,25 @@ function RolesPage() {
                 <tr>
                   <th
                     scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                    className="sticky top-0 whitespace-nowrap z-10 border-b border-gray-300 bg-gray-50 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
                   >
                     STT
                   </th>
                   <th
                     scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                    className="sticky top-0 whitespace-nowrap z-10 border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
                   >
                     SỐ ĐIỆN THOẠI
                   </th>
                   <th
                     scope="col"
-                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                    className="sticky top-0 whitespace-nowrap z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
                   >
                     CHỨC VỤ
                   </th>
                   <th
                     scope="col"
-                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                    className="sticky top-0 whitespace-nowrap z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
                   >
                     CƠ SỞ
                   </th>

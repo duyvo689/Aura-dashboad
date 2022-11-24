@@ -116,7 +116,7 @@ function CategoryPage() {
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
       <div className="flex gap-6 mt-4 mx-6">
-        <div className="flex-1">
+        <div className="w-[30%]">
           <form onSubmit={addNewCategory}>
             <label
               htmlFor="helper-text"
@@ -150,21 +150,33 @@ function CategoryPage() {
             </div>
           </form>
         </div>
-        <div className="flex-1 overflow-x-auto relative shadow-md sm:rounded-lg mt-8">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <div className="w-[70%] h-[84vh] overflow-x-auto relative shadow-md sm:rounded-lg mt-8">
+          <table className="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="py-3  text-center px-6">
+                <th
+                  scope="col"
+                  className="sticky top-0 whitespace-nowrap z-10 border-b border-gray-300 bg-gray-50 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                >
                   STT
                 </th>
-                <th scope="col" className="py-3 px-6">
+                <th
+                  scope="col"
+                  className="sticky top-0 whitespace-nowrap z-10 border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                >
                   TÊN DANH MỤC
                 </th>
-                <th scope="col" className="py-3 px-6">
+                <th
+                  scope="col"
+                  className="sticky top-0 whitespace-nowrap z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                >
                   NGÀY TẠO
                 </th>
-                <th scope="col" className="py-3 text-right px-6">
-                  HÀNH ĐỘNG
+                <th
+                  scope="col"
+                  className="sticky whitespace-nowrap top-0 z-10 border-b border-gray-300 bg-gray-50 py-3.5 pr-4 pl-3 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
+                >
+                  <span className="sr-only">Edit</span>
                 </th>
               </tr>
             </thead>

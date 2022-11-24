@@ -115,7 +115,7 @@ function CustomerPage() {
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
       <div className="flex gap-6 mt-4 mx-6">
-        <div className="flex-1">
+        <div className="w-[40%]">
           <form onSubmit={addNewCustomers}>
             <label
               htmlFor="helper-text"
@@ -149,7 +149,7 @@ function CustomerPage() {
             </div>
           </form>
         </div>
-        <div className="flex-1 overflow-x-auto relative shadow-md sm:rounded-lg mt-8">
+        <div className="w-[60%] overflow-x-auto relative shadow-md sm:rounded-lg mt-8">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
