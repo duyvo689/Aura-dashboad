@@ -97,13 +97,12 @@ function BannerPage() {
         .from("banners")
         .update({ link: _link, image_url: _image })
         .eq("id", id)
-        .select()
-        .single();
+        .select();
       if (error != null) {
         toast.error(error.message);
       } else {
         let index = banners.findIndex((item) => item.id == id);
-        banners[index] = data;
+        banners[index] = data[0];
         toast.success(`Đã sửa ${_link}`);
         setToggle({
           index: -1,

@@ -34,7 +34,6 @@ function RolesPage() {
       clinic: "",
     },
   });
-  const category: Category[] = useSelector((state: RootState) => state.category);
 
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
   const roles: Role[] = useSelector((state: RootState) => state.roles);
@@ -54,7 +53,7 @@ function RolesPage() {
       const _clinic = event.target.elements.clinic.value;
       const flagPhone = validatePhoneNumber(_phone);
       if (!flagPhone) {
-        toast.error(`Số điên thoại không đúng`);
+        toast.error(`Số điện thoại không đúng`);
         return;
       }
       const _infoRole = {
@@ -82,7 +81,7 @@ function RolesPage() {
           setPhone("");
         }
       } else {
-        toast.error(`Nhân sự ${_phone} đã có`);
+        toast.error(`Nhân sự ${_phone} đã tồn tại`);
       }
       const flag = await checkCreatePersonnel(_role, _phone);
       if (!flag) {
@@ -128,13 +127,14 @@ function RolesPage() {
         .from("roles")
         .update({ phone: _phone, clinic_id: _clinic })
         .eq("phone", phone)
-        .select(`*,clinic_id(*)`)
-        .single();
+        .select(`*,clinic_id(*)`);
+      console.log(data);
       if (error != null) {
         toast.error(error.message);
-      } else {
+      }
+      if (data) {
         let index = roles.findIndex((item) => item.phone == phone);
-        roles[index] = data;
+        roles[index] = data[0];
         toast.success(`Đã sửa ${phone}`);
         setToggle({
           index: -1,
