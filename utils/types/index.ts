@@ -1,7 +1,9 @@
 interface Role {
+  id: string;
   phone: string;
   position: string;
-  createdAt?: string;
+  created_at: string;
+  clinic_id:  Clinic;
 }
 
 interface User {
@@ -9,7 +11,7 @@ interface User {
   created_at: string;
   phone: string;
   avatar: string;
-  name: string;
+  name: string ;
 }
 interface Banner {
   id: string;

@@ -28,3 +28,21 @@ import { supabase } from "../../services/supaBaseClient";
       console.log(error);
     }
   };
+
+  // HÀM CHECK XEM PHẢI SỐ ĐIỆN THOẠI?
+export const validatePhoneNumber = (phone:string) => {
+  let isValidPhoneNumber = true
+  if (!(phone.match('[0-9]{10}'))) {
+    isValidPhoneNumber = false
+  }
+  if (phone.length > 10) {
+    isValidPhoneNumber = false
+
+  }
+  var fPhone = phone.charAt(0);
+  if (fPhone != '0') {
+    isValidPhoneNumber = false
+  }
+
+  return (isValidPhoneNumber)
+}
