@@ -67,7 +67,7 @@ function RolesPage() {
         clinic_id: _clinic,
         phone: _phone,
       };
-      const flagRole = await checkCreateRoles(_phone);
+      const flagRole = await checkCreateRoles(_phone, _role);
       if (!flagRole) {
         const { data, error } = await supabase
           .from("roles")
@@ -108,11 +108,12 @@ function RolesPage() {
     return false;
   };
 
-  const checkCreateRoles = async (phone: string) => {
+  const checkCreateRoles = async (phone: string, role: string) => {
     let { data: roles, error } = await supabase
       .from("roles")
       .select("phone")
-      .eq("phone", phone);
+      .match({ phone: phone, position: role });
+    console.log(roles, error);
     if (roles && roles.length > 0) return true;
     return false;
   };
