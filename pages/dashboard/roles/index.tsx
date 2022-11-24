@@ -113,7 +113,6 @@ function RolesPage() {
       .from("roles")
       .select("phone")
       .match({ phone: phone, position: role });
-    console.log(roles, error);
     if (roles && roles.length > 0) return true;
     return false;
   };
@@ -164,8 +163,6 @@ function RolesPage() {
       .from(`${table}s`)
       .update({ phone: newPhone, clinic_id: clinic_id })
       .eq("phone", oldPhone);
-
-    console.log("updateEditPersonnel", data, error);
   };
   // ==update edit end==//
 

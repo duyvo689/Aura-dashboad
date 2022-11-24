@@ -10,6 +10,7 @@ import { Provider } from "react-redux";
 import Auth from "../auth/index";
 import "tippy.js/dist/tippy.css";
 import { Toaster } from "react-hot-toast";
+import Script from "next/script";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -20,6 +21,7 @@ export default function App({ Component, pageProps }: AppProps) {
         </Layout>
         <Toaster position="top-center" reverseOrder={false} />
       </Auth>
+      <Script src="https://unpkg.com/flowbite@1.5.4/dist/flowbite.js"></Script>
     </Provider>
   );
 }

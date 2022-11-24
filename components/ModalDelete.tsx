@@ -17,24 +17,6 @@ function ModalDelete({ id, title, setOpenModalDelete }: Props) {
   const dispatch = useDispatch();
   const remove = async () => {
     return;
-    // setIsLoading(true);
-    // if (title === "clinic") {
-    //   console.log(id);
-    //   const { data, error } = await supabase
-    //     .from(" clinic")
-    //     .delete()
-    //     .eq("id", id);
-    //   console.log(data);
-    //   console.log(error);
-    // if (response && response.data.status === "Success") {
-    //   const gamesTmp: Game[] = [];
-    //   games.map((game) => {
-    //     game._id !== id ? gamesTmp.push(game) : null;
-    //   });
-    //   dispatch(clinicsAction("clinics", gamesTmp));
-    //   setIsLoading(false);
-    //   setIsDelete(true);
-    // }
   };
 
   return (

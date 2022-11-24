@@ -5,11 +5,11 @@ import Link from "next/link";
 import react, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { servicesAction } from "../../../redux/actions/ReduxAction";
+import { categoryAction, servicesAction } from "../../../redux/actions/ReduxAction";
 import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
 import { uploadImageProduct } from "../../../utils/funtions";
-import { OpenModal, Service } from "../../../utils/types";
+import { Category, OpenModal, Service } from "../../../utils/types";
 import NewModalDelete from "./modal-delete";
 
 interface Toggle {
@@ -19,6 +19,7 @@ interface Toggle {
     name: string;
     description: string;
     image: string;
+    category: string;
   };
 }
 function classNames(...classes: any) {
@@ -26,11 +27,17 @@ function classNames(...classes: any) {
 }
 export default function Example() {
   const services: Service[] = useSelector((state: RootState) => state.services);
+  const categories: Category[] = useSelector((state: RootState) => state.category);
+
+  const [servicesState, setServicesState] = useState<Service[]>();
+  useEffect(() => {
+    setServicesState(services);
+  }, [services]);
   const dispatch = useDispatch();
   const [toggle, setToggle] = useState<Toggle>({
     index: -1,
     isEdit: false,
-    value: { name: "", description: "", image: "" },
+    value: { name: "", description: "", image: "", category: "" },
   });
   const [image, setImage] = useState<any>();
   const upImg = useRef<any>(null);
@@ -62,7 +69,10 @@ export default function Example() {
   };
 
   const getAllService = async () => {
-    let { data, error } = await supabase.from("services").select("*").eq("active", true);
+    let { data, error } = await supabase
+      .from("services")
+      .select(`*,category_id(*)`)
+      .eq("active", true);
     if (error) {
       toast(error.message);
       return;
@@ -71,24 +81,43 @@ export default function Example() {
       dispatch(servicesAction("services", data));
     }
   };
+  const getAllCategory = async () => {
+    let { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .eq("active", true);
+    if (error) {
+      toast(error.message);
+      return;
+    }
+    if (data && data.length > 0) {
+      dispatch(categoryAction("category", data));
+    }
+  };
   useEffect(() => {
     getAllService();
+    getAllCategory();
   }, []);
 
   const updateService = async (id: string) => {
     try {
       const _name = toggle.value.name;
       const _description = toggle.value.description;
+      const _category = toggle.value.category;
       let _image = toggle.value.image;
       if (image) {
         _image = (await uploadImageProduct(image, "services")) as string;
       }
-      console.log(_image);
       const { data, error } = await supabase
         .from("services")
-        .update({ name: _name, description: _description, image: _image })
+        .update({
+          name: _name,
+          description: _description,
+          image: _image,
+          category_id: _category,
+        })
         .eq("id", id)
-        .select()
+        .select(`*,category_id(*)`)
         .single();
       if (error != null) {
         toast.error(error.message);
@@ -99,13 +128,37 @@ export default function Example() {
         setToggle({
           index: -1,
           isEdit: false,
-          value: { name: "", description: "", image: "" },
+          value: { name: "", description: "", image: "", category: "" },
         });
         setImage(null);
       }
     } catch (error) {
       console.log(error);
     } finally {
+    }
+  };
+
+  const handlerSearch = (e: any) => {
+    const pattern = new RegExp(e.target.value.toLowerCase(), "g");
+    const tmp = services.filter((service: Service) => {
+      return pattern.test(service.name.toLowerCase());
+    });
+    setServicesState(tmp);
+    if (!e.target.value) {
+      setServicesState(services);
+    }
+  };
+
+  const onChangeCategory = async (id: string) => {
+    let { data, error } =
+      id == "0"
+        ? await supabase.from("services").select(`*,category_id(*)`)
+        : await supabase
+            .from("services")
+            .select(`*,category_id(*)`)
+            .eq("category_id", id);
+    if (data && data.length > 0) {
+      dispatch(servicesAction("services", data));
     }
   };
 
@@ -121,6 +174,37 @@ export default function Example() {
           <p className="mt-2 text-sm text-gray-700">
             Quản lý tất cả các dịch vụ ở Aura ID.
           </p>
+
+          <div className="mt-6">
+            <div className="relative mt-1 rounded-md shadow-sm">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"></div>
+              <input
+                type="text"
+                name="price"
+                id="price"
+                className="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                placeholder="Tìm kiếm dich vụ"
+                onChange={handlerSearch}
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center">
+                <select
+                  onChange={(e) => onChangeCategory(e.target.value)}
+                  id="currency"
+                  name="currency"
+                  className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                >
+                  {categories && categories.length > 0 && (
+                    <>
+                      <option value={0}>Tất cả</option>
+                      {categories.map((item) => (
+                        <option value={item.id}>{item.name}</option>
+                      ))}
+                    </>
+                  )}
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
         <Link href="/dashboard/services/create-service">
           <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
@@ -133,7 +217,7 @@ export default function Example() {
           </div>
         </Link>
       </div>
-      <div className="mt-8 flex flex-col">
+      <div className="mt-6 flex flex-col">
         <div className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle">
             <div className="shadow-sm ring-1 ring-black ring-opacity-5">
@@ -162,6 +246,12 @@ export default function Example() {
                       scope="col"
                       className="sticky top-0 z-10 hidden border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
                     >
+                      DANH MỤC
+                    </th>
+                    <th
+                      scope="col"
+                      className="sticky top-0 z-10 hidden border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                    >
                       MÔ TẢ
                     </th>
                     <th
@@ -179,9 +269,9 @@ export default function Example() {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  {services &&
-                    services.length > 0 &&
-                    services.map((service, serviceIdx) => (
+                  {servicesState &&
+                    servicesState.length > 0 &&
+                    servicesState.map((service, serviceIdx) => (
                       <tr key={service.id}>
                         <td
                           className={classNames(
@@ -269,6 +359,44 @@ export default function Example() {
                           )}
                         >
                           {serviceIdx == toggle.index && toggle.isEdit ? (
+                            <select
+                              onChange={(e) =>
+                                setToggle({
+                                  index: serviceIdx,
+                                  isEdit: true,
+                                  value: {
+                                    ...toggle.value,
+                                    category: e.target.value,
+                                  },
+                                })
+                              }
+                              value={toggle.value.category}
+                              name="clinic"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 min-w-[200px]"
+                            >
+                              {categories && categories.length > 0
+                                ? categories.map((category: any, index: number) => {
+                                    return (
+                                      <option value={category.id} key={index}>
+                                        {category.name}
+                                      </option>
+                                    );
+                                  })
+                                : null}
+                            </select>
+                          ) : (
+                            service.category_id.name
+                          )}
+                        </td>
+                        <td
+                          className={classNames(
+                            serviceIdx !== services.length - 1
+                              ? "border-b border-gray-200"
+                              : "",
+                            "whitespace-wrap px-3 py-4 text-sm text-gray-500 hidden sm:table-cell"
+                          )}
+                        >
+                          {serviceIdx == toggle.index && toggle.isEdit ? (
                             <textarea
                               rows={4}
                               name="newDescription"
@@ -338,6 +466,7 @@ export default function Example() {
                                       name: service.name,
                                       description: service.description,
                                       image: service.image,
+                                      category: service.category_id.id,
                                     },
                                   })
                                 }
@@ -353,7 +482,12 @@ export default function Example() {
                                 setToggle({
                                   index: -1,
                                   isEdit: false,
-                                  value: { name: "", description: "", image: "" },
+                                  value: {
+                                    name: "",
+                                    description: "",
+                                    image: "",
+                                    category: "",
+                                  },
                                 });
                                 setImage(null);
                               }}
