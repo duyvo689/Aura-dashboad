@@ -15,8 +15,6 @@
     "@heroicons/react": "^2.0.12",
     "@mui/material": "^5.10.15",
     "@mui/styled-engine-sc": "^5.10.14",
-    "@mui/x-data-grid": "^5.17.12",
-    "@mui/x-data-grid-generator": "^5.17.12",
     "@supabase/supabase-js": "^2.0.4",
     "@tippyjs/react": "^4.2.6",
     "flowbite": "^1.5.4",

@@ -38,6 +38,11 @@ function RolesPage() {
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
   const roles: Role[] = useSelector((state: RootState) => state.roles);
   const dispatch = useDispatch();
+  const [rolesState, setRolesState] = useState<Role[]>();
+
+  useEffect(() => {
+    setRolesState(roles);
+  }, [roles]);
 
   useEffect(() => {
     getAllClinic();
@@ -192,6 +197,35 @@ function RolesPage() {
     }
   };
   // ==get data end==//
+
+  const handlerSearch = (e: any) => {
+    const pattern = new RegExp(e.target.value.toLowerCase(), "g");
+    const tmp = roles.filter((role: Role) => {
+      return pattern.test(role.phone.toLowerCase());
+    });
+    setRolesState(tmp);
+    if (!e.target.value) {
+      setRolesState(roles);
+    }
+  };
+
+  const onChangeClinic = async (id: string) => {
+    let { data, error } =
+      id == "0"
+        ? await supabase.from("roles").select(`*,clinic_id(*)`)
+        : await supabase.from("roles").select(`*,clinic_id(*)`).eq("clinic_id", id);
+
+    dispatch(rolesAction("roles", data));
+  };
+
+  const onChangePersonnel = async (position: string) => {
+    let { data, error } =
+      position == "0"
+        ? await supabase.from("roles").select(`*,clinic_id(*)`)
+        : await supabase.from("roles").select(`*,clinic_id(*)`).eq("position", position);
+
+    dispatch(rolesAction("roles", data));
+  };
   return (
     <>
       <Head>
@@ -199,7 +233,7 @@ function RolesPage() {
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
       <div className="flex gap-6 mt-4 mx-6">
-        <div className="flex-1">
+        <div className="w-[40%]">
           <form onSubmit={addNewRoles}>
             <label
               htmlFor="helper-text"
@@ -273,165 +307,233 @@ function RolesPage() {
             </div>
           </form>
         </div>
-        <div className="flex-2 overflow-x-auto relative shadow-md sm:rounded-lg mt-8">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" className="py-3  text-center px-6">
-                  STT
-                </th>
-                <th scope="col" className="py-3  whitespace-nowrap px-6">
-                  SỐ ĐIỆN THOẠI
-                </th>
-                <th scope="col" className="py-3  whitespace-nowrap px-6">
-                  CHỨC VỤ
-                </th>
-                <th scope="col" className="py-3  whitespace-nowrap px-6">
-                  CƠ SỞ
-                </th>
-
-                <th scope="col" className="py-3  whitespace-nowrap text-right px-6">
-                  HÀNH ĐỘNG
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {roles &&
-                roles.length > 0 &&
-                roles.map((item, index) => (
-                  <tr
-                    key={item.id}
-                    className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700"
+        <div className="w-[60%]">
+          <div className="mb-6">
+            <div className="relative mt-1 rounded-md shadow-sm">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"></div>
+              <input
+                type="text"
+                name="price"
+                id="price"
+                className="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                placeholder="Tìm kiếm số điện thoại"
+                onChange={handlerSearch}
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center">
+                <select
+                  onChange={(e) => onChangePersonnel(e.target.value)}
+                  id="currency"
+                  name="currency"
+                  className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                >
+                  {ROLES_MAPPING && ROLES_MAPPING.length > 0 && (
+                    <>
+                      <option value={0}>Tất cả</option>
+                      {ROLES_MAPPING.map((item) => (
+                        <option key={item.value} value={item.value}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </>
+                  )}
+                </select>
+                <select
+                  onChange={(e) => onChangeClinic(e.target.value)}
+                  id="currency"
+                  name="currency"
+                  className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                >
+                  {clinics && clinics.length > 0 && (
+                    <>
+                      <option value={0}>Tất cả</option>
+                      {clinics.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </>
+                  )}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div className="w-full h-[80vh] overflow-x-auto relative shadow-md sm:rounded-lg">
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th
+                    scope="col"
+                    className="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
                   >
-                    <td className="py-4 px-6">{index}</td>
-                    {index == toggle.index && toggle.isEdit ? (
-                      <>
-                        <input
-                          className="bg-gray-50 mt-4 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          type="text"
-                          value={toggle.value.phone}
-                          onChange={(e) =>
-                            setToggle({
-                              index: index,
-                              isEdit: true,
-                              value: { ...toggle.value, phone: e.target.value },
-                            })
-                          }
-                        />
-                      </>
-                    ) : (
-                      <th
-                        scope="row"
-                        className="py-4 px-6 cursor-pointer font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        {item.phone}
-                      </th>
-                    )}
-                    <td
-                      className="py-4  px-6"
-                      onChange={(e) =>
-                        setToggle({
-                          index: index,
-                          isEdit: true,
-                          value: {
-                            ...toggle.value,
-                            role: item.position,
-                          },
-                        })
-                      }
+                    STT
+                  </th>
+                  <th
+                    scope="col"
+                    className="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                  >
+                    SỐ ĐIỆN THOẠI
+                  </th>
+                  <th
+                    scope="col"
+                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                  >
+                    CHỨC VỤ
+                  </th>
+                  <th
+                    scope="col"
+                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                  >
+                    CƠ SỞ
+                  </th>
+                  <th
+                    scope="col"
+                    className="sticky whitespace-nowrap top-0 z-10 border-b border-gray-300 bg-gray-50 py-3.5 pr-4 pl-3 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
+                  >
+                    <span className="sr-only">Edit</span>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {rolesState && rolesState.length > 0 ? (
+                  rolesState.map((item, index) => (
+                    <tr
+                      key={item.id}
+                      className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700"
                     >
-                      {item.position}
-                    </td>
-                    <td className="py-4  px-6">
+                      <td className="py-4 px-6">{index}</td>
                       {index == toggle.index && toggle.isEdit ? (
-                        <select
-                          onChange={(e) =>
-                            setToggle({
-                              index: index,
-                              isEdit: true,
-                              value: {
-                                ...toggle.value,
-                                clinic: e.target.value,
-                              },
-                            })
-                          }
-                          value={toggle.value.clinic}
-                          name="clinic"
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 min-w-[200px]"
-                        >
-                          {clinics && clinics.length > 0
-                            ? clinics.map((clinic: any, index: number) => {
-                                return (
-                                  <option value={clinic.id} key={index}>
-                                    {clinic.name}
-                                  </option>
-                                );
-                              })
-                            : null}
-                        </select>
-                      ) : (
-                        item.clinic_id?.name
-                      )}
-                    </td>
-                    <td className="py-4 px-6 text-right whitespace-nowrap text-white">
-                      {index == toggle.index && toggle.isEdit ? (
-                        <span
-                          onClick={() => editRole(item.phone)}
-                          className="text-red-600  cursor-pointer hover:text-indigo-900"
-                        >
-                          Lưu Lại
-                        </span>
-                      ) : (
                         <>
-                          <button
-                            onClick={() =>
-                              alert(
-                                `Không được xoá ${item.phone}, tính năng đang phát triển!`
-                              )
+                          <input
+                            className="bg-gray-50 mt-4 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            type="text"
+                            value={toggle.value.phone}
+                            onChange={(e) =>
+                              setToggle({
+                                index: index,
+                                isEdit: true,
+                                value: { ...toggle.value, phone: e.target.value },
+                              })
                             }
-                            type="button"
-                            data-modal-toggle="popup-modal"
-                            className="text-red-700 cursor-pointer hover:text-indigo-900"
-                          >
-                            Xoá
-                          </button>
-                          <span
-                            onClick={() =>
+                          />
+                        </>
+                      ) : (
+                        <th
+                          scope="row"
+                          className="py-4 px-6 cursor-pointer font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        >
+                          {item.phone}
+                        </th>
+                      )}
+                      <td
+                        className="py-4  px-6"
+                        onChange={(e) =>
+                          setToggle({
+                            index: index,
+                            isEdit: true,
+                            value: {
+                              ...toggle.value,
+                              role: item.position,
+                            },
+                          })
+                        }
+                      >
+                        {item.position}
+                      </td>
+                      <td className="py-4  px-6">
+                        {index == toggle.index && toggle.isEdit ? (
+                          <select
+                            onChange={(e) =>
                               setToggle({
                                 index: index,
                                 isEdit: true,
                                 value: {
-                                  phone: item.phone,
-                                  role: item.position,
-                                  clinic: item.clinic_id.id,
+                                  ...toggle.value,
+                                  clinic: e.target.value,
                                 },
                               })
                             }
-                            className="text-indigo-600 ml-4 cursor-pointer hover:text-indigo-900"
+                            value={toggle.value.clinic}
+                            name="clinic"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 min-w-[200px]"
                           >
-                            Sửa
+                            {clinics && clinics.length > 0
+                              ? clinics.map((clinic: any, index: number) => {
+                                  return (
+                                    <option value={clinic.id} key={index}>
+                                      {clinic.name}
+                                    </option>
+                                  );
+                                })
+                              : null}
+                          </select>
+                        ) : (
+                          item.clinic_id?.name
+                        )}
+                      </td>
+                      <td className="py-4 px-6 text-right whitespace-nowrap text-white">
+                        {index == toggle.index && toggle.isEdit ? (
+                          <span
+                            onClick={() => editRole(item.phone)}
+                            className="text-red-600  cursor-pointer hover:text-indigo-900"
+                          >
+                            Lưu Lại
                           </span>
-                        </>
-                      )}
-                      {index == toggle.index && toggle.isEdit && (
-                        <span
-                          onClick={() => {
-                            setToggle({
-                              index: -1,
-                              isEdit: false,
-                              value: { phone: "", clinic: "", role: "" },
-                            });
-                          }}
-                          className="text-gray-600  cursor-pointer ml-4 hover:text-indigo-900"
-                        >
-                          Huỷ
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() =>
+                                alert(
+                                  `Không được xoá ${item.phone}, tính năng đang phát triển!`
+                                )
+                              }
+                              type="button"
+                              data-modal-toggle="popup-modal"
+                              className="text-red-700 cursor-pointer hover:text-indigo-900"
+                            >
+                              Xoá
+                            </button>
+                            <span
+                              onClick={() =>
+                                setToggle({
+                                  index: index,
+                                  isEdit: true,
+                                  value: {
+                                    phone: item.phone,
+                                    role: item.position,
+                                    clinic: item.clinic_id.id,
+                                  },
+                                })
+                              }
+                              className="text-indigo-600 ml-4 cursor-pointer hover:text-indigo-900"
+                            >
+                              Sửa
+                            </span>
+                          </>
+                        )}
+                        {index == toggle.index && toggle.isEdit && (
+                          <span
+                            onClick={() => {
+                              setToggle({
+                                index: -1,
+                                isEdit: false,
+                                value: { phone: "", clinic: "", role: "" },
+                              });
+                            }}
+                            className="text-gray-600  cursor-pointer ml-4 hover:text-indigo-900"
+                          >
+                            Huỷ
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <div className="block mt-6 ml-8">Không có dữ liệu</div>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </>
