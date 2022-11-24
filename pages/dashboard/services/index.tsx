@@ -197,7 +197,9 @@ export default function Example() {
                     <>
                       <option value={0}>Tất cả</option>
                       {categories.map((item) => (
-                        <option value={item.id}>{item.name}</option>
+                        <option key={item.id} value={item.id}>
+                          {item.name}
+                        </option>
                       ))}
                     </>
                   )}
