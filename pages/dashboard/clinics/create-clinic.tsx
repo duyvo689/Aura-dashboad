@@ -53,7 +53,7 @@ export default function CreateClinic() {
       let isValid = validateForm(_serviceInfo);
       if (!isValid) return;
       const { data, error } = await supabase
-        .from(" clinics")
+        .from("clinics")
         .insert([_serviceInfo])
         .single();
       if (error != null) {

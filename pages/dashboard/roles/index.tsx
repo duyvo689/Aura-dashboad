@@ -174,7 +174,7 @@ function RolesPage() {
   // ==get data start==//
   const getAllClinic = async () => {
     let { data: clinics, error } = await supabase
-      .from(" clinics")
+      .from("clinics")
       .select(`*`)
       .eq("active", true);
 

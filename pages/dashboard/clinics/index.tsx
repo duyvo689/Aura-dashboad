@@ -43,7 +43,7 @@ export default function ClinicPage() {
   const updateActive = async (id: string) => {
     try {
       const { data, error } = await supabase
-        .from(" clinics")
+        .from("clinics")
         .update({ active: false })
         .eq("id", id)
         .select();
@@ -66,7 +66,7 @@ export default function ClinicPage() {
 
   const getAllClinic = async () => {
     let { data: clinics, error } = await supabase
-      .from(" clinics")
+      .from("clinics")
       .select("*")
       .eq("active", true);
 
@@ -93,7 +93,7 @@ export default function ClinicPage() {
         _image = (await uploadImageProduct(image, "clinics")) as string;
       }
       const { data, error } = await supabase
-        .from(" clinics")
+        .from("clinics")
         .update({
           name: _name,
           description: _description,
