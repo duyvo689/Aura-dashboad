@@ -8,7 +8,7 @@ import Layout from "../layout/layout";
 import store from "../redux/store";
 import { Provider } from "react-redux";
 import Auth from "../auth/index";
-import "tippy.js/dist/tippy.css";
+// import "tippy.js/dist/tippy.css";
 import { Toaster } from "react-hot-toast";
 import Script from "next/script";
 
