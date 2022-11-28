@@ -16,6 +16,7 @@ function ItemRole({ index, item }: Props) {
       {openModalDelete && (
         <ModalDelete
           id={item.id!}
+          type="clinics"
           title={"clinic"}
           setOpenModalDelete={setOpenModalDelete}
         />
