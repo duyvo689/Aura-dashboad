@@ -1,24 +1,36 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { clinicsAction } from "../redux/actions/ReduxAction";
-import { Clinic } from "../utils/types";
+import { bannersAction, clinicsAction } from "../redux/actions/ReduxAction";
+import { Banner, Clinic } from "../utils/types";
 import { RootState } from "../redux/reducers";
 import { supabase } from "../services/supaBaseClient";
+import toast from "react-hot-toast";
 interface Props {
   id: string;
   title: string;
+  type: string;
   setOpenModalDelete: any;
 }
-function ModalDelete({ id, title, setOpenModalDelete }: Props) {
+function ModalDelete({ id, title, type, setOpenModalDelete }: Props) {
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
+  const banners: Banner[] = useSelector((state: RootState) => state.banners);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isDelete, setIsDelete] = useState<boolean>(false);
   const dispatch = useDispatch();
   const remove = async () => {
-    return;
+    setIsLoading(true);
+    if (type === "banners") {
+      const { data, error } = await supabase.from("banners").delete().eq("id", id);
+      if (error) {
+        toast("Có lỗi xảy ra. Vui lòng thử lại");
+      } else {
+        const tmpBanners = banners.filter((banner) => banner.id !== id);
+        dispatch(bannersAction("banners", tmpBanners));
+      }
+    }
+    setOpenModalDelete(false);
+    setIsLoading(false);
   };
-
   return (
     <div className="flex items-center">
       <div
@@ -32,7 +44,7 @@ function ModalDelete({ id, title, setOpenModalDelete }: Props) {
           <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <div className="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Delete {title}
+                Xoá {title}
               </h3>
               <button
                 type="button"
@@ -59,44 +71,29 @@ function ModalDelete({ id, title, setOpenModalDelete }: Props) {
             </div>
             <div className="p-6 space-y-6">
               <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                Are you sure?
+                Bạn có chắc là muốn xoá dữ liệu này?
               </p>
             </div>
             <div className="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600">
-              {isLoading ? (
-                <button
-                  data-modal-toggle="defaultModal"
-                  type="button"
-                  className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
-                  onClick={remove}
-                >
-                  Deleting...
-                </button>
-              ) : (
-                <>
-                  {!isDelete ? (
-                    <button
-                      data-modal-toggle="defaultModal"
-                      type="button"
-                      className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
-                      onClick={remove}
-                    >
-                      Delete
-                    </button>
-                  ) : null}
+              <button
+                data-modal-toggle="defaultModal"
+                type="button"
+                className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                onClick={isLoading ? () => {} : remove}
+              >
+                {isLoading ? "Đang xoá..." : "Xoá"}
+              </button>
 
-                  <button
-                    data-modal-toggle="defaultModal"
-                    type="button"
-                    className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-                    onClick={() => {
-                      setOpenModalDelete(false);
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </>
-              )}
+              <button
+                data-modal-toggle="defaultModal"
+                type="button"
+                className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                onClick={() => {
+                  isLoading ? () => {} : setOpenModalDelete(false);
+                }}
+              >
+                Huỷ
+              </button>
             </div>
           </div>
         </div>

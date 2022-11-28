@@ -3,7 +3,7 @@ interface Role {
   phone: string;
   position: string;
   created_at: string;
-  clinic_id:  Clinic;
+  clinic_id: Clinic;
 }
 
 interface User {
@@ -11,14 +11,13 @@ interface User {
   created_at: string;
   phone: string;
   avatar: string;
-  name: string ;
+  name: string;
 }
 interface Banner {
   id: string;
   created_at: string;
   image_url: string;
   link: string;
-  order: number;
 }
 interface Clinic {
   id: string;
@@ -60,4 +59,14 @@ interface OpenModal {
   id: string;
   name: string;
 }
-export type { Role, User, Banner, Clinic, Service ,Category,Payment,Customer,OpenModal};
+export type {
+  Role,
+  User,
+  Banner,
+  Clinic,
+  Service,
+  Category,
+  Payment,
+  Customer,
+  OpenModal,
+};

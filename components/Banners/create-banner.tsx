@@ -22,45 +22,46 @@ function CreateBannerForm({ banners }: Props) {
     e.preventDefault();
     setIsLoading(true);
     if (!fileBanner) return;
-    const { data, error } = await supabase.storage
-      .from("banners")
-      .upload(`/${fileBanner.name}`, fileBanner, {
-        upsert: true,
-      });
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    if (data && data.path) {
-      const { data: banners, error: getBannersError } = await supabase
-        .from("banners")
-        .select("*");
-      if (getBannersError) {
-        toast.error(getBannersError.message);
-        return;
-      }
-      const { data: newBanner, error: newBannerError } = await supabase
-        .from("banners")
-        .insert([
-          {
-            image_url: IMAGE_BASE_URL + data.path,
-            order: banners?.length + 1,
-          },
-        ]);
-      if (newBannerError) {
-        setMessage(false);
-        setIsLoading(false);
-        return;
-      }
-      // if upload file sucesss
-      banners.push({
-        image_url: IMAGE_BASE_URL + data.path,
-        order: banners?.length + 1,
-      });
-      dispatch(bannersAction("banners", banners));
-      setIsLoading(false);
-      setMessage(true);
-    }
+    console.log(fileBanner);
+    // const { data, error } = await supabase.storage
+    //   .from("banners")
+    //   .upload(`/${fileBanner.name}`, fileBanner, {
+    //     upsert: true,
+    //   });
+    // if (error) {
+    //   toast.error(error.message);
+    //   return;
+    // }
+    // if (data && data.path) {
+    //   const { data: banners, error: getBannersError } = await supabase
+    //     .from("banners")
+    //     .select("*");
+    //   if (getBannersError) {
+    //     toast.error(getBannersError.message);
+    //     return;
+    //   }
+    //   const { data: newBanner, error: newBannerError } = await supabase
+    //     .from("banners")
+    //     .insert([
+    //       {
+    //         image_url: IMAGE_BASE_URL + data.path,
+    //         order: banners?.length + 1,
+    //       },
+    //     ]);
+    //   if (newBannerError) {
+    //     setMessage(false);
+    //     setIsLoading(false);
+    //     return;
+    //   }
+    //   // if upload file sucesss
+    //   banners.push({
+    //     image_url: IMAGE_BASE_URL + data.path,
+    //     order: banners?.length + 1,
+    //   });
+    //   dispatch(bannersAction("banners", banners));
+    //   setIsLoading(false);
+    //   setMessage(true);
+    // }
   };
   const addMore = async () => {
     setFileBanner(null);
@@ -110,8 +111,7 @@ function CreateBannerForm({ banners }: Props) {
                 className="p-4 my-4 text-sm text-primary bg-green-100 rounded-lg "
                 role="alert"
               >
-                <span className="font-bold">Thành công!!!</span> Tạo mới thành
-                công
+                <span className="font-bold">Thành công!!!</span> Tạo mới thành công
               </div>
             ) : (
               <div
