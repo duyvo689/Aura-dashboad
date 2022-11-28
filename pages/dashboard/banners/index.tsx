@@ -396,7 +396,7 @@ function BannerPage() {
                                 Xoá
                               </div>
                               <Link href={`/dashboard/banners/edit/${banner.id}`}>
-                                <div className="text-green-600 hover:text-green-900">
+                                <div className="text-indigo-600 hover:text-indigo-900">
                                   Chỉnh sửa<span className="sr-only">, {banner.id}</span>
                                 </div>
                               </Link>
