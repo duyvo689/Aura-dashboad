@@ -122,7 +122,10 @@ video {
 .wallet-adapter-button-trigger:hover {
   background-color: rgb(0, 149, 79) !important;
 }
-
+.required::after {
+  content: " *";
+  color: red;
+}
 @media only screen and (min-width: 480px) {
   .colleciton-witdh {
     min-width: 720px !important;

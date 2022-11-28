@@ -472,7 +472,7 @@ function RolesPage() {
                         ) : item.name ? (
                           item.name
                         ) : (
-                          "Đang cập nhât"
+                          "Đang cập nhật"
                         )}
                       </td>
                       <td

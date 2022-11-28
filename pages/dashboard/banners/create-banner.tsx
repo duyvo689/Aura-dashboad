@@ -1,5 +1,6 @@
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,10 +12,10 @@ import convertImg from "../../../utils/helpers/convertImg";
 import { Banner } from "../../../utils/types";
 
 function CreateBanner() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [image, setImage] = useState<any>();
-  const [link, setLink] = useState("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [bannerImage, setBannerImage] = useState<File | null>(null);
   const banners: Banner[] = useSelector((state: RootState) => state.banners);
+  const router = useRouter();
   const dispatch = useDispatch();
   const getAllBanner = async () => {
     let { data: banners, error } = await supabase.from("banners").select("*");
@@ -27,137 +28,150 @@ function CreateBanner() {
     }
   };
   useEffect(() => {
-    if (!banners) return;
-    getAllBanner();
-  }, []);
+    if (!banners) {
+      getAllBanner();
+    }
+  }, [banners]);
   const addNewBanner = async (event: any) => {
     setIsLoading(true);
     event.preventDefault();
-    const link = event.target.elements.link.value;
-    const uploadResponse = await UploadCareAPI.uploadImg(image); //imageFile
-    if (uploadResponse && uploadResponse.status === 200) {
-      // const _urlImg = await uploadImageProduct(image, "banners");
-      const { data, error } = await supabase
-        .from("banners")
-        .insert([{ link: link, image_url: convertImg(uploadResponse.data.file) }])
-        .select()
-        .single();
-      if (error) {
-        toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
-      } else {
-        banners.push(data);
-        toast.success(`Đã thêm ${name}`);
+    if (!banners) {
+      return;
+    }
+    if (!bannerImage) {
+      toast("Vui lòng chọn hình ảnh");
+    } else {
+      const link = event.target.elements.link.value;
+      const uploadResponse = await UploadCareAPI.uploadImg(bannerImage); //imageFile
+      if (uploadResponse && uploadResponse.status === 200) {
+        // const _urlImg = await uploadImageProduct(image, "banners");
+        const { data, error } = await supabase
+          .from("banners")
+          .insert([{ link: link, image_url: convertImg(uploadResponse.data.file) }])
+          .select()
+          .single();
+        if (error) {
+          toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
+        } else {
+          banners.push(data);
+          console.log(banners);
+          dispatch(bannersAction("banners", banners));
+          toast.success(`Thêm banner thành công`);
+          router.push("/dashboard/banners");
+        }
       }
     }
     setIsLoading(false);
   };
   return (
-    <div className="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
-      <Head>
-        <title>Tạo Banner</title>
-        <meta property="og:title" content="Tạo banner" key="title" />
-      </Head>
-      <main>
-        <div className="flex gap-6 mt-4 mx-6">
-          <div className="w-[40%]">
-            <form onSubmit={addNewBanner}>
-              <div className="sm:col-span-6 mt-4">
-                <label
-                  htmlFor="photo"
-                  className="block text-sm font-bold text-gray-700 mb-4"
-                >
-                  THÊM HÌNH
-                </label>
-                <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
-                  {image ? (
-                    <div className="h-24 relative">
-                      <img
-                        src={URL.createObjectURL(image)}
-                        className="h-full w-full rounded-lg  object-cover"
-                      />
-                      <div
-                        className="absolute h-7 w-7 -top-4 -right-4"
-                        onClick={() => setImage(null)}
-                      >
-                        <XCircleIcon />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-1 text-center ">
-                      <svg
-                        className="mx-auto h-12 w-12 text-gray-400"
-                        stroke="currentColor"
-                        fill="none"
-                        viewBox="0 0 48 48"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                          strokeWidth={2}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <div className="flex text-sm text-gray-600">
-                        <label
-                          htmlFor="file-upload"
-                          className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
-                        >
-                          <span>Đăng tải hình ảnh</span>
-                          <input
-                            id="file-upload"
-                            name="file-upload"
-                            type="file"
-                            multiple
-                            className="sr-only"
-                            onChange={(e) =>
-                              e.target.files && setImage(e.target.files[0])
-                            }
-                          />
-                        </label>
-                        <p className="pl-1">or drag and drop</p>
-                      </div>
-                      <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                    </div>
-                  )}
+    <div className="px-4">
+      <form className="space-y-8 divide-y divide-gray-200" onSubmit={addNewBanner}>
+        <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+          <div className="space-y-6 sm:space-y-5">
+            <div>
+              <h3 className="text-lg font-medium leading-6 text-gray-900">Tạo banner</h3>
+              <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                Tạo banner cho Aura ID App. Thông tin sẽ được hiển thị trên Aura ID app.
+              </p>
+            </div>
+          </div>
+          <div className="space-y-6 sm:space-y-5">
+            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+              >
+                Link liên kết (Nếu có)
+              </label>
+              <div className="mt-1 sm:col-span-2 sm:mt-0">
+                <div className="flex max-w-lg rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    name="link"
+                    id="link"
+                    placeholder="Đường dẫn liên kết cho banner"
+                    className="block w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  />
                 </div>
               </div>
+            </div>
+          </div>
+          <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+            <label
+              htmlFor="cover-photo"
+              className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 required"
+            >
+              Hình ảnh banner
+            </label>
+            <div className="mt-1 sm:col-span-2 sm:mt-0">
+              <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
+                {bannerImage ? (
+                  <div className="h-24 relative">
+                    <img
+                      src={URL.createObjectURL(bannerImage)}
+                      className="h-full w-full rounded-lg  object-cover"
+                    />
 
-              <label
-                htmlFor="helper-text"
-                className="block mb-2 text-sm font-bold text-gray-900 dark:text-white mt-6"
-              >
-                NHẬP LINK
-              </label>
-              <input
-                type="link"
-                id="link"
-                name="link"
-                value={link}
-                aria-describedby="helper-text-explanation"
-                className="bg-gray-50 mt-4 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Link (*Không bắt buộc)"
-                onChange={(e) => setLink(e.target.value)}
-              />
-              <div className="justify-end flex mt-4">
-                {!image ? (
-                  <p className="text-white bg-gray-400 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">
-                    THÊM BANNER
-                  </p>
+                    <div
+                      className="absolute h-7 w-7 -top-4 -right-4 cursor-pointer"
+                      onClick={() => setBannerImage(null)}
+                    >
+                      <XCircleIcon />
+                    </div>
+                  </div>
                 ) : (
-                  <button
-                    type={"submit"}
-                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                  >
-                    {isLoading ? "ĐANG THÊM..." : "THÊM BANNER"}
-                  </button>
+                  <div className="space-y-1 text-center">
+                    <svg
+                      className="mx-auto h-12 w-12 text-gray-400"
+                      stroke="currentColor"
+                      fill="none"
+                      viewBox="0 0 48 48"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <div className="flex text-sm text-gray-600">
+                      <label
+                        htmlFor="file-upload"
+                        className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
+                      >
+                        <span>Upload hình ảnh</span>
+                        <input
+                          id="file-upload"
+                          name="file-upload"
+                          type="file"
+                          className="sr-only"
+                          onChange={(e) =>
+                            e.target.files && setBannerImage(e.target.files[0])
+                          }
+                        />
+                      </label>
+                      <p className="pl-1">(kéo hoặc thả)</p>
+                    </div>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF</p>
+                  </div>
                 )}
               </div>
-            </form>
+            </div>
           </div>
         </div>
-      </main>
+        <div className="pt-5">
+          <div className="flex justify-end">
+            <button
+              type={isLoading ? "button" : "submit"}
+              className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              {isLoading ? "Đang tạo..." : "Tạo mới"}
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 }
-export default CreateBanner();
+export default CreateBanner;

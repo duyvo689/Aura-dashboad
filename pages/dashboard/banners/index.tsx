@@ -16,35 +16,7 @@ import convertImg from "../../../utils/helpers/convertImg";
 import ModalDelete from "../../../components/ModalDelete";
 import Link from "next/link";
 
-interface Toggle {
-  index: number;
-  isEdit: boolean;
-  value: {
-    img: string;
-    link: string;
-  };
-}
-
-interface LoadDelete {
-  load: boolean;
-  id: string;
-}
 function BannerPage() {
-  const [link, setLink] = useState<string>();
-  const [load, setLoad] = useState<boolean>(false);
-  const [loadEdit, setLoadEdit] = useState<boolean>(false);
-  const [loadDelete, setLoadDelete] = useState<LoadDelete>({ load: false, id: "" });
-  const [toggle, setToggle] = useState<Toggle>({
-    index: -1,
-    isEdit: false,
-    value: {
-      img: "",
-      link: "",
-    },
-  });
-  const upImg = useRef<any>(null);
-  const [image, setImage] = useState<any>();
-  const [uploadedImage, setUploadedImage] = useState<any>(); //update image banner if have
   let banners: Banner[] = useSelector((state: RootState) => state.banners);
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
   const dispatch = useDispatch();
@@ -61,49 +33,6 @@ function BannerPage() {
   useEffect(() => {
     getAllBanner();
   }, []);
-
-  const updateBanner = async (event: any, id: string) => {
-    try {
-      setLoadEdit(true);
-      event.preventDefault();
-      const _link = event.target.elements.newLink.value;
-      let _image = toggle.value.img;
-      if (!uploadedImage) return;
-      const uploadResponse = await UploadCareAPI.uploadImg(uploadedImage); //imageFile
-      if (uploadResponse && uploadResponse.status === 200) {
-        const { data, error } = await supabase
-          .from("banners")
-          .update({ link: _link, image_url: convertImg(uploadResponse.data.file) })
-          .eq("id", id)
-          .select()
-          .single();
-        if (error != null) {
-          toast.error(error.message);
-        } else {
-          let index = banners.findIndex((item) => item.id == id);
-          banners[index] = data;
-          toast.success(`Đã sửa ${_link}`);
-          setToggle({
-            index: -1,
-            isEdit: false,
-            value: {
-              img: "",
-              link: "",
-            },
-          });
-          setUploadedImage(null);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoadEdit(false);
-    }
-  };
-
-  const handleClick = () => {
-    upImg.current.click();
-  };
 
   return (
     <>
@@ -382,108 +311,117 @@ function BannerPage() {
           </table>
         </div>
       </div> */}
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="sm:flex sm:items-center">
-          <div className="sm:flex-auto">
-            <h1 className="text-xl font-semibold text-gray-900">
-              Baners({banners.length})
-            </h1>
-            <p className="mt-2 text-sm text-gray-700">Danh sách các banner</p>
+      {banners ? (
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="sm:flex sm:items-center">
+            <div className="sm:flex-auto">
+              <h1 className="text-xl font-semibold text-gray-900">
+                Baners({banners.length})
+              </h1>
+              <p className="mt-2 text-sm text-gray-700">Danh sách các banner</p>
+            </div>
+            <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+              <Link href="/dashboard/banners/create-banner">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                >
+                  Thêm banner
+                </button>
+              </Link>
+            </div>
           </div>
-          <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-            <Link href="/dashboard/banners/create-banner">
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-              >
-                Thêm banner
-              </button>
-            </Link>
-          </div>
-        </div>
-        <div className="mt-8 flex flex-col">
-          <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead>
-                  <tr>
-                    <th
-                      scope="col"
-                      className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
-                    >
-                      STT
-                    </th>
-                    <th
-                      scope="col"
-                      className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
-                    >
-                      Hình ảnh
-                    </th>
-                    <th
-                      scope="col"
-                      className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Link liên kết
-                    </th>
-                    <th
-                      scope="col"
-                      className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Ngày tạo
-                    </th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6 md:pr-0">
-                      <span className="sr-only">Edit</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {banners.map((banner: Banner, index: number) => (
-                    <>
-                      <tr key={index}>
-                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                          {index}
-                        </td>
-                        <td className="py-4 px-3 text-sm text-gray-500 m-0">
-                          <img src={banner.image_url} className="w-40" />
-                        </td>
-                        <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                          {banner.link}
-                        </td>
-                        <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                          {moment(banner.created_at).format("DD/MM/YYYY")}
-                        </td>
-                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
-                          <div className="flex gap-3">
-                            <div
-                              className="text-red-500"
-                              onClick={() => {
-                                setOpenModalDelete(true);
-                              }}
-                            >
-                              Xoá
+          <div className="mt-8 flex flex-col">
+            <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                <table className="min-w-full divide-y divide-gray-300">
+                  <thead>
+                    <tr>
+                      <th
+                        scope="col"
+                        className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
+                      >
+                        STT
+                      </th>
+                      <th
+                        scope="col"
+                        className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
+                      >
+                        Hình ảnh
+                      </th>
+                      <th
+                        scope="col"
+                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Link liên kết
+                      </th>
+                      <th
+                        scope="col"
+                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Ngày tạo
+                      </th>
+                      <th
+                        scope="col"
+                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Hành động
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {banners.map((banner: Banner, index: number) => (
+                      <>
+                        <tr key={index}>
+                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
+                            {index}
+                          </td>
+                          <td className="py-4 px-3 text-sm text-gray-500 m-0">
+                            <img src={banner.image_url} className="w-40" />
+                          </td>
+                          <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                            {banner.link}
+                          </td>
+                          <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                            {moment(banner.created_at).format("DD/MM/YYYY")}
+                          </td>
+                          <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
+                            <div className="flex gap-3">
+                              <div
+                                className="text-red-500"
+                                onClick={() => {
+                                  setOpenModalDelete(true);
+                                }}
+                              >
+                                Xoá
+                              </div>
+                              <Link href={`/dashboard/banners/edit/${banner.id}`}>
+                                <div className="text-green-600 hover:text-green-900">
+                                  Chỉnh sửa<span className="sr-only">, {banner.id}</span>
+                                </div>
+                              </Link>
                             </div>
-                            <a href="#" className="text-green-600 hover:text-green-900">
-                              Edit<span className="sr-only">, {banner.id}</span>
-                            </a>
-                          </div>
-                        </td>
-                      </tr>
-                      {openModalDelete && (
-                        <ModalDelete
-                          id={banner.id}
-                          title="banner"
-                          type="banners"
-                          setOpenModalDelete={setOpenModalDelete}
-                        />
-                      )}
-                    </>
-                  ))}
-                </tbody>
-              </table>
+                          </td>
+                        </tr>
+                        {openModalDelete && (
+                          <ModalDelete
+                            id={banner.id}
+                            title="banner"
+                            type="banners"
+                            setOpenModalDelete={setOpenModalDelete}
+                          />
+                        )}
+                      </>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div>Loading...</div>
+      )}
     </>
   );
 }
