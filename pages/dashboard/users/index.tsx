@@ -182,7 +182,7 @@ export default function Example() {
                             <div className="w-24 h-16 ">
                               <img
                                 className="w-full h-full rounded object-cover"
-                                alt="Chờ cập nhập"
+                                alt="Chờ cập nhật"
                                 src={
                                   person.avatar
                                     ? person.avatar
@@ -199,7 +199,7 @@ export default function Example() {
                               "whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden lg:table-cell"
                             )}
                           >
-                            {person.name ? person.name : "Chờ cập nhập"}
+                            {person.name ? person.name : "Chờ cập nhật"}
                           </td>
                           <td
                             className={classNames(
@@ -209,7 +209,7 @@ export default function Example() {
                               "whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                             )}
                           >
-                            {person.phone ? person.phone : "Chờ cập nhập"}
+                            {person.phone ? person.phone : "Chờ cập nhật"}
                           </td>
                           <td
                             className={classNames(

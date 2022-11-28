@@ -18,8 +18,8 @@ interface Toggle {
   };
 }
 const ROLES_MAPPING = [
-  { name: "Doctor", value: "doctor" },
-  { name: "Staff", value: "staff" },
+  { name: "Bác sĩ", value: "doctor" },
+  { name: "Lễ Tân", value: "staff" },
 ];
 
 function RolesPage() {
@@ -438,7 +438,11 @@ function RolesPage() {
                           })
                         }
                       >
-                        {item.position}
+                        {item.position === "staff"
+                          ? "Lễ Tân"
+                          : item.position === "doctor"
+                          ? "Bác sĩ"
+                          : ""}
                       </td>
                       <td className="py-4  px-6">
                         {index == toggle.index && toggle.isEdit ? (
