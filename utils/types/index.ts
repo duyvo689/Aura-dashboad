@@ -1,6 +1,7 @@
 interface Role {
   id: string;
   phone: string;
+  name: string;
   position: string;
   created_at: string;
   clinic_id:  Clinic;

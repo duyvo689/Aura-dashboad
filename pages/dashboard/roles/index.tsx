@@ -15,6 +15,7 @@ interface Toggle {
     phone: string;
     role: string;
     clinic: string;
+    name: string;
   };
 }
 const ROLES_MAPPING = [
@@ -24,6 +25,7 @@ const ROLES_MAPPING = [
 
 function RolesPage() {
   const [phone, setPhone] = useState<string>();
+  const [name, setName] = useState<string>();
   const [load, setLoad] = useState<boolean>(false);
   const [toggle, setToggle] = useState<Toggle>({
     index: -1,
@@ -32,6 +34,7 @@ function RolesPage() {
       phone: "",
       role: "",
       clinic: "",
+      name: "",
     },
   });
 
@@ -56,6 +59,7 @@ function RolesPage() {
       const _phone = event.target.elements.phone.value;
       const _role = event.target.elements.role.value;
       const _clinic = event.target.elements.clinic.value;
+      const _name = event.target.elements.name.value;
       const flagPhone = validatePhoneNumber(_phone);
       if (!flagPhone) {
         toast.error(`Số điện thoại không đúng`);
@@ -65,6 +69,7 @@ function RolesPage() {
         position: _role,
         clinic_id: _clinic,
         phone: _phone,
+        name: _name,
       };
 
       const _infoPersonnel = {
@@ -127,10 +132,11 @@ function RolesPage() {
       const _phone = toggle.value.phone;
       const _clinic = toggle.value.clinic;
       const _role = toggle.value.role;
+      const _name = toggle.value.name;
 
       const { data, error } = await supabase
         .from("roles")
-        .update({ phone: _phone, clinic_id: _clinic })
+        .update({ phone: _phone, clinic_id: _clinic, name: _name })
         .eq("phone", phone)
         .select(`*,clinic_id(*)`);
       console.log(data);
@@ -148,6 +154,7 @@ function RolesPage() {
             phone: "",
             role: "",
             clinic: "",
+            name: "",
           },
         });
         await updateEditPersonnel(_role, phone, _phone, _clinic);
@@ -250,6 +257,22 @@ function RolesPage() {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Số điện thoại"
               onChange={(e) => setPhone(e.target.value)}
+            />
+            <label
+              htmlFor="helper-text"
+              className="block mb-4 mt-6 text-sm font-bold text-gray-900 dark:text-white"
+            >
+              TÊN NHÂN SỰ
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={name}
+              aria-describedby="helper-text-explanation"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Nhập tên nhân sự"
+              onChange={(e) => setName(e.target.value)}
             />
             <label
               htmlFor="helper-text"
@@ -377,6 +400,12 @@ function RolesPage() {
                     scope="col"
                     className="sticky top-0 whitespace-nowrap z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
                   >
+                    TÊN NHÂN SỰ
+                  </th>
+                  <th
+                    scope="col"
+                    className="sticky top-0 whitespace-nowrap z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                  >
                     CHỨC VỤ
                   </th>
                   <th
@@ -405,7 +434,7 @@ function RolesPage() {
                       {index == toggle.index && toggle.isEdit ? (
                         <>
                           <input
-                            className="bg-gray-50 mt-4 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="bg-gray-50 mt-[14px] min-w-[120px] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             type="text"
                             value={toggle.value.phone}
                             onChange={(e) =>
@@ -425,8 +454,29 @@ function RolesPage() {
                           {item.phone}
                         </th>
                       )}
+                      <td className="py-4  whitespace-nowrap px-6">
+                        {index == toggle.index && toggle.isEdit ? (
+                          <input
+                            className="bg-gray-50 min-w-[120px] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            type="text"
+                            name="name"
+                            value={toggle.value.name}
+                            onChange={(e) =>
+                              setToggle({
+                                index: index,
+                                isEdit: true,
+                                value: { ...toggle.value, name: e.target.value },
+                              })
+                            }
+                          />
+                        ) : item.name ? (
+                          item.name
+                        ) : (
+                          "Đang cập nhât"
+                        )}
+                      </td>
                       <td
-                        className="py-4  px-6"
+                        className="py-4 whitespace-nowrap px-6"
                         onChange={(e) =>
                           setToggle({
                             index: index,
@@ -506,6 +556,7 @@ function RolesPage() {
                                     phone: item.phone,
                                     role: item.position,
                                     clinic: item.clinic_id.id,
+                                    name: item.name,
                                   },
                                 })
                               }
@@ -521,7 +572,7 @@ function RolesPage() {
                               setToggle({
                                 index: -1,
                                 isEdit: false,
-                                value: { phone: "", clinic: "", role: "" },
+                                value: { phone: "", clinic: "", role: "", name: "" },
                               });
                             }}
                             className="text-gray-600  cursor-pointer ml-4 hover:text-indigo-900"
