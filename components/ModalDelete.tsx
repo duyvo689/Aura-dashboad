@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { bannersAction, clinicsAction } from "../redux/actions/ReduxAction";
-import { Banner, Clinic } from "../utils/types";
+import {
+  bannersAction,
+  clinicsAction,
+  servicesAction,
+} from "../redux/actions/ReduxAction";
+import { Banner, Clinic, Service } from "../utils/types";
 import { RootState } from "../redux/reducers";
 import { supabase } from "../services/supaBaseClient";
 import toast from "react-hot-toast";
@@ -15,6 +19,7 @@ interface Props {
 function ModalDelete({ id, title, type, setOpenModalDelete }: Props) {
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
   const banners: Banner[] = useSelector((state: RootState) => state.banners);
+  const services: Service[] = useSelector((state: RootState) => state.services);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const remove = async () => {
@@ -25,7 +30,34 @@ function ModalDelete({ id, title, type, setOpenModalDelete }: Props) {
         toast("Có lỗi xảy ra. Vui lòng thử lại");
       } else {
         const tmpBanners = banners.filter((banner) => banner.id !== id);
+        toast("Thao tác thành công");
         dispatch(bannersAction("banners", tmpBanners));
+      }
+    }
+    if (type === "clinics") {
+      const { data, error } = await supabase
+        .from(" clinics")
+        .update([{ active: false }])
+        .eq("id", id);
+      if (error) {
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại");
+      } else {
+        const tmpClinic = clinics.filter((clinic) => clinic.id !== id);
+        toast.success("Thao tác thành công");
+        dispatch(clinicsAction("clinics", tmpClinic));
+      }
+    }
+    if (type === "services") {
+      const { data, error } = await supabase
+        .from("services")
+        .update([{ active: false }])
+        .eq("id", id);
+      if (error) {
+        toast("Có lỗi xảy ra. Vui lòng thử lại");
+      } else {
+        const tmpServices = services.filter((service) => service.id !== id);
+        toast.success("Thao tác thành công");
+        dispatch(servicesAction("services", tmpServices));
       }
     }
     setOpenModalDelete(false);
@@ -70,7 +102,7 @@ function ModalDelete({ id, title, type, setOpenModalDelete }: Props) {
               </button>
             </div>
             <div className="p-6 space-y-6">
-              <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              <p className="text-base text-start leading-relaxed text-gray-500 dark:text-gray-400">
                 Bạn có chắc là muốn xoá dữ liệu này?
               </p>
             </div>

@@ -4,7 +4,7 @@ interface CATEGORY {
   type: string;
 }
 
-const adminRedux = (state = [], action: CATEGORY) => {
+const adminRedux = (state = null, action: CATEGORY) => {
   switch (action.type) {
     case "category":
       return action.category;

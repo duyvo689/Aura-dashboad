@@ -15,7 +15,6 @@ export default function Layout({ children }: any) {
             <HeaderDashboard />
             <div
               style={{
-                maxWidth: "1440px",
                 margin: "auto",
                 width: "100%",
                 height: "100%",

@@ -1,18 +1,21 @@
-import { Button } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { categoryAction, paymentAction } from "../../../redux/actions/ReduxAction";
+import { categoryAction, servicesAction } from "../../../redux/actions/ReduxAction";
 import { supabase } from "../../../services/supaBaseClient";
-import { Category } from "../../../utils/types";
-import { XCircleIcon, ArrowSmallLeftIcon } from "@heroicons/react/24/outline";
+import { Category, Service } from "../../../utils/types";
+import { XCircleIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
 import Link from "next/link";
-import { createImgId, uploadImageProduct } from "../../../utils/funtions";
+import UploadCareAPI from "../../../services/uploadCareAPI";
+import { RootState } from "../../../redux/reducers";
+import convertImg from "../../../utils/helpers/convertImg";
+import router from "next/router";
 
 export default function CreateService() {
-  const [image, setImage] = useState<any>();
-  const category: Category[] = useSelector((state: any) => state.category);
+  const [image, setImage] = useState<File | null>(null);
+  const categories: Category[] = useSelector((state: any) => state.category);
+  const services: Service[] = useSelector((state: RootState) => state.services);
   const dispatch = useDispatch();
   const [load, setLoad] = useState<boolean>(false);
 
@@ -41,10 +44,16 @@ export default function CreateService() {
   }
 
   const addNewService = async (event: any) => {
-    try {
-      event.preventDefault();
+    event.preventDefault();
+    setLoad(true);
+    if (!services) return;
+    if (!image) {
+      toast("Vui lòng chọn hình ảnh");
       setLoad(true);
-      const _urlImg = await uploadImageProduct(image, "services");
+      return;
+    }
+    const uploadResponse = await UploadCareAPI.uploadImg(image); //imageFile
+    if (uploadResponse && uploadResponse.status === 200) {
       const _name = event.target.elements.name.value;
       const _price = event.target.elements.price.value;
       const _category = event.target.elements.category.value;
@@ -54,30 +63,38 @@ export default function CreateService() {
         price: _price,
         category_id: _category,
         description: _description,
-        image: _urlImg,
+        image: convertImg(uploadResponse.data.file),
       };
       let isValid = validateForm(_serviceInfo);
       if (!isValid) return;
       const { data, error } = await supabase
         .from("services")
         .insert([_serviceInfo])
-        .select()
+        .select(`*,category_id(*)`)
         .single();
       if (error != null) {
         toast.error(error.message);
-      } else {
+      } else if (data) {
         toast.success(`Đã thêm thành công`);
-        setImage(null);
-        event.target.reset();
-        category.push(data);
+        services.unshift(data);
+        dispatch(servicesAction("services", services));
+        router.push("/dashboard/services");
       }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoad(false);
     }
   };
-
+  const getAllService = async () => {
+    let { data, error } = await supabase
+      .from("services")
+      .select(`*,category_id(*)`)
+      .eq("active", true);
+    if (error) {
+      toast(error.message);
+      return;
+    }
+    if (data) {
+      dispatch(servicesAction("services", data));
+    }
+  };
   const getAllCategory = async () => {
     let { data, error } = await supabase.from("categories").select("*");
     if (error) {
@@ -89,8 +106,13 @@ export default function CreateService() {
     }
   };
   useEffect(() => {
-    getAllCategory();
-  }, []);
+    if (!categories) {
+      getAllCategory();
+    }
+    if (!services) {
+      getAllService();
+    }
+  }, [categories, services]);
 
   return (
     <>
@@ -102,7 +124,7 @@ export default function CreateService() {
         <div className="sm:flex-auto">
           <h1 className="text-xl font-semibold text-gray-900">THÊM DỊCH VỤ MỚI</h1>
           <p className="mt-2 text-sm text-gray-700">
-            Nhập đầy đủ các thông tin để thêm mới một dịch vụ ở Aura ID.
+            Thêm mới dịch vụ. Thông tin sẽ được hiển thị trên cả 3 MiniApp.
           </p>
         </div>
         <Link href="/dashboard/services">
@@ -126,8 +148,8 @@ export default function CreateService() {
             <div className="pt-6">
               <div className="sm:col-span-3">
                 <label
-                  htmlFor="first-name"
-                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 required"
                 >
                   Tên Dịch Vụ
                 </label>
@@ -136,7 +158,7 @@ export default function CreateService() {
                     type="text"
                     name="name"
                     id="name"
-                    autoComplete="given-name"
+                    required
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   />
                 </div>
@@ -145,7 +167,7 @@ export default function CreateService() {
                 <div className="sm:col-span-3">
                   <label
                     htmlFor="price"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 required"
                   >
                     Nhập Giá Dịch Vụ
                   </label>
@@ -154,7 +176,6 @@ export default function CreateService() {
                       type="number"
                       name="price"
                       id="price"
-                      autoComplete="family-name"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                   </div>
@@ -163,7 +184,7 @@ export default function CreateService() {
                 <div className="sm:col-span-3">
                   <label
                     htmlFor="category"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 required"
                   >
                     Chọn Danh Mục
                   </label>
@@ -171,12 +192,11 @@ export default function CreateService() {
                     <select
                       id="category"
                       name="category"
-                      autoComplete="country-name"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     >
-                      {category &&
-                        category.length > 0 &&
-                        category.map((item) => (
+                      {categories &&
+                        categories.length > 0 &&
+                        categories.map((item) => (
                           <option key={item.id} value={item.id}>
                             {item.name}
                           </option>
@@ -189,14 +209,17 @@ export default function CreateService() {
           </div>
           <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
             <div className="sm:col-span-6">
-              <label htmlFor="about" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700 required"
+              >
                 Mô Tả Dịch Vụ
               </label>
               <div className="mt-1">
                 <textarea
                   id="description"
                   name="description"
-                  rows={3}
+                  rows={5}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   defaultValue={""}
                 />
@@ -206,9 +229,9 @@ export default function CreateService() {
             <div className="sm:col-span-6">
               <label
                 htmlFor="cover-photo"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 required"
               >
-                Thêm Hình Ảnh Dịch Vụ
+                Hình Ảnh Dịch Vụ
               </label>
               <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
                 {image ? (
@@ -245,7 +268,7 @@ export default function CreateService() {
                         htmlFor="file-upload"
                         className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
                       >
-                        <span>Upload a file</span>
+                        <span>Upload hình ảnh</span>
                         <input
                           id="file-upload"
                           name="file-upload"
@@ -255,9 +278,9 @@ export default function CreateService() {
                           onChange={(e) => e.target.files && setImage(e.target.files[0])}
                         />
                       </label>
-                      <p className="pl-1">or drag and drop</p>
+                      <p className="pl-1">(kéo hoặc thả)</p>
                     </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                    <p className="text-xs text-gray-500">PNG, JPG, JPEG</p>
                   </div>
                 )}
               </div>
@@ -269,7 +292,7 @@ export default function CreateService() {
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
             type="submit"
           >
-            {load ? "ĐANG THÊM..." : "THÊM SẢN PHẨM"}
+            {load ? "ĐANG THÊM..." : "THÊM DỊCH VỤ"}
           </button>
           <p className="text-red-600 text-[12px] font-[600]">
             *Lưu ý chọn Danh Mục cho dịch vụ!

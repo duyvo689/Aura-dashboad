@@ -27,6 +27,7 @@ interface Clinic {
   avatar: string;
   address: string;
   description: string;
+  active: boolean;
 }
 interface Service {
   id: string;
@@ -36,6 +37,7 @@ interface Service {
   image: string;
   description: string;
   category_id: Category;
+  active: true;
 }
 
 interface Category {

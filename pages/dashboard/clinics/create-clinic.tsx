@@ -1,17 +1,23 @@
 import { Button } from "flowbite-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../../../services/supaBaseClient";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
 import Link from "next/link";
 import { uploadImageProduct } from "../../../utils/funtions";
+import { clinicsAction } from "../../../redux/actions/ReduxAction";
+import { Clinic } from "../../../utils/types";
+import { RootState } from "../../../redux/reducers";
+import UploadCareAPI from "../../../services/uploadCareAPI";
+import convertImg from "../../../utils/helpers/convertImg";
 
 export default function CreateClinic() {
-  const [image, setImage] = useState<any>();
+  const [clinicImage, setClinicImg] = useState<File | null>(null);
   const [load, setLoad] = useState<boolean>(false);
-
+  const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
+  const dispatch = useDispatch();
   const fieldsOfForm: any = {
     name: "Tên Cơ Sở!",
     description: "Mô Tả Cơ Sở!",
@@ -36,40 +42,58 @@ export default function CreateClinic() {
   }
 
   const addNewClinic = async (event: any) => {
-    try {
-      event.preventDefault();
-      setLoad(true);
-      const _urlImg = await uploadImageProduct(image, "clinics");
-      const _name = event.target.elements.name.value;
-      const _address = event.target.elements.address.value;
-      const _description = event.target.elements.description.value;
+    event.preventDefault();
+    setLoad(true);
+    const _name = event.target.elements.name.value;
+    const _address = event.target.elements.address.value;
+    const _description = event.target.elements.description.value;
 
-      let _serviceInfo = {
-        name: _name,
-        address: _address,
-        description: _description,
-        avatar: _urlImg,
-      };
-      let isValid = validateForm(_serviceInfo);
-      if (!isValid) return;
-      const { data, error } = await supabase
-        .from("clinics")
-        .insert([_serviceInfo])
-        .single();
-      if (error != null) {
-        toast.error(error.message);
-      } else {
-        toast.success(`Đã thêm cở sở thành công`);
-        setImage(null);
-        event.target.reset();
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoad(false);
+    let _serviceInfo = {
+      name: _name,
+      address: _address,
+      description: _description,
+      avatar: clinicImage || "",
+    };
+    let isValid = validateForm(_serviceInfo);
+    if (!isValid || !clinicImage) return;
+    const uploadResponse = await UploadCareAPI.uploadImg(clinicImage); //imageFile
+    if (uploadResponse && uploadResponse.status === 200) {
+      _serviceInfo.avatar = convertImg(uploadResponse.data.file);
+    }
+    const { data, error } = await supabase
+      .from(" clinics")
+      .insert([_serviceInfo])
+      .select("*")
+      .single();
+    if (error) {
+      toast.error(error.message);
+    } else if (data) {
+      toast.success(`Đã thêm cở sở thành công`);
+      clinics.push(data);
+      dispatch(clinicsAction("clinics", clinics));
+      setClinicImg(null);
+      event.target.reset();
+    }
+    setLoad(false);
+  };
+  const getAllClinic = async () => {
+    let { data: clinics, error } = await supabase
+      .from(" clinics")
+      .select("*")
+      .eq("active", true);
+    if (error) {
+      toast(error.message);
+      return;
+    }
+    if (clinics && clinics.length > 0) {
+      dispatch(clinicsAction("clinics", clinics));
     }
   };
-
+  useEffect(() => {
+    if (!clinics) {
+      getAllClinic();
+    }
+  }, []);
   return (
     <>
       <Head>
@@ -104,8 +128,8 @@ export default function CreateClinic() {
             <div className="pt-6">
               <div className="sm:col-span-3">
                 <label
-                  htmlFor="first-name"
-                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 required"
                 >
                   Tên Cơ Sở
                 </label>
@@ -114,15 +138,15 @@ export default function CreateClinic() {
                     type="text"
                     name="name"
                     id="name"
-                    autoComplete="given-name"
+                    required
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   />
                 </div>
               </div>
               <div className="sm:col-span-3 mt-6">
                 <label
-                  htmlFor="first-name"
-                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="address"
+                  className="block text-sm font-medium text-gray-700 required"
                 >
                   Địa Chỉ Cơ Sở
                 </label>
@@ -131,7 +155,7 @@ export default function CreateClinic() {
                     type="text"
                     name="address"
                     id="address"
-                    autoComplete="given-name"
+                    required
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   />
                 </div>
@@ -140,14 +164,18 @@ export default function CreateClinic() {
           </div>
           <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
             <div className="sm:col-span-6">
-              <label htmlFor="about" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700 required"
+              >
                 Mô Tả Cơ Sở
               </label>
               <div className="mt-1">
                 <textarea
                   id="description"
                   name="description"
-                  rows={3}
+                  rows={5}
+                  required
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   defaultValue={""}
                 />
@@ -157,20 +185,20 @@ export default function CreateClinic() {
             <div className="sm:col-span-6">
               <label
                 htmlFor="cover-photo"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 required"
               >
                 Thêm Hình Ảnh Cơ Sở
               </label>
               <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
-                {image ? (
+                {clinicImage ? (
                   <div className="h-24 relative">
                     <img
-                      src={URL.createObjectURL(image)}
+                      src={URL.createObjectURL(clinicImage)}
                       className="h-full w-full rounded-lg  object-cover"
                     />
                     <div
                       className="absolute h-7 w-7 -top-4 -right-4"
-                      onClick={() => setImage(null)}
+                      onClick={() => setClinicImg(null)}
                     >
                       <XCircleIcon />
                     </div>
@@ -196,19 +224,21 @@ export default function CreateClinic() {
                         htmlFor="file-upload"
                         className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
                       >
-                        <span>Upload a file</span>
+                        <span>Upload hình ảnh</span>
                         <input
-                          id="file-upload"
-                          name="file-upload"
+                          id="cover-photo"
+                          name="cover-photo"
                           type="file"
                           multiple
                           className="sr-only"
-                          onChange={(e) => e.target.files && setImage(e.target.files[0])}
+                          onChange={(e) =>
+                            e.target.files && setClinicImg(e.target.files[0])
+                          }
                         />
                       </label>
-                      <p className="pl-1">or drag and drop</p>
+                      <p className="pl-1">(kéo hoặc thả)</p>
                     </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                    <p className="text-xs text-gray-500">PNG, JPG, JPEG</p>
                   </div>
                 )}
               </div>

@@ -584,7 +584,7 @@ function RolesPage() {
                     </tr>
                   ))
                 ) : (
-                  <div className="block mt-6 ml-8">Không có dữ liệu</div>
+                  <tr className="block mt-6 ml-8">Không có dữ liệu</tr>
                 )}
               </tbody>
             </table>
