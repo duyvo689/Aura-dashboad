@@ -7,43 +7,17 @@ import { categoryAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
 import Tippy from "@tippyjs/react";
 import moment from "moment";
-import NewModalDelete from "../services/modal-delete";
+import ModalDelete from "../../../components/ModalDelete";
+import { RootState } from "../../../redux/reducers";
+import ModalUpdate from "../../../components/ModalUpdate";
 
-interface Toggle {
-  index: number;
-  isEdit: boolean;
-  value: string;
-}
 function CategoryPage() {
-  const [name, setName] = useState<string>();
-  const [load, setLoad] = useState<boolean>(false);
-  const [toggle, setToggle] = useState<Toggle>({ index: -1, isEdit: false, value: "" });
-
-  const category: Category[] = useSelector((state: any) => state.category);
+  const [name, setName] = useState<string>("");
+  const [load, setLoad] = useState(false);
+  const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+  const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
+  const category: Category[] = useSelector((state: RootState) => state.category);
   const dispatch = useDispatch();
-
-  const [open, setOpen] = useState<OpenModal>({ isOpen: false, id: "", name: "" });
-
-  const updateActive = async (id: string) => {
-    try {
-      const { data, error } = await supabase
-        .from("categories")
-        .update({ active: false })
-        .eq("id", id)
-        .select();
-      if (error != null) {
-        toast.error(error.message);
-      } else {
-        toast.success(`Đã xoá danh mục`);
-        let newCategorys = category.filter((item) => item.id !== id);
-        dispatch(categoryAction("category", newCategorys));
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setOpen({ isOpen: false, id: "", name: "" });
-    }
-  };
 
   const getAllCategory = async () => {
     let { data, error } = await supabase
@@ -86,29 +60,29 @@ function CategoryPage() {
     }
   };
 
-  const updateCategory = async (event: any, id: string) => {
-    try {
-      event.preventDefault();
-      const name = event.target.elements.newName.value;
-      const { data, error } = await supabase
-        .from("categories")
-        .update({ name: name })
-        .eq("id", id)
-        .select()
-        .single();
-      if (error != null) {
-        toast.error(error.message);
-      } else {
-        let index = category.findIndex((item) => item.id == id);
-        category[index] = data;
-        toast.success(`Đã sửa ${name}`);
-        setToggle({ index: -1, isEdit: false, value: "" });
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-    }
-  };
+  // const updateCategory = async (event: any, id: string) => {
+  //   try {
+  //     event.preventDefault();
+  //     const name = event.target.elements.newName.value;
+  //     const { data, error } = await supabase
+  //       .from("categories")
+  //       .update({ name: name })
+  //       .eq("id", id)
+  //       .select()
+  //       .single();
+  //     if (error != null) {
+  //       toast.error(error.message);
+  //     } else {
+  //       let index = category.findIndex((item) => item.id == id);
+  //       category[index] = data;
+  //       toast.success(`Đã sửa ${name}`);
+  //       setToggle({ index: -1, isEdit: false, value: "" });
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //   }
+  // };
   return (
     <>
       <Head>
@@ -136,13 +110,13 @@ function CategoryPage() {
             />
             <div className="justify-end flex mt-4">
               {!name ? (
-                <p className="text-white bg-gray-400 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">
+                <button className="text-white bg-gray-400 font-medium rounded-lg text-sm px-4 py-2.5 mr-2 mb-2 cursor-not-allowed">
                   THÊM DANH MỤC
-                </p>
+                </button>
               ) : (
                 <button
                   type={"submit"}
-                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                  className="text-white bg-indigo-600 hover:bg-indigo-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                 >
                   {load ? "ĐANG THÊM..." : "THÊM DANH MỤC"}
                 </button>
@@ -151,119 +125,83 @@ function CategoryPage() {
           </form>
         </div>
         <div className="w-[70%] h-[84vh] overflow-x-auto relative shadow-md sm:rounded-lg mt-8">
-          <table className="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
+          <table className="min-w-full divide-y divide-gray-300 px-4">
             <thead className="bg-gray-50">
               <tr>
                 <th
                   scope="col"
-                  className="sticky top-0 whitespace-nowrap z-10 border-b border-gray-300 bg-gray-50 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                  className="py-3.5 px-4 text-center text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
                 >
                   STT
                 </th>
                 <th
                   scope="col"
-                  className="sticky top-0 whitespace-nowrap z-10 border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                  className="py-3.5 px-4 text-center text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
                 >
                   TÊN DANH MỤC
                 </th>
                 <th
                   scope="col"
-                  className="sticky top-0 whitespace-nowrap z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                  className="py-3.5 px-4 text-center text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
                 >
                   NGÀY TẠO
                 </th>
+
                 <th
                   scope="col"
-                  className="sticky whitespace-nowrap top-0 z-10 border-b border-gray-300 bg-gray-50 py-3.5 pr-4 pl-3 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
-                >
-                  <span className="sr-only">Edit</span>
-                </th>
+                  className="py-3.5 px-4 text-center text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
+                ></th>
               </tr>
             </thead>
             <tbody>
               {category &&
                 category.length > 0 &&
-                category.map((item, index) => (
-                  <tr
-                    key={item.id}
-                    className="bg-white hover:bg-gray-100 border-b dark:bg-gray-900 dark:border-gray-700"
-                  >
-                    <td className="py-4 text-center px-6">{index}</td>
-                    {index == toggle.index && toggle.isEdit ? (
-                      <th
-                        scope="row"
-                        className="py-2 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        <form onSubmit={(e) => updateCategory(e, item.id)}>
-                          <div className="flex">
-                            <input
-                              autoFocus
-                              type="text"
-                              id="newName"
-                              name="newName"
-                              value={toggle.value}
-                              aria-describedby="helper-text-explanation"
-                              className="border rounded border-gray-300 text-gray-900 text-sm focus:ring-blue-400 focus:border-blue-400 block w-full min-w-[150px]"
-                              placeholder="Tên danh mục"
-                              onChange={(e) =>
-                                setToggle({
-                                  index: index,
-                                  isEdit: true,
-                                  value: e.target.value,
-                                })
-                              }
-                            />
-                            <span className="flex gap-2 ml-2 items-center">
-                              {item.name == toggle.value ? (
-                                <span className="border h-[30px]  border-gray-400 flex items-center rounded px-4 text-white bg-gray-400">
-                                  Sửa
-                                </span>
-                              ) : (
-                                <button
-                                  type="submit"
-                                  className="border cursor-pointer hover:bg-red-500 h-[30px] border-gray-400 flex items-center rounded px-4 text-white bg-red-600"
-                                >
-                                  Sửa
-                                </button>
-                              )}
-
-                              <span
-                                className="border cursor-pointer hover:bg-gray-300 h-[30px] border-gray-400 flex items-center rounded px-4 bg-gray-200"
-                                onClick={() =>
-                                  setToggle({ index: -1, isEdit: false, value: "" })
-                                }
-                              >
-                                Huỷ
-                              </span>
-                            </span>
-                          </div>
-                        </form>
-                      </th>
-                    ) : (
-                      <Tippy content="Nháy đúp chuột để chỉnh sửa">
-                        <th
-                          scope="row"
-                          className="py-4 px-6 cursor-pointer font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                          onDoubleClick={() =>
-                            setToggle({ index: index, isEdit: true, value: item.name })
-                          }
-                        >
-                          {item.name}
-                        </th>
-                      </Tippy>
-                    )}
-                    <td className="py-4  px-6">
+                category.map((item, index: number) => (
+                  <tr key={index}>
+                    <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
+                      {index}
+                    </td>
+                    <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
+                      {item.name}
+                    </td>
+                    <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
                       {moment(item.created_at).format("DD/MM/YYYY")}
                     </td>
-                    <td className="py-4 px-6 text-right text-white">
-                      <button
-                        onClick={() =>
-                          setOpen({ isOpen: true, id: item.id, name: item.name })
-                        }
-                        className="bg-red-500 px-3 py-[2px] rounded text-[12px] font-bold"
-                      >
-                        Xoá
-                      </button>
+                    <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
+                      <div className="flex gap-3 ">
+                        <div
+                          className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                          onClick={() => {
+                            setOpenModalUpdate(true);
+                          }}
+                        >
+                          Chỉnh sửa
+                        </div>
+
+                        <div
+                          className="text-red-500 cursor-pointer"
+                          onClick={() => {
+                            setOpenModalDelete(true);
+                          }}
+                        >
+                          Xoá
+                        </div>
+                        {openModalDelete && (
+                          <ModalDelete
+                            id={item.id}
+                            title="danh mục dịch vụ"
+                            type="categories"
+                            setOpenModalDelete={setOpenModalDelete}
+                          />
+                        )}
+                        {openModalUpdate && (
+                          <ModalUpdate
+                            category={item}
+                            title="danh mục dịch vụ"
+                            setOpenModalUpdate={setOpenModalUpdate}
+                          />
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -271,7 +209,6 @@ function CategoryPage() {
           </table>
         </div>
       </div>
-      <NewModalDelete open={open} setOpen={setOpen} updateActive={updateActive} />
     </>
   );
 }

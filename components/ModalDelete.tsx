@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   bannersAction,
+  categoryAction,
   clinicsAction,
   servicesAction,
 } from "../redux/actions/ReduxAction";
-import { Banner, Clinic, Service } from "../utils/types";
+import { Banner, Category, Clinic, Service } from "../utils/types";
 import { RootState } from "../redux/reducers";
 import { supabase } from "../services/supaBaseClient";
 import toast from "react-hot-toast";
@@ -20,6 +21,7 @@ function ModalDelete({ id, title, type, setOpenModalDelete }: Props) {
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
   const banners: Banner[] = useSelector((state: RootState) => state.banners);
   const services: Service[] = useSelector((state: RootState) => state.services);
+  const category: Category[] = useSelector((state: RootState) => state.category);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const remove = async () => {
@@ -58,6 +60,19 @@ function ModalDelete({ id, title, type, setOpenModalDelete }: Props) {
         const tmpServices = services.filter((service) => service.id !== id);
         toast.success("Thao tác thành công");
         dispatch(servicesAction("services", tmpServices));
+      }
+    }
+    if (type === "categories") {
+      const { data, error } = await supabase
+        .from("categories")
+        .update([{ active: false }])
+        .eq("id", id);
+      if (error) {
+        toast("Có lỗi xảy ra. Vui lòng thử lại");
+      } else {
+        const tmpCategory = category.filter((item) => item.id !== id);
+        toast.success("Thao tác thành công");
+        dispatch(categoryAction("category", tmpCategory));
       }
     }
     setOpenModalDelete(false);
