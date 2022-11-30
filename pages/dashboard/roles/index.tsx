@@ -202,7 +202,6 @@ function RolesPage() {
     } else {
       setFilterRoles(() => {
         const pattern = new RegExp(e.target.value, "g");
-
         const tmp = roles.filter((item: Role) => {
           return pattern.test(item.phone);
         });

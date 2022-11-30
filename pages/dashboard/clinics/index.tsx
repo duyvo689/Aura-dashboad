@@ -1,3 +1,4 @@
+import { Switch } from "@headlessui/react";
 import Tippy from "@tippyjs/react";
 import moment from "moment";
 import Head from "next/head";
@@ -6,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import ModalDelete from "../../../components/ModalDelete";
+import ModalToggleActive from "../../../components/ModalToggleActive";
 import { clinicsAction } from "../../../redux/actions/ReduxAction";
 import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
@@ -30,8 +32,11 @@ function classNames(...classes: any) {
 
 export default function ClinicPage() {
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
-  const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
-  const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
+  const [openModalToggle, setOpenModalToggle] = useState<boolean>(false);
+  const [selectedToggle, setSelectedToggle] = useState<{
+    id: string;
+    status: boolean;
+  } | null>(null);
   const dispatch = useDispatch();
 
   const getAllClinic = async () => {
@@ -157,7 +162,29 @@ export default function ClinicPage() {
                             {clinic.description}
                           </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            <span
+                            <Switch
+                              checked={clinic.active}
+                              onClick={() => {
+                                setSelectedToggle({
+                                  id: clinic.id,
+                                  status: !clinic.active,
+                                });
+                                setOpenModalToggle(true);
+                              }}
+                              className={classNames(
+                                clinic.active ? "bg-indigo-600" : "bg-gray-200",
+                                "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                              )}
+                            >
+                              <span
+                                aria-hidden="true"
+                                className={classNames(
+                                  clinic.active ? "translate-x-5" : "translate-x-0",
+                                  "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                )}
+                              />
+                            </Switch>
+                            {/* <span
                               className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
                                 clinic.active
                                   ? "bg-green-100 text-green-800"
@@ -165,7 +192,7 @@ export default function ClinicPage() {
                               }`}
                             >
                               {clinic.active ? "Đang hoạt động" : "Không hoạt động"}
-                            </span>
+                            </span> */}
                           </td>
                           <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
                             <div className="flex gap-3 ">
@@ -174,7 +201,7 @@ export default function ClinicPage() {
                                   Chỉnh sửa
                                 </div>
                               </Link>
-                              <div
+                              {/* <div
                                 className="text-red-500 cursor-pointer"
                                 onClick={() => {
                                   setSelectedDeleteId(clinic.id);
@@ -182,7 +209,7 @@ export default function ClinicPage() {
                                 }}
                               >
                                 Xoá
-                              </div>
+                              </div> */}
                             </div>
                           </td>
                         </tr>
@@ -196,12 +223,13 @@ export default function ClinicPage() {
         ) : (
           <div>Loading...</div>
         )}
-        {openModalDelete && selectedDeleteId && (
-          <ModalDelete
-            id={selectedDeleteId}
+        {openModalToggle && selectedToggle && (
+          <ModalToggleActive
+            id={selectedToggle.id}
+            status={selectedToggle.status}
             title="phòng khám"
             type="clinics"
-            setOpenModalDelete={setOpenModalDelete}
+            setOpenModalToggle={setOpenModalToggle}
           />
         )}
       </main>

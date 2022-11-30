@@ -1,27 +1,32 @@
+import { Switch } from "@headlessui/react";
 import Head from "next/head";
 import Link from "next/link";
 import react, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import ModalDelete from "../../../components/ModalDelete";
+import ModalToggleActive from "../../../components/ModalToggleActive";
 import { categoryAction, servicesAction } from "../../../redux/actions/ReduxAction";
 import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
 import { convertVnd } from "../../../utils/helpers/convertToVND";
 import { Category, Service } from "../../../utils/types";
-
+function classNames(...classes: any[]) {
+  return classes.filter(Boolean).join(" ");
+}
 export default function ServicePage() {
   const services: Service[] = useSelector((state: RootState) => state.services);
   const categories: Category[] = useSelector((state: RootState) => state.category);
-  const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
-  const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
+  const [openModalToggle, setOpenModalToggle] = useState<boolean>(false);
+  const [selectedToggle, setSelectedToggle] = useState<{
+    id: string;
+    status: boolean;
+  } | null>(null);
   const [filterService, setFilterService] = useState<Service[] | null>(null);
   const dispatch = useDispatch();
   const getAllService = async () => {
-    let { data, error } = await supabase
-      .from("services")
-      .select(`*,category_id(*)`)
-      .eq("active", true);
+    let { data, error } = await supabase.from("services").select(`*,category_id(*)`);
+
     if (error) {
       toast(error.message);
       return;
@@ -31,10 +36,7 @@ export default function ServicePage() {
     }
   };
   const getAllCategory = async () => {
-    let { data, error } = await supabase
-      .from("categories")
-      .select("*")
-      .eq("active", true);
+    let { data, error } = await supabase.from("categories").select("*");
     if (error) {
       toast.error(error.message);
       return;
@@ -68,6 +70,9 @@ export default function ServicePage() {
         return tmp;
       });
     }
+  };
+  const onChangeActive = async (e: any) => {
+    console.log(e);
   };
   useEffect(() => {
     if (!categories) {
@@ -184,7 +189,7 @@ export default function ServicePage() {
                       </th>
                       <th
                         scope="col"
-                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                        className="whitespace-nowrap py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                       >
                         Trạng thái
                       </th>
@@ -225,7 +230,29 @@ export default function ServicePage() {
                             {service.description}
                           </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            <span
+                            <Switch
+                              checked={service.active}
+                              onClick={() => {
+                                setSelectedToggle({
+                                  id: service.id,
+                                  status: !service.active,
+                                });
+                                setOpenModalToggle(true);
+                              }}
+                              className={classNames(
+                                service.active ? "bg-indigo-600" : "bg-gray-200",
+                                "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                              )}
+                            >
+                              <span
+                                aria-hidden="true"
+                                className={classNames(
+                                  service.active ? "translate-x-5" : "translate-x-0",
+                                  "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                )}
+                              />
+                            </Switch>
+                            {/* <span
                               className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
                                 service.active
                                   ? "bg-green-100 text-green-800"
@@ -233,7 +260,7 @@ export default function ServicePage() {
                               }`}
                             >
                               {service.active ? "Đang hoạt động" : "Không hoạt động"}
-                            </span>
+                            </span> */}
                           </td>
                           <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
                             <div className="flex gap-3 ">
@@ -242,7 +269,7 @@ export default function ServicePage() {
                                   Chỉnh sửa
                                 </div>
                               </Link>
-                              <div
+                              {/* <div
                                 className="text-red-500 cursor-pointer"
                                 onClick={() => {
                                   setSelectedDeleteId(service.id);
@@ -250,7 +277,7 @@ export default function ServicePage() {
                                 }}
                               >
                                 Xoá
-                              </div>
+                              </div> */}
                             </div>
                           </td>
                         </tr>
@@ -265,12 +292,14 @@ export default function ServicePage() {
               </div>
             </div>
           </div>
-          {openModalDelete && selectedDeleteId && (
-            <ModalDelete
-              id={selectedDeleteId}
+
+          {openModalToggle && selectedToggle && (
+            <ModalToggleActive
+              id={selectedToggle.id}
+              status={selectedToggle.status}
               title="dịch vụ"
               type="services"
-              setOpenModalDelete={setOpenModalDelete}
+              setOpenModalToggle={setOpenModalToggle}
             />
           )}
         </main>
