@@ -191,7 +191,7 @@ function CategoryPage() {
                     className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
                   >
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                      {index}
+                      {index + 1}
                     </td>
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                       <div className="w-24 h-16">

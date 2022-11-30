@@ -142,7 +142,7 @@ export default function ClinicPage() {
                       {clinics.map((clinic: Clinic, index: number) => (
                         <tr key={index}>
                           <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                            {index}
+                            {index + 1}
                           </td>
                           <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
                             {clinic.name}
@@ -159,7 +159,9 @@ export default function ClinicPage() {
                             {clinic.address}
                           </td>
                           <td className="py-4 px-3 text-sm text-gray-500">
-                            {clinic.description}
+                            <span className="mint-ellipsis-three">
+                              {clinic.description}
+                            </span>
                           </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                             <Switch

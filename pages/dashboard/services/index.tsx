@@ -207,9 +207,9 @@ export default function ServicePage() {
                       filterService?.map((service: Service, index: number) => (
                         <tr key={index}>
                           <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                            {index}
+                            {index + 1}
                           </td>
-                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
+                          <td className="whitespace-wrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
                             {service.name}
                           </td>
                           <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
@@ -227,7 +227,9 @@ export default function ServicePage() {
                             {service.category_id.name}
                           </td>
                           <td className="py-4 px-3 text-sm text-gray-500">
-                            {service.description}
+                            <span className="mint-ellipsis-three">
+                              {service.description}
+                            </span>
                           </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                             <Switch

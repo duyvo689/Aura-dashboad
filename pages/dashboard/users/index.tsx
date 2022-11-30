@@ -140,7 +140,7 @@ export default function Example() {
                     users.map((user: any, index) => (
                       <tr key={index}>
                         <td className="pl-6 whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {index}
+                          {index + 1}
                         </td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                           <div className="flex items-center">

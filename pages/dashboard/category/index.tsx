@@ -138,7 +138,7 @@ function CategoryPage() {
                 category.map((item, index: number) => (
                   <tr key={index}>
                     <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                      {index}
+                      {index + 1}
                     </td>
                     <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
                       {item.name}
