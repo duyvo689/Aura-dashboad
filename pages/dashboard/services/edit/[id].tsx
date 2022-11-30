@@ -7,15 +7,16 @@ import { supabase } from "../../../../services/supaBaseClient";
 import { Category, Service } from "../../../../utils/types";
 import Head from "next/head";
 import Link from "next/link";
-import { createImgId, uploadImageProduct } from "../../../../utils/funtions";
 import UploadCareAPI from "../../../../services/uploadCareAPI";
 import { RootState } from "../../../../redux/reducers";
 import convertImg from "../../../../utils/helpers/convertImg";
 import router, { useRouter } from "next/router";
+import { Widget } from "@uploadcare/react-widget";
+import { XCircleIcon } from "@heroicons/react/24/outline";
 
 export default function UpdateService() {
   const { id } = useRouter().query;
-  const [newServiceImg, setNewServiceImg] = useState<File | null>(null);
+  const [newServiceImg, setNewServiceImg] = useState<string | null>(null);
   const categories: Category[] = useSelector((state: any) => state.category);
   const services: Service[] = useSelector((state: RootState) => state.services);
   const [service, setService] = useState<Service | null>(null);
@@ -41,14 +42,10 @@ export default function UpdateService() {
     if (!services || !service) return;
     let updateImage = service.image;
     if (newServiceImg) {
-      const uploadResponse = await UploadCareAPI.uploadImg(newServiceImg); //imageFile
-      if (uploadResponse && uploadResponse.status === 200) {
-        updateImage = convertImg(uploadResponse.data.file);
-      }
+      updateImage = newServiceImg;
     }
     const _name = event.target.elements.name.value;
     const _price = event.target.elements.price.value;
-    console.log(_price);
     const _category = event.target.elements.category.value;
     const _description = event.target.elements.description.value;
     let _serviceInfo = {
@@ -245,7 +242,7 @@ export default function UpdateService() {
                           <div className="h-24">
                             {newServiceImg ? (
                               <img
-                                src={URL.createObjectURL(newServiceImg)}
+                                src={newServiceImg}
                                 className="h-full w-full rounded-lg  object-cover"
                               />
                             ) : (
@@ -255,7 +252,7 @@ export default function UpdateService() {
                               />
                             )}
                           </div>
-                          <div className="flex text-sm text-gray-600">
+                          {/* <div className="flex text-sm text-gray-600">
                             <label
                               htmlFor="cover-photo"
                               className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
@@ -273,7 +270,17 @@ export default function UpdateService() {
                                 }
                               />
                             </label>
-                          </div>
+                          </div> */}
+                          <Widget
+                            publicKey={process.env.NEXT_PUBLIC_UPLOADCARE as string}
+                            clearable
+                            multiple={false}
+                            onChange={(file) => {
+                              if (file) {
+                                setNewServiceImg(convertImg(file.uuid!));
+                              }
+                            }}
+                          />
                         </div>
                       )}
                     </div>

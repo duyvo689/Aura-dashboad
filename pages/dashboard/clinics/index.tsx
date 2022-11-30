@@ -31,16 +31,8 @@ function classNames(...classes: any) {
 export default function ClinicPage() {
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+  const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
   const dispatch = useDispatch();
-  const [toggle, setToggle] = useState<Toggle>({
-    index: -1,
-    isEdit: false,
-    value: { name: "", description: "", image: "", address: "" },
-  });
-
-  const [image, setImage] = useState<any>();
-  const upImg = useRef<any>(null);
-  const [open, setOpen] = useState<OpenModal>({ isOpen: false, id: "", name: "" });
 
   const getAllClinic = async () => {
     let { data: clinics, error } = await supabase
@@ -180,25 +172,17 @@ export default function ClinicPage() {
                               <Link href={`/dashboard/clinics/edit/${clinic.id}`}>
                                 <div className="text-indigo-600 hover:text-indigo-900 cursor-pointer">
                                   Chỉnh sửa
-                                  <span className="sr-only">, {clinic.id}</span>
                                 </div>
                               </Link>
                               <div
                                 className="text-red-500 cursor-pointer"
                                 onClick={() => {
+                                  setSelectedDeleteId(clinic.id);
                                   setOpenModalDelete(true);
                                 }}
                               >
                                 Xoá
                               </div>
-                              {openModalDelete && (
-                                <ModalDelete
-                                  id={clinic.id}
-                                  title="phòng khám"
-                                  type="clinics"
-                                  setOpenModalDelete={setOpenModalDelete}
-                                />
-                              )}
                             </div>
                           </td>
                         </tr>
@@ -211,6 +195,14 @@ export default function ClinicPage() {
           </div>
         ) : (
           <div>Loading...</div>
+        )}
+        {openModalDelete && selectedDeleteId && (
+          <ModalDelete
+            id={selectedDeleteId}
+            title="phòng khám"
+            type="clinics"
+            setOpenModalDelete={setOpenModalDelete}
+          />
         )}
       </main>
     </div>

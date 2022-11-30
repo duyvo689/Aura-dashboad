@@ -1,7 +1,8 @@
 import { XCircleIcon } from "@heroicons/react/24/outline";
+import { Widget } from "@uploadcare/react-widget";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { bannersAction } from "../../../redux/actions/ReduxAction";
@@ -10,10 +11,11 @@ import { supabase } from "../../../services/supaBaseClient";
 import UploadCareAPI from "../../../services/uploadCareAPI";
 import convertImg from "../../../utils/helpers/convertImg";
 import { Banner } from "../../../utils/types";
-
+const UPLOADCARE_KEY = process.env.NEXT_PUBLIC_UPLOADCARE as string;
 function CreateBanner() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [bannerImage, setBannerImage] = useState<File | null>(null);
+  const [bannerImage, setBannerImage] = useState<string | null>(null);
+  const widgetApi = useRef<any>(null);
   const banners: Banner[] = useSelector((state: RootState) => state.banners);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -42,23 +44,20 @@ function CreateBanner() {
       toast("Vui lòng chọn hình ảnh");
     } else {
       const link = event.target.elements.link.value;
-      const uploadResponse = await UploadCareAPI.uploadImg(bannerImage); //imageFile
-      if (uploadResponse && uploadResponse.status === 200) {
-        // const _urlImg = await uploadImageProduct(image, "banners");
-        const { data, error } = await supabase
-          .from("banners")
-          .insert([{ link: link, image_url: convertImg(uploadResponse.data.file) }])
-          .select()
-          .single();
-        if (error) {
-          toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
-        } else {
-          banners.push(data);
-          console.log(banners);
-          dispatch(bannersAction("banners", banners));
-          toast.success(`Thêm banner thành công`);
-          router.push("/dashboard/banners");
-        }
+
+      // const _urlImg = await uploadImageProduct(image, "banners");
+      const { data, error } = await supabase
+        .from("banners")
+        .insert([{ link: link, image_url: bannerImage }])
+        .select()
+        .single();
+      if (error) {
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
+      } else {
+        banners.push(data);
+        dispatch(bannersAction("banners", banners));
+        toast.success(`Thêm banner thành công`);
+        router.push("/dashboard/banners");
       }
     }
     setIsLoading(false);
@@ -108,7 +107,7 @@ function CreateBanner() {
                 {bannerImage ? (
                   <div className="h-24 relative">
                     <img
-                      src={URL.createObjectURL(bannerImage)}
+                      src={bannerImage}
                       className="h-full w-full rounded-lg  object-cover"
                     />
 
@@ -135,7 +134,7 @@ function CreateBanner() {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    <div className="flex text-sm text-gray-600">
+                    {/* <div className="flex text-sm text-gray-600">
                       <label
                         htmlFor="file-upload"
                         className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
@@ -153,7 +152,18 @@ function CreateBanner() {
                       </label>
                       <p className="pl-1">(kéo hoặc thả)</p>
                     </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF</p>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF</p> */}
+                    <Widget
+                      ref={widgetApi}
+                      publicKey={UPLOADCARE_KEY}
+                      clearable
+                      multiple={false}
+                      onChange={(file) => {
+                        if (file) {
+                          setBannerImage(convertImg(file.uuid!));
+                        }
+                      }}
+                    />
                   </div>
                 )}
               </div>

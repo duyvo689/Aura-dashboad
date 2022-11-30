@@ -126,6 +126,10 @@ video {
   content: " *";
   color: red;
 }
+.uploadcare--widget__button {
+  background: rgb(88 80 236) !important;
+  cursor:pointer;
+}
 @media only screen and (min-width: 480px) {
   .colleciton-witdh {
     min-width: 720px !important;

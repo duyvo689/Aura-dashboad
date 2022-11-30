@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
+import { Widget } from "@uploadcare/react-widget";
 import router, { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { bannersAction } from "../../../../redux/actions/ReduxAction";
@@ -10,11 +11,12 @@ import { supabase } from "../../../../services/supaBaseClient";
 import UploadCareAPI from "../../../../services/uploadCareAPI";
 import convertImg from "../../../../utils/helpers/convertImg";
 import { Banner } from "../../../../utils/types";
-
+const UPLOADCARE_KEY = process.env.NEXT_PUBLIC_UPLOADCARE as string;
 function UpdateBanner() {
   const { id } = useRouter().query;
+  const widgetApi = useRef<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [newBannerImg, setNewBannerImg] = useState<File | null>(null);
+  const [newBannerImg, setNewBannerImg] = useState<string | null>(null);
   const banners: Banner[] = useSelector((state: RootState) => state.banners);
   const [banner, setBanner] = useState<Banner | null>(null);
   const dispatch = useDispatch();
@@ -51,13 +53,7 @@ function UpdateBanner() {
       let updateImage = banner.image_url; //default
       const link = event.target.elements.link.value;
       if (newBannerImg) {
-        const uploadResponse = await UploadCareAPI.uploadImg(newBannerImg); //imageFile
-        if (uploadResponse && uploadResponse.status === 200) {
-          updateImage = convertImg(uploadResponse.data.file);
-        } else {
-          toast("Lỗi. Thử lại.");
-          return;
-        }
+        updateImage = newBannerImg;
       }
       // const _urlImg = await uploadImageProduct(image, "banners");
       const { data, error } = await supabase
@@ -138,7 +134,7 @@ function UpdateBanner() {
                       <div className="h-24">
                         {newBannerImg ? (
                           <img
-                            src={URL.createObjectURL(newBannerImg)}
+                            src={newBannerImg}
                             className="h-full w-full rounded-lg  object-cover"
                           />
                         ) : (
@@ -153,17 +149,23 @@ function UpdateBanner() {
                           htmlFor="file-upload"
                           className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
                         >
-                          <span className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                          {/* <span
+                            onClick={() => widgetApi.current.openDialog()}
+                            className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                          >
                             Đổi ảnh mới
-                          </span>
-                          <input
-                            id="file-upload"
-                            name="file-upload"
-                            type="file"
-                            className="sr-only"
-                            onChange={(e) =>
-                              e.target.files && setNewBannerImg(e.target.files[0])
-                            }
+                          </span> */}
+
+                          <Widget
+                            ref={widgetApi}
+                            publicKey={UPLOADCARE_KEY}
+                            clearable
+                            multiple={false}
+                            onChange={(file) => {
+                              if (file) {
+                                setNewBannerImg(convertImg(file.uuid!));
+                              }
+                            }}
                           />
                         </label>
                       </div>

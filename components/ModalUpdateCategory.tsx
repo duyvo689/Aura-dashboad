@@ -13,7 +13,7 @@ interface Props {
   setOpenModalUpdate: any;
 }
 
-function ModalUpdate({ category, title, setOpenModalUpdate }: Props) {
+function ModalUpdateCategory({ category, title, setOpenModalUpdate }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [newCategory, setNewCategory] = useState<string | null>(null);
   const categories: Category[] = useSelector((state: RootState) => state.category);
@@ -31,7 +31,6 @@ function ModalUpdate({ category, title, setOpenModalUpdate }: Props) {
       setIsLoading(false);
       toast.error("Lỗi. Thử lại");
     } else if (data) {
-      console.log(data);
       let index = categories.findIndex((item) => item.id == category.id);
       categories[index] = data;
       toast.success("Cập nhật thành công");
@@ -126,7 +125,4 @@ function ModalUpdate({ category, title, setOpenModalUpdate }: Props) {
     </div>
   );
 }
-export default ModalUpdate;
-function setIsLoading(arg0: boolean) {
-  throw new Error("Function not implemented.");
-}
+export default ModalUpdateCategory;

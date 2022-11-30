@@ -158,7 +158,7 @@ export default function Example() {
                             <div className="ml-4">
                               <div className="font-medium text-gray-900">{user.name}</div>
                               <div className="text-gray-500">
-                                {user.email || "Đang cập nhật"}
+                                Email: {user.email || "Chưa cập nhật"}
                               </div>
                             </div>
                           </div>

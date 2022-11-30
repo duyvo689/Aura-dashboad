@@ -12,9 +12,10 @@ import { Clinic } from "../../../utils/types";
 import { RootState } from "../../../redux/reducers";
 import UploadCareAPI from "../../../services/uploadCareAPI";
 import convertImg from "../../../utils/helpers/convertImg";
+import { Widget } from "@uploadcare/react-widget";
 
 export default function CreateClinic() {
-  const [clinicImage, setClinicImg] = useState<File | null>(null);
+  const [clinicImage, setClinicImg] = useState<string | null>(null);
   const [load, setLoad] = useState<boolean>(false);
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
   const dispatch = useDispatch();
@@ -56,10 +57,7 @@ export default function CreateClinic() {
     };
     let isValid = validateForm(_serviceInfo);
     if (!isValid || !clinicImage) return;
-    const uploadResponse = await UploadCareAPI.uploadImg(clinicImage); //imageFile
-    if (uploadResponse && uploadResponse.status === 200) {
-      _serviceInfo.avatar = convertImg(uploadResponse.data.file);
-    }
+
     const { data, error } = await supabase
       .from(" clinics")
       .insert([_serviceInfo])
@@ -193,7 +191,7 @@ export default function CreateClinic() {
                 {clinicImage ? (
                   <div className="h-24 relative">
                     <img
-                      src={URL.createObjectURL(clinicImage)}
+                      src={clinicImage}
                       className="h-full w-full rounded-lg  object-cover"
                     />
                     <div
@@ -219,7 +217,7 @@ export default function CreateClinic() {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    <div className="flex text-sm text-gray-600">
+                    {/* <div className="flex text-sm text-gray-600">
                       <label
                         htmlFor="file-upload"
                         className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
@@ -238,7 +236,17 @@ export default function CreateClinic() {
                       </label>
                       <p className="pl-1">(kéo hoặc thả)</p>
                     </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, JPEG</p>
+                    <p className="text-xs text-gray-500">PNG, JPG, JPEG</p> */}
+                    <Widget
+                      publicKey={process.env.NEXT_PUBLIC_UPLOADCARE as string}
+                      clearable
+                      multiple={false}
+                      onChange={(file) => {
+                        if (file) {
+                          setClinicImg(convertImg(file.uuid!));
+                        }
+                      }}
+                    />
                   </div>
                 )}
               </div>

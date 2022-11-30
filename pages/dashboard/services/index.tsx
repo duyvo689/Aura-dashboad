@@ -1,5 +1,3 @@
-import Tippy from "@tippyjs/react";
-import moment from "moment";
 import Head from "next/head";
 import Link from "next/link";
 import react, { useEffect, useRef, useState } from "react";
@@ -16,6 +14,7 @@ export default function ServicePage() {
   const services: Service[] = useSelector((state: RootState) => state.services);
   const categories: Category[] = useSelector((state: RootState) => state.category);
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+  const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
   const [filterService, setFilterService] = useState<Service[] | null>(null);
   const dispatch = useDispatch();
   const getAllService = async () => {
@@ -90,7 +89,7 @@ export default function ServicePage() {
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
       {filterService ? (
-        <div className="px-4 sm:px-6 lg:px-8">
+        <main className="px-4 sm:px-6 lg:px-8">
           <div className="sm:flex sm:items-center">
             <div className="sm:flex-auto">
               <h1 className="text-xl font-semibold text-gray-900">THÔNG TIN DỊCH VỤ</h1>
@@ -241,25 +240,17 @@ export default function ServicePage() {
                               <Link href={`/dashboard/services/edit/${service.id}`}>
                                 <div className="text-indigo-600 hover:text-indigo-900 cursor-pointer">
                                   Chỉnh sửa
-                                  <span className="sr-only">, {service.id}</span>
                                 </div>
                               </Link>
                               <div
                                 className="text-red-500 cursor-pointer"
                                 onClick={() => {
+                                  setSelectedDeleteId(service.id);
                                   setOpenModalDelete(true);
                                 }}
                               >
                                 Xoá
                               </div>
-                              {openModalDelete && (
-                                <ModalDelete
-                                  id={service.id}
-                                  title="dịch vụ"
-                                  type="services"
-                                  setOpenModalDelete={setOpenModalDelete}
-                                />
-                              )}
                             </div>
                           </td>
                         </tr>
@@ -274,7 +265,15 @@ export default function ServicePage() {
               </div>
             </div>
           </div>
-        </div>
+          {openModalDelete && selectedDeleteId && (
+            <ModalDelete
+              id={selectedDeleteId}
+              title="dịch vụ"
+              type="services"
+              setOpenModalDelete={setOpenModalDelete}
+            />
+          )}
+        </main>
       ) : (
         <div>Loading...</div>
       )}

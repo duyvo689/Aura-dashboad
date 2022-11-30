@@ -5,60 +5,28 @@ import { supabase } from "../../../services/supaBaseClient";
 import { OpenModal, Payment } from "../../../utils/types";
 import { paymentAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
-import Tippy from "@tippyjs/react";
 import moment from "moment";
-import { uploadImageProduct } from "../../../utils/funtions";
-import NewModalDelete from "../services/modal-delete";
 
-interface Toggle {
-  index: number;
-  isEdit: boolean;
-  value: {
-    img: string;
-    name: string;
-  };
-}
+import { RootState } from "../../../redux/reducers";
+import ModalDelete from "../../../components/ModalDelete";
+import ModalUpdatePayment from "../../../components/ModalUpdatePayment";
+import UploadCareAPI from "../../../services/uploadCareAPI";
+import convertImg from "../../../utils/helpers/convertImg";
+import { Widget } from "@uploadcare/react-widget";
+import { useRouter } from "next/router";
+const UPLOADCARE_KEY = process.env.NEXT_PUBLIC_UPLOADCARE as string;
+
 function CategoryPage() {
-  const [name, setName] = useState<string>();
   const [load, setLoad] = useState<boolean>(false);
-  const [toggle, setToggle] = useState<Toggle>({
-    index: -1,
-    isEdit: false,
-    value: {
-      img: "",
-      name: "",
-    },
-  });
-
-  const upImg = useRef<any>(null);
-  const [image, setImage] = useState<any>();
-  const [file, setFile] = useState<any>();
-
-  const payments: Payment[] = useSelector((state: any) => state.payments);
+  //
+  const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+  const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
+  const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
+  const [selectedUpdateItem, setSelectedUpdateItem] = useState<Payment | null>(null);
+  const [image, setImage] = useState<string | null>(null);
+  const payments: Payment[] = useSelector((state: RootState) => state.payments);
+  const router = useRouter();
   const dispatch = useDispatch();
-
-  const [open, setOpen] = useState<OpenModal>({ isOpen: false, id: "", name: "" });
-
-  const updateActive = async (id: string) => {
-    try {
-      const { data, error } = await supabase
-        .from("payments")
-        .update({ active: false })
-        .eq("id", id)
-        .select();
-      if (error != null) {
-        toast.error(error.message);
-      } else {
-        toast.success(`Đã xoá phương thức thanh toán`);
-        let newPayments = payments.filter((item) => item.id !== id);
-        dispatch(paymentAction("payments", newPayments));
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setOpen({ isOpen: false, id: "", name: "" });
-    }
-  };
   const getAllPayment = async () => {
     let { data: payments, error } = await supabase
       .from("payments")
@@ -73,74 +41,36 @@ function CategoryPage() {
     }
   };
   useEffect(() => {
-    getAllPayment();
+    if (!payments) {
+      getAllPayment();
+    }
   }, []);
 
   const addNewPayment = async (event: any) => {
-    try {
-      setLoad(true);
-      event.preventDefault();
-      const name = event.target.elements.name.value;
-      const _urlImg = await uploadImageProduct(image, "services");
+    setLoad(true);
+    event.preventDefault();
+    if (!payments) return;
+    if (!image || event.target.name.value === "") {
+      toast.error("Nhập thiếu. Vui lòng kiểm tra lại");
+    } else {
+      const name = event.target.name.value;
       const { data, error } = await supabase
         .from("payments")
-        .insert([{ name: name, image: _urlImg }])
+        .insert([{ name: name, image: image }])
         .select()
         .single();
-      if (error != null) {
-        toast.error(error.message);
-      } else {
+      if (error) {
+        toast.error(`Lỗi. Thử lại`);
+      } else if (data) {
+        toast.success(`Thêm mới thành công`);
         payments.push(data);
-        toast.success(`Đã thêm ${name}`);
-        setName("");
-        setImage(null);
+        router.reload();
+        dispatch(paymentAction("payments", payments));
       }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoad(false);
     }
+    setLoad(false);
   };
 
-  const updatePayment = async (event: any, id: string) => {
-    try {
-      event.preventDefault();
-      const _name = event.target.elements.newName.value;
-      let _image = toggle.value.img;
-      if (file) {
-        _image = (await uploadImageProduct(file, "services")) as string;
-      }
-      const { data, error } = await supabase
-        .from("payments")
-        .update({ name: _name, image: _image })
-        .eq("id", id)
-        .select()
-        .single();
-      if (error != null) {
-        toast.error(error.message);
-      } else {
-        let index = payments.findIndex((item) => item.id == id);
-        payments[index] = data;
-        toast.success(`Đã sửa ${_name}`);
-        setToggle({
-          index: -1,
-          isEdit: false,
-          value: {
-            img: "",
-            name: "",
-          },
-        });
-        setFile(null);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-    }
-  };
-
-  const handleClick = () => {
-    upImg.current.click();
-  };
   return (
     <>
       <Head>
@@ -160,13 +90,10 @@ function CategoryPage() {
               type="text"
               id="name"
               name="name"
-              value={name}
               aria-describedby="helper-text-explanation"
               className="bg-gray-50 mt-4 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Tên phương thức thanh toán"
-              onChange={(e) => setName(e.target.value)}
             />
-
             <div className="sm:col-span-6 mt-4">
               <label
                 htmlFor="photo"
@@ -174,52 +101,48 @@ function CategoryPage() {
               >
                 THÊM HÌNH
               </label>
-              <div className="mt-1 flex items-center">
-                <span className="h-16 w-16 overflow-hidden rounded-full bg-gray-100">
-                  {image ? (
-                    <img
-                      src={URL.createObjectURL(image)}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
+              <div className="mt-1 flex items-end gap-3">
+                {image ? (
+                  <span className="w-1/2 overflow-hidden">
+                    <img src={image} className="h-full w-full object-cover" />
+                  </span>
+                ) : (
+                  <div className="space-y-1 text-center ">
                     <svg
-                      className="h-full w-full text-gray-300"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
+                      className="mx-auto h-20 w-20 text-gray-400"
+                      stroke="currentColor"
+                      fill="none"
+                      viewBox="0 0 48 48"
+                      aria-hidden="true"
                     >
-                      <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                      <path
+                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
-                  )}
-                </span>
-                <button
-                  onClick={handleClick}
-                  type="button"
-                  className="ml-5 rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                  Thay Đổi
-                </button>
-                <input
-                  ref={upImg}
-                  type="file"
-                  hidden
-                  multiple
-                  onChange={(e) => e.target.files && setImage(e.target.files[0])}
+                  </div>
+                )}
+                <Widget
+                  publicKey={UPLOADCARE_KEY}
+                  clearable
+                  multiple={false}
+                  onChange={(file) => {
+                    if (file) {
+                      setImage(convertImg(file.uuid!));
+                    }
+                  }}
                 />
               </div>
             </div>
             <div className="justify-end flex mt-4">
-              {!name || !image ? (
-                <p className="text-white bg-gray-400 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">
-                  THÊM THANH TOÁN
-                </p>
-              ) : (
-                <button
-                  type={"submit"}
-                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                >
-                  {load ? "ĐANG THÊM..." : "THÊM THANH TOÁN"}
-                </button>
-              )}
+              <button
+                type={"submit"}
+                className="text-white bg-indigo-600 hover:bg-indigo-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+              >
+                {load ? "ĐANG THÊM..." : "THÊM THANH TOÁN"}
+              </button>
             </div>
           </form>
         </div>
@@ -227,19 +150,34 @@ function CategoryPage() {
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="py-3 text-center px-6">
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                >
                   STT
                 </th>
-                <th scope="col" className="py-3 px-6">
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                >
                   HÌNH
                 </th>
-                <th scope="col" className="py-3 px-6">
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                >
                   TÊN DANH MỤC
                 </th>
-                <th scope="col" className="py-3 px-6">
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                >
                   NGÀY TẠO
                 </th>
-                <th scope="col" className="py-3 text-right px-6">
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                >
                   HÀNH ĐỘNG
                 </th>
               </tr>
@@ -249,135 +187,45 @@ function CategoryPage() {
                 payments.length > 0 &&
                 payments.map((item, index) => (
                   <tr
-                    key={item.id}
-                    className="bg-white cursor-pointer  hover:bg-gray-100 border-b dark:bg-gray-900 dark:border-gray-700"
+                    key={index}
+                    className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
                   >
-                    <td className="py-4 text-center px-6">{index}</td>
-                    <td className="py-4 px-6">
-                      {index == toggle.index && toggle.isEdit ? (
-                        <>
-                          <Tippy content="Nháy chuột để chỉnh sửa ảnh">
-                            <div className="h-10 w-12 cursor-pointer">
-                              <img
-                                onClick={handleClick}
-                                className="w-full h-full rounded-md object-cover"
-                                src={file ? URL.createObjectURL(file) : item.image}
-                              />
-                            </div>
-                          </Tippy>
-                          <input
-                            ref={upImg}
-                            type="file"
-                            hidden
-                            multiple
-                            onChange={(e) => e.target.files && setFile(e.target.files[0])}
-                          />
-                        </>
-                      ) : (
-                        <Tippy content="Nháy đúp chuột để chỉnh sửa">
-                          <img
-                            src={item.image}
-                            className="h-10 w-12 rounded-md object-cover"
-                            onDoubleClick={() =>
-                              setToggle({
-                                index: index,
-                                isEdit: true,
-                                value: {
-                                  ...toggle.value,
-                                  img: item.image,
-                                  name: item.name,
-                                },
-                              })
-                            }
-                          />
-                        </Tippy>
-                      )}
+                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                      {index}
                     </td>
-                    {index == toggle.index && toggle.isEdit ? (
-                      <th
-                        scope="row"
-                        className="py-2 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        <form onSubmit={(e) => updatePayment(e, item.id)}>
-                          <div className="flex">
-                            <input
-                              autoFocus
-                              type="text"
-                              id="newName"
-                              name="newName"
-                              value={toggle.value.name}
-                              aria-describedby="helper-text-explanation"
-                              className="border rounded border-gray-300  text-gray-900 text-sm focus:ring-blue-400 focus:border-blue-400 block w-full min-w-[150px]"
-                              placeholder="Tên danh mục"
-                              onChange={(e) =>
-                                setToggle({
-                                  index: index,
-                                  isEdit: true,
-                                  value: { ...toggle.value, name: e.target.value },
-                                })
-                              }
-                            />
-                            <span className="flex gap-2 ml-2 items-center">
-                              <button
-                                type="submit"
-                                className="h-[30px] cursor-pointer hover:bg-red-500 border-gray-400 flex items-center rounded px-4 text-white bg-red-600"
-                              >
-                                Sửa
-                              </button>
-
-                              <span
-                                className="cursor-pointer hover:bg-gray-300 h-[30px] border-gray-400 flex items-center rounded px-4 bg-gray-200"
-                                onClick={() => {
-                                  setToggle({
-                                    index: -1,
-                                    isEdit: false,
-                                    value: {
-                                      img: "",
-                                      name: "",
-                                    },
-                                  });
-                                  setFile(null);
-                                }}
-                              >
-                                Huỷ
-                              </span>
-                            </span>
-                          </div>
-                        </form>
-                      </th>
-                    ) : (
-                      <Tippy content="Nháy đúp chuột để chỉnh sửa">
-                        <th
-                          scope="row"
-                          className="py-4 px-6 font-medium text-gray-900 whitespace-wrap dark:text-white"
-                          onDoubleClick={() =>
-                            setToggle({
-                              index: index,
-                              isEdit: true,
-                              value: {
-                                ...toggle.value,
-                                name: item.name,
-                                img: item.image,
-                              },
-                            })
-                          }
-                        >
-                          {item.name}
-                        </th>
-                      </Tippy>
-                    )}
-                    <td className="py-4  px-6">
+                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                      <div className="w-24 h-16">
+                        <img className="w-full h-full rounded" src={item.image} />
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                      {item.name}
+                    </td>
+                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                       {moment(item.created_at).format("DD/MM/YYYY")}
                     </td>
-                    <td className="py-4 px-6 text-right text-white">
-                      <button
-                        onClick={() =>
-                          setOpen({ isOpen: true, id: item.id, name: item.name })
-                        }
-                        className="bg-red-500 px-3 py-[2px] rounded text-[12px] font-bold"
-                      >
-                        Xoá
-                      </button>
+                    <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
+                      <div className="flex gap-3 ">
+                        <div
+                          className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                          onClick={() => {
+                            setSelectedUpdateItem(item);
+                            setOpenModalUpdate(true);
+                          }}
+                        >
+                          Chỉnh sửa
+                        </div>
+
+                        <div
+                          className="text-red-500 cursor-pointer"
+                          onClick={() => {
+                            setSelectedDeleteId(item.id);
+                            setOpenModalDelete(true);
+                          }}
+                        >
+                          Xoá
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -385,7 +233,21 @@ function CategoryPage() {
           </table>
         </div>
       </div>
-      <NewModalDelete open={open} setOpen={setOpen} updateActive={updateActive} />
+      {openModalDelete && selectedDeleteId && (
+        <ModalDelete
+          id={selectedDeleteId}
+          title="danh mục dịch vụ"
+          type="payments"
+          setOpenModalDelete={setOpenModalDelete}
+        />
+      )}
+      {openModalUpdate && selectedUpdateItem && (
+        <ModalUpdatePayment
+          payment={selectedUpdateItem}
+          title="phương thức thanh toán"
+          setOpenModalUpdate={setOpenModalUpdate}
+        />
+      )}
     </>
   );
 }

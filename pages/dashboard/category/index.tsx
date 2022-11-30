@@ -9,13 +9,15 @@ import Tippy from "@tippyjs/react";
 import moment from "moment";
 import ModalDelete from "../../../components/ModalDelete";
 import { RootState } from "../../../redux/reducers";
-import ModalUpdate from "../../../components/ModalUpdate";
+import ModalUpdateCategory from "../../../components/ModalUpdateCategory";
 
 function CategoryPage() {
   const [name, setName] = useState<string>("");
   const [load, setLoad] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+  const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
   const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
+  const [selectedItemUpdate, setSelectedItemUpdate] = useState<Category | null>(null);
   const category: Category[] = useSelector((state: RootState) => state.category);
   const dispatch = useDispatch();
 
@@ -60,36 +62,13 @@ function CategoryPage() {
     }
   };
 
-  // const updateCategory = async (event: any, id: string) => {
-  //   try {
-  //     event.preventDefault();
-  //     const name = event.target.elements.newName.value;
-  //     const { data, error } = await supabase
-  //       .from("categories")
-  //       .update({ name: name })
-  //       .eq("id", id)
-  //       .select()
-  //       .single();
-  //     if (error != null) {
-  //       toast.error(error.message);
-  //     } else {
-  //       let index = category.findIndex((item) => item.id == id);
-  //       category[index] = data;
-  //       toast.success(`Đã sửa ${name}`);
-  //       setToggle({ index: -1, isEdit: false, value: "" });
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //   }
-  // };
   return (
     <>
       <Head>
         <title>Danh Mục</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      <div className="flex gap-6 mt-4 mx-6">
+      <main className="flex gap-6 mt-4 mx-6">
         <div className="w-[30%]">
           <form onSubmit={addNewCategory}>
             <label
@@ -172,6 +151,7 @@ function CategoryPage() {
                         <div
                           className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
                           onClick={() => {
+                            setSelectedItemUpdate(item);
                             setOpenModalUpdate(true);
                           }}
                         >
@@ -181,26 +161,12 @@ function CategoryPage() {
                         <div
                           className="text-red-500 cursor-pointer"
                           onClick={() => {
+                            setSelectedDeleteId(item.id);
                             setOpenModalDelete(true);
                           }}
                         >
                           Xoá
                         </div>
-                        {openModalDelete && (
-                          <ModalDelete
-                            id={item.id}
-                            title="danh mục dịch vụ"
-                            type="categories"
-                            setOpenModalDelete={setOpenModalDelete}
-                          />
-                        )}
-                        {openModalUpdate && (
-                          <ModalUpdate
-                            category={item}
-                            title="danh mục dịch vụ"
-                            setOpenModalUpdate={setOpenModalUpdate}
-                          />
-                        )}
                       </div>
                     </td>
                   </tr>
@@ -208,7 +174,22 @@ function CategoryPage() {
             </tbody>
           </table>
         </div>
-      </div>
+        {openModalDelete && selectedDeleteId && (
+          <ModalDelete
+            id={selectedDeleteId}
+            title="danh mục dịch vụ"
+            type="categories"
+            setOpenModalDelete={setOpenModalDelete}
+          />
+        )}
+        {openModalUpdate && selectedItemUpdate && (
+          <ModalUpdateCategory
+            category={selectedItemUpdate}
+            title="danh mục dịch vụ"
+            setOpenModalUpdate={setOpenModalUpdate}
+          />
+        )}
+      </main>
     </>
   );
 }

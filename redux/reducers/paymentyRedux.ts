@@ -4,7 +4,7 @@ interface PAYMENT {
   type: string;
 }
 
-const adminRedux = (state = [], action: PAYMENT) => {
+const adminRedux = (state = null, action: PAYMENT) => {
   switch (action.type) {
     case "payments":
       return action.payments;

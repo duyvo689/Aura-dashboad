@@ -1,3 +1,4 @@
+import { Widget } from "@uploadcare/react-widget";
 import Head from "next/head";
 import Link from "next/link";
 import router, { useRouter } from "next/router";
@@ -14,11 +15,11 @@ import { Clinic } from "../../../../utils/types";
 function UpdateClinic() {
   const { id } = useRouter().query;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [newClinicImg, setNewClinicImg] = useState<File | null>(null);
+  const [newClinicImg, setNewClinicImg] = useState<string | null>(null);
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
   const [clinic, setClinic] = useState<Clinic | null>(null);
   const dispatch = useDispatch();
-  const fetchBannerById = async () => {
+  const fetchClinicById = async () => {
     let { data: clinic, error } = await supabase
       .from(" clinics")
       .select("*")
@@ -41,10 +42,7 @@ function UpdateClinic() {
     let _image = clinic.avatar;
 
     if (newClinicImg) {
-      const uploadResponse = await UploadCareAPI.uploadImg(newClinicImg); //imageFile
-      if (uploadResponse && uploadResponse.status === 200) {
-        _image = convertImg(uploadResponse.data.file);
-      }
+      _image = newClinicImg;
     }
     const { data, error } = await supabase
       .from(" clinics")
@@ -89,7 +87,7 @@ function UpdateClinic() {
   }, [clinics]);
   useEffect(() => {
     if (!clinic && id) {
-      fetchBannerById();
+      fetchClinicById();
     }
   }, [id]);
   return (
@@ -200,7 +198,7 @@ function UpdateClinic() {
                         <div className="h-24">
                           {newClinicImg ? (
                             <img
-                              src={URL.createObjectURL(newClinicImg)}
+                              src={newClinicImg}
                               className="h-full w-full rounded-lg  object-cover"
                             />
                           ) : (
@@ -215,7 +213,7 @@ function UpdateClinic() {
                             htmlFor="cover-photo"
                             className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
                           >
-                            <span className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            {/* <span className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                               Đổi ảnh mới
                             </span>
                             <input
@@ -226,6 +224,16 @@ function UpdateClinic() {
                               onChange={(e) =>
                                 e.target.files && setNewClinicImg(e.target.files[0])
                               }
+                            /> */}
+                            <Widget
+                              publicKey={process.env.NEXT_PUBLIC_UPLOADCARE as string}
+                              clearable
+                              multiple={false}
+                              onChange={(file) => {
+                                if (file) {
+                                  setNewClinicImg(convertImg(file.uuid!));
+                                }
+                              }}
                             />
                           </label>
                         </div>

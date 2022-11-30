@@ -11,9 +11,10 @@ import UploadCareAPI from "../../../services/uploadCareAPI";
 import { RootState } from "../../../redux/reducers";
 import convertImg from "../../../utils/helpers/convertImg";
 import router from "next/router";
+import { Widget } from "@uploadcare/react-widget";
 
 export default function CreateService() {
-  const [image, setImage] = useState<File | null>(null);
+  const [serviceImage, setServiceImage] = useState<string | null>(null);
   const categories: Category[] = useSelector((state: any) => state.category);
   const services: Service[] = useSelector((state: RootState) => state.services);
   const dispatch = useDispatch();
@@ -47,39 +48,36 @@ export default function CreateService() {
     event.preventDefault();
     setLoad(true);
     if (!services) return;
-    if (!image) {
+    if (!serviceImage) {
       toast("Vui lòng chọn hình ảnh");
       setLoad(true);
       return;
     }
-    const uploadResponse = await UploadCareAPI.uploadImg(image); //imageFile
-    if (uploadResponse && uploadResponse.status === 200) {
-      const _name = event.target.elements.name.value;
-      const _price = event.target.elements.price.value;
-      const _category = event.target.elements.category.value;
-      const _description = event.target.elements.description.value;
-      let _serviceInfo = {
-        name: _name,
-        price: _price,
-        category_id: _category,
-        description: _description,
-        image: convertImg(uploadResponse.data.file),
-      };
-      let isValid = validateForm(_serviceInfo);
-      if (!isValid) return;
-      const { data, error } = await supabase
-        .from("services")
-        .insert([_serviceInfo])
-        .select(`*,category_id(*)`)
-        .single();
-      if (error != null) {
-        toast.error(error.message);
-      } else if (data) {
-        toast.success(`Đã thêm thành công`);
-        services.unshift(data);
-        dispatch(servicesAction("services", services));
-        router.push("/dashboard/services");
-      }
+    const _name = event.target.elements.name.value;
+    const _price = event.target.elements.price.value;
+    const _category = event.target.elements.category.value;
+    const _description = event.target.elements.description.value;
+    let _serviceInfo = {
+      name: _name,
+      price: _price,
+      category_id: _category,
+      description: _description,
+      image: serviceImage,
+    };
+    let isValid = validateForm(_serviceInfo);
+    if (!isValid) return;
+    const { data, error } = await supabase
+      .from("services")
+      .insert([_serviceInfo])
+      .select(`*,category_id(*)`)
+      .single();
+    if (error != null) {
+      toast.error(error.message);
+    } else if (data) {
+      toast.success(`Đã thêm thành công`);
+      services.unshift(data);
+      dispatch(servicesAction("services", services));
+      router.push("/dashboard/services");
     }
   };
   const getAllService = async () => {
@@ -234,15 +232,15 @@ export default function CreateService() {
                 Hình Ảnh Dịch Vụ
               </label>
               <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
-                {image ? (
+                {serviceImage ? (
                   <div className="h-24 relative">
                     <img
-                      src={URL.createObjectURL(image)}
+                      src={serviceImage}
                       className="h-full w-full rounded-lg  object-cover"
                     />
                     <div
                       className="absolute h-7 w-7 -top-4 -right-4"
-                      onClick={() => setImage(null)}
+                      onClick={() => setServiceImage(null)}
                     >
                       <XCircleIcon />
                     </div>
@@ -263,7 +261,7 @@ export default function CreateService() {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    <div className="flex text-sm text-gray-600">
+                    {/* <div className="flex text-sm text-gray-600">
                       <label
                         htmlFor="file-upload"
                         className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
@@ -280,7 +278,17 @@ export default function CreateService() {
                       </label>
                       <p className="pl-1">(kéo hoặc thả)</p>
                     </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, JPEG</p>
+                    <p className="text-xs text-gray-500">PNG, JPG, JPEG</p> */}
+                    <Widget
+                      publicKey={process.env.NEXT_PUBLIC_UPLOADCARE as string}
+                      clearable
+                      multiple={false}
+                      onChange={(file) => {
+                        if (file) {
+                          setServiceImage(convertImg(file.uuid!));
+                        }
+                      }}
+                    />
                   </div>
                 )}
               </div>

@@ -5,9 +5,10 @@ import {
   bannersAction,
   categoryAction,
   clinicsAction,
+  paymentAction,
   servicesAction,
 } from "../redux/actions/ReduxAction";
-import { Banner, Category, Clinic, Service } from "../utils/types";
+import { Banner, Category, Clinic, Payment, Service } from "../utils/types";
 import { RootState } from "../redux/reducers";
 import { supabase } from "../services/supaBaseClient";
 import toast from "react-hot-toast";
@@ -18,10 +19,12 @@ interface Props {
   setOpenModalDelete: any;
 }
 function ModalDelete({ id, title, type, setOpenModalDelete }: Props) {
+  console.log(id);
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
   const banners: Banner[] = useSelector((state: RootState) => state.banners);
   const services: Service[] = useSelector((state: RootState) => state.services);
   const category: Category[] = useSelector((state: RootState) => state.category);
+  const payments: Payment[] = useSelector((state: RootState) => state.payments);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const remove = async () => {
@@ -29,7 +32,7 @@ function ModalDelete({ id, title, type, setOpenModalDelete }: Props) {
     if (type === "banners") {
       const { data, error } = await supabase.from("banners").delete().eq("id", id);
       if (error) {
-        toast("Có lỗi xảy ra. Vui lòng thử lại");
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại");
       } else {
         const tmpBanners = banners.filter((banner) => banner.id !== id);
         toast("Thao tác thành công");
@@ -55,7 +58,7 @@ function ModalDelete({ id, title, type, setOpenModalDelete }: Props) {
         .update([{ active: false }])
         .eq("id", id);
       if (error) {
-        toast("Có lỗi xảy ra. Vui lòng thử lại");
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại");
       } else {
         const tmpServices = services.filter((service) => service.id !== id);
         toast.success("Thao tác thành công");
@@ -68,11 +71,24 @@ function ModalDelete({ id, title, type, setOpenModalDelete }: Props) {
         .update([{ active: false }])
         .eq("id", id);
       if (error) {
-        toast("Có lỗi xảy ra. Vui lòng thử lại");
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại");
       } else {
         const tmpCategory = category.filter((item) => item.id !== id);
         toast.success("Thao tác thành công");
         dispatch(categoryAction("category", tmpCategory));
+      }
+    }
+    if (type === "payments") {
+      const { data, error } = await supabase
+        .from("payments")
+        .update([{ active: false }])
+        .eq("id", id);
+      if (error) {
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại");
+      } else {
+        const tmpPayments = payments.filter((item) => item.id !== id);
+        toast.success("Thao tác thành công");
+        dispatch(paymentAction("payments", tmpPayments));
       }
     }
     setOpenModalDelete(false);

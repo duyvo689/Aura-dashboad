@@ -19,6 +19,7 @@ import Link from "next/link";
 function BannerPage() {
   let banners: Banner[] = useSelector((state: RootState) => state.banners);
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+  const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
   const dispatch = useDispatch();
   const getAllBanner = async () => {
     let { data: banners, error } = await supabase.from("banners").select("*");
@@ -77,25 +78,25 @@ function BannerPage() {
                           scope="col"
                           className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
                         >
-                          Hình ảnh
+                          HÌNH ẢNH
                         </th>
                         <th
                           scope="col"
                           className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                         >
-                          Link liên kết
+                          LINK LIÊN KẾT
                         </th>
                         <th
                           scope="col"
                           className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                         >
-                          Ngày tạo
+                          NGÀY TẠO
                         </th>
                         <th
                           scope="col"
                           className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                         >
-                          Hành động
+                          HÀNH ĐỘNG
                         </th>
                       </tr>
                     </thead>
@@ -116,30 +117,23 @@ function BannerPage() {
                           </td>
                           <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
                             <div className="flex gap-3 cursor-pointer">
-                              <div
-                                className="text-red-500"
-                                onClick={() => {
-                                  setOpenModalDelete(true);
-                                }}
-                              >
-                                Xoá
-                              </div>
                               <Link href={`/dashboard/banners/edit/${banner.id}`}>
                                 <div className="text-indigo-600 hover:text-indigo-900">
                                   Chỉnh sửa
                                   <span className="sr-only">, {banner.id}</span>
                                 </div>
                               </Link>
+                              <div
+                                className="text-red-500"
+                                onClick={() => {
+                                  setSelectedDeleteId(banner.id);
+                                  setOpenModalDelete(true);
+                                }}
+                              >
+                                Xoá
+                              </div>
                             </div>
                           </td>
-                          {openModalDelete && (
-                            <ModalDelete
-                              id={banner.id}
-                              title="banner"
-                              type="banners"
-                              setOpenModalDelete={setOpenModalDelete}
-                            />
-                          )}
                         </tr>
                       ))}
                     </tbody>
@@ -150,6 +144,14 @@ function BannerPage() {
           </div>
         ) : (
           <div>Loading...</div>
+        )}
+        {openModalDelete && selectedDeleteId && (
+          <ModalDelete
+            id={selectedDeleteId}
+            title="banner"
+            type="banners"
+            setOpenModalDelete={setOpenModalDelete}
+          />
         )}
       </main>
     </>

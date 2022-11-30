@@ -27,31 +27,23 @@ function RolesPage() {
   const [phone, setPhone] = useState<string>();
   const [name, setName] = useState<string>();
   const [load, setLoad] = useState<boolean>(false);
-  const [toggle, setToggle] = useState<Toggle>({
-    index: -1,
-    isEdit: false,
-    value: {
-      phone: "",
-      role: "",
-      clinic: "",
-      name: "",
-    },
-  });
-
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
   const roles: Role[] = useSelector((state: RootState) => state.roles);
   const dispatch = useDispatch();
-  const [rolesState, setRolesState] = useState<Role[]>();
-
+  const [filterRoles, setFilterRoles] = useState<Role[] | null>(null);
   useEffect(() => {
-    setRolesState(roles);
+    if (!clinics) {
+      getAllClinic();
+    }
+  }, [clinics]);
+  useEffect(() => {
+    if (!roles) {
+      getAllRoles();
+    }
+  });
+  useEffect(() => {
+    setFilterRoles(roles);
   }, [roles]);
-
-  useEffect(() => {
-    getAllClinic();
-    getAllRoles();
-  }, []);
-
   const addNewRoles = async (event: any) => {
     try {
       setLoad(true);
@@ -88,7 +80,7 @@ function RolesPage() {
         } else {
           roles.push(data);
           toast.success(`Đã thêm ${_phone}`);
-          setPhone("");
+          event.target.reset();
         }
       } else {
         toast.error(`Nhân sự ${_phone} đã tồn tại`);
@@ -127,43 +119,43 @@ function RolesPage() {
   };
 
   // ==update edit start==//
-  const editRole = async (phone: string) => {
-    try {
-      const _phone = toggle.value.phone;
-      const _clinic = toggle.value.clinic;
-      const _role = toggle.value.role;
-      const _name = toggle.value.name;
+  // const editRole = async (phone: string) => {
+  //   try {
+  //     const _phone = toggle.value.phone;
+  //     const _clinic = toggle.value.clinic;
+  //     const _role = toggle.value.role;
+  //     const _name = toggle.value.name;
 
-      const { data, error } = await supabase
-        .from("roles")
-        .update({ phone: _phone, clinic_id: _clinic, name: _name })
-        .eq("phone", phone)
-        .select(`*,clinic_id(*)`);
-      console.log(data);
-      if (error != null) {
-        toast.error(error.message);
-      }
-      if (data) {
-        let index = roles.findIndex((item) => item.phone == phone);
-        roles[index] = data[0];
-        toast.success(`Đã sửa ${phone}`);
-        setToggle({
-          index: -1,
-          isEdit: false,
-          value: {
-            phone: "",
-            role: "",
-            clinic: "",
-            name: "",
-          },
-        });
-        await updateEditPersonnel(_role, phone, _phone, _clinic);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-    }
-  };
+  //     const { data, error } = await supabase
+  //       .from("roles")
+  //       .update({ phone: _phone, clinic_id: _clinic, name: _name })
+  //       .eq("phone", phone)
+  //       .select(`*,clinic_id(*)`);
+  //     console.log(data);
+  //     if (error != null) {
+  //       toast.error(error.message);
+  //     }
+  //     if (data) {
+  //       let index = roles.findIndex((item) => item.phone == phone);
+  //       roles[index] = data[0];
+  //       toast.success(`Đã sửa ${phone}`);
+  //       setToggle({
+  //         index: -1,
+  //         isEdit: false,
+  //         value: {
+  //           phone: "",
+  //           role: "",
+  //           clinic: "",
+  //           name: "",
+  //         },
+  //       });
+  //       await updateEditPersonnel(_role, phone, _phone, _clinic);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //   }
+  // };
 
   const updateEditPersonnel = async (
     table: string,
@@ -184,7 +176,6 @@ function RolesPage() {
       .from(" clinics")
       .select(`*`)
       .eq("active", true);
-
     if (error) {
       toast(error.message);
       return;
@@ -206,32 +197,36 @@ function RolesPage() {
   // ==get data end==//
 
   const handlerSearch = (e: any) => {
-    const pattern = new RegExp(e.target.value.toLowerCase(), "g");
-    const tmp = roles.filter((role: Role) => {
-      return pattern.test(role.phone.toLowerCase());
-    });
-    setRolesState(tmp);
-    if (!e.target.value) {
-      setRolesState(roles);
+    if (e.target.value === "") {
+      setFilterRoles(roles);
+    } else {
+      setFilterRoles(() => {
+        const pattern = new RegExp(e.target.value, "g");
+
+        const tmp = roles.filter((item: Role) => {
+          return pattern.test(item.phone);
+        });
+        return tmp;
+      });
+    }
+  };
+  const onChangeClinic = async (id: string) => {
+    if (id === "") {
+      setFilterRoles(roles);
+    } else {
+      const filterByClinic = roles.filter((el) => el.clinic_id.id === id);
+      setFilterRoles(filterByClinic);
     }
   };
 
-  const onChangeClinic = async (id: string) => {
-    let { data, error } =
-      id == "0"
-        ? await supabase.from("roles").select(`*,clinic_id(*)`)
-        : await supabase.from("roles").select(`*,clinic_id(*)`).eq("clinic_id", id);
-
-    dispatch(rolesAction("roles", data));
-  };
-
   const onChangePersonnel = async (position: string) => {
-    let { data, error } =
-      position == "0"
-        ? await supabase.from("roles").select(`*,clinic_id(*)`)
-        : await supabase.from("roles").select(`*,clinic_id(*)`).eq("position", position);
-
-    dispatch(rolesAction("roles", data));
+    console.log(position);
+    if (position === "") {
+      setFilterRoles(roles);
+    } else {
+      const filterByPosition = roles.filter((el) => el.position === position);
+      setFilterRoles(filterByPosition);
+    }
   };
   return (
     <>
@@ -336,8 +331,8 @@ function RolesPage() {
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"></div>
               <input
                 type="text"
-                name="price"
-                id="price"
+                name="search"
+                id="search"
                 className="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 placeholder="Tìm kiếm số điện thoại"
                 onChange={handlerSearch}
@@ -351,7 +346,7 @@ function RolesPage() {
                 >
                   {ROLES_MAPPING && ROLES_MAPPING.length > 0 && (
                     <>
-                      <option value={0}>Tất cả</option>
+                      <option value="">Tất cả</option>
                       {ROLES_MAPPING.map((item) => (
                         <option key={item.value} value={item.value}>
                           {item.name}
@@ -368,7 +363,7 @@ function RolesPage() {
                 >
                   {clinics && clinics.length > 0 && (
                     <>
-                      <option value={0}>Tất cả</option>
+                      <option value="">Tất cả</option>
                       {clinics.map((item) => (
                         <option key={item.id} value={item.id}>
                           {item.name}
@@ -386,200 +381,64 @@ function RolesPage() {
                 <tr>
                   <th
                     scope="col"
-                    className="sticky top-0 whitespace-nowrap z-10 border-b border-gray-300 bg-gray-50 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     STT
                   </th>
                   <th
                     scope="col"
-                    className="sticky top-0 whitespace-nowrap z-10 border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     SỐ ĐIỆN THOẠI
                   </th>
                   <th
                     scope="col"
-                    className="sticky top-0 whitespace-nowrap z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     TÊN NHÂN SỰ
                   </th>
                   <th
                     scope="col"
-                    className="sticky top-0 whitespace-nowrap z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     CHỨC VỤ
                   </th>
                   <th
                     scope="col"
-                    className="sticky top-0 whitespace-nowrap z-10 hidden border-b border-gray-300 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     CƠ SỞ
                   </th>
-                  <th
+                  {/* <th
                     scope="col"
-                    className="sticky whitespace-nowrap top-0 z-10 border-b border-gray-300 bg-gray-50 py-3.5 pr-4 pl-3 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
+                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     <span className="sr-only">Edit</span>
-                  </th>
+                  </th> */}
                 </tr>
               </thead>
 
               <tbody>
-                {rolesState && rolesState.length > 0 ? (
-                  rolesState.map((item, index) => (
+                {filterRoles && filterRoles.length > 0 ? (
+                  filterRoles.map((item, index) => (
                     <tr
                       key={item.id}
                       className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700"
                     >
-                      <td className="py-4 px-6">{index}</td>
-                      {index == toggle.index && toggle.isEdit ? (
-                        <>
-                          <input
-                            className="bg-gray-50 mt-[14px] min-w-[120px] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            type="text"
-                            value={toggle.value.phone}
-                            onChange={(e) =>
-                              setToggle({
-                                index: index,
-                                isEdit: true,
-                                value: { ...toggle.value, phone: e.target.value },
-                              })
-                            }
-                          />
-                        </>
-                      ) : (
-                        <th
-                          scope="row"
-                          className="py-4 px-6 cursor-pointer font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                        >
-                          {item.phone}
-                        </th>
-                      )}
-                      <td className="py-4  whitespace-nowrap px-6">
-                        {index == toggle.index && toggle.isEdit ? (
-                          <input
-                            className="bg-gray-50 min-w-[120px] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            type="text"
-                            name="name"
-                            value={toggle.value.name}
-                            onChange={(e) =>
-                              setToggle({
-                                index: index,
-                                isEdit: true,
-                                value: { ...toggle.value, name: e.target.value },
-                              })
-                            }
-                          />
-                        ) : item.name ? (
-                          item.name
-                        ) : (
-                          "Đang cập nhật"
-                        )}
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                        {index}
                       </td>
-                      <td
-                        className="py-4 whitespace-nowrap px-6"
-                        onChange={(e) =>
-                          setToggle({
-                            index: index,
-                            isEdit: true,
-                            value: {
-                              ...toggle.value,
-                              role: item.position,
-                            },
-                          })
-                        }
-                      >
-                        {item.position === "staff"
-                          ? "Lễ Tân"
-                          : item.position === "doctor"
-                          ? "Bác sĩ"
-                          : ""}
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                        {item.phone}
                       </td>
-                      <td className="py-4  px-6">
-                        {index == toggle.index && toggle.isEdit ? (
-                          <select
-                            onChange={(e) =>
-                              setToggle({
-                                index: index,
-                                isEdit: true,
-                                value: {
-                                  ...toggle.value,
-                                  clinic: e.target.value,
-                                },
-                              })
-                            }
-                            value={toggle.value.clinic}
-                            name="clinic"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 min-w-[200px]"
-                          >
-                            {clinics && clinics.length > 0
-                              ? clinics.map((clinic: any, index: number) => {
-                                  return (
-                                    <option value={clinic.id} key={index}>
-                                      {clinic.name}
-                                    </option>
-                                  );
-                                })
-                              : null}
-                          </select>
-                        ) : (
-                          item.clinic_id?.name
-                        )}
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                        {item.name || "Đang cập nhật"}
                       </td>
-                      <td className="py-4 px-6 text-right whitespace-nowrap text-white">
-                        {index == toggle.index && toggle.isEdit ? (
-                          <span
-                            onClick={() => editRole(item.phone)}
-                            className="text-red-600  cursor-pointer hover:text-indigo-900"
-                          >
-                            Lưu Lại
-                          </span>
-                        ) : (
-                          <>
-                            <button
-                              onClick={() =>
-                                alert(
-                                  `Không được xoá ${item.phone}, tính năng đang phát triển!`
-                                )
-                              }
-                              type="button"
-                              data-modal-toggle="popup-modal"
-                              className="text-red-700 cursor-pointer hover:text-indigo-900"
-                            >
-                              Xoá
-                            </button>
-                            <span
-                              onClick={() =>
-                                setToggle({
-                                  index: index,
-                                  isEdit: true,
-                                  value: {
-                                    phone: item.phone,
-                                    role: item.position,
-                                    clinic: item.clinic_id.id,
-                                    name: item.name,
-                                  },
-                                })
-                              }
-                              className="text-indigo-600 ml-4 cursor-pointer hover:text-indigo-900"
-                            >
-                              Sửa
-                            </span>
-                          </>
-                        )}
-                        {index == toggle.index && toggle.isEdit && (
-                          <span
-                            onClick={() => {
-                              setToggle({
-                                index: -1,
-                                isEdit: false,
-                                value: { phone: "", clinic: "", role: "", name: "" },
-                              });
-                            }}
-                            className="text-gray-600  cursor-pointer ml-4 hover:text-indigo-900"
-                          >
-                            Huỷ
-                          </span>
-                        )}
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                        {ROLES_MAPPING.filter((el) => el.value === item.position)[0].name}
+                      </td>
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                        {item.clinic_id.name}
                       </td>
                     </tr>
                   ))
