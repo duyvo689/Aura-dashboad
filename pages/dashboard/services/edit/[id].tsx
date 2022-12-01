@@ -274,7 +274,7 @@ export default function UpdateService() {
                           <Widget
                             publicKey={process.env.NEXT_PUBLIC_UPLOADCARE as string}
                             onChange={(info) => {
-                              console.log(info);
+                              // console.log(info);
                               if (info && info.uuid) {
                                 setNewServiceImg(convertImg(info.uuid));
                               }
