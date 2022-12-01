@@ -273,13 +273,10 @@ export default function UpdateService() {
                           </div> */}
                           <Widget
                             publicKey={process.env.NEXT_PUBLIC_UPLOADCARE as string}
-                            onFileSelect={(file) => {
-                              console.log("File changed: ", file);
-                            }}
-                            onChange={(file) => {
-                              console.log(file);
-                              if (file && file.uuid) {
-                                setNewServiceImg(convertImg(file.uuid));
+                            onChange={(info) => {
+                              console.log(info);
+                              if (info && info.uuid) {
+                                setNewServiceImg(convertImg(info.uuid));
                               }
                             }}
                           />
