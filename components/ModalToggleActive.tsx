@@ -6,9 +6,10 @@ import {
   categoryAction,
   clinicsAction,
   paymentAction,
+  rolesAction,
   servicesAction,
 } from "../redux/actions/ReduxAction";
-import { Banner, Category, Clinic, Payment, Service } from "../utils/types";
+import { Banner, Category, Clinic, Payment, Role, Service } from "../utils/types";
 import { RootState } from "../redux/reducers";
 import { supabase } from "../services/supaBaseClient";
 import toast from "react-hot-toast";
@@ -21,10 +22,8 @@ interface Props {
 }
 function ModalToggleActive({ id, title, type, setOpenModalToggle, status }: Props) {
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
-  const banners: Banner[] = useSelector((state: RootState) => state.banners);
+  const roles: Role[] = useSelector((state: RootState) => state.roles);
   const services: Service[] = useSelector((state: RootState) => state.services);
-  const category: Category[] = useSelector((state: RootState) => state.category);
-  const payments: Payment[] = useSelector((state: RootState) => state.payments);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const remove = async () => {
@@ -72,32 +71,32 @@ function ModalToggleActive({ id, title, type, setOpenModalToggle, status }: Prop
         dispatch(servicesAction("services", services));
       }
     }
-    // if (type === "categories") {
-    //   const { data, error } = await supabase
-    //     .from("categories")
-    //     .update([{ active: false }])
-    //     .eq("id", id);
-    //   if (error) {
-    //     toast.error("Có lỗi xảy ra. Vui lòng thử lại");
-    //   } else {
-    //     const tmpCategory = category.filter((item) => item.id !== id);
-    //     toast.success("Thao tác thành công");
-    //     dispatch(categoryAction("category", tmpCategory));
-    //   }
-    // }
-    // if (type === "payments") {
-    //   const { data, error } = await supabase
-    //     .from("payments")
-    //     .update([{ active: false }])
-    //     .eq("id", id);
-    //   if (error) {
-    //     toast.error("Có lỗi xảy ra. Vui lòng thử lại");
-    //   } else {
-    //     const tmpPayments = payments.filter((item) => item.id !== id);
-    //     toast.success("Thao tác thành công");
-    //     dispatch(paymentAction("payments", tmpPayments));
-    //   }
-    // }
+    if (type === "roles") {
+      // this id is phone:id:position
+      const rolesId = id.split(":")[1];
+      const rolesPhone = id.split(":")[0];
+      const rolesPosition = id.split(":")[2] + "s";
+      const { data: updatedRoles, error: updatedRolesError } = await supabase
+        .from("roles")
+        .update([{ active: status }])
+        .eq("id", rolesId)
+        .select(`*,clinic_id(*)`)
+        .single();
+      const { data: updatedUser, error: updatedUserError } = await supabase
+        .from(rolesPosition)
+        .update([{ active: status }])
+        .eq("phone", rolesPhone)
+        .select()
+        .single();
+      if (updatedRolesError || updatedUserError) {
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại");
+      } else if (updatedRoles && updatedUser) {
+        let index = roles.findIndex((item) => item.id == rolesId);
+        roles[index] = updatedRoles;
+        toast.success("Thao tác thành công");
+        dispatch(rolesAction("roles", roles));
+      }
+    }
     setOpenModalToggle(false);
     setIsLoading(false);
   };

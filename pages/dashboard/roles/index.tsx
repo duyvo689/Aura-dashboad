@@ -7,43 +7,33 @@ import { clinicsAction, rolesAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
 import { RootState } from "../../../redux/reducers";
 import { validatePhoneNumber } from "../../../utils/funtions";
+import Link from "next/link";
+import { Switch } from "@headlessui/react";
+import ModalToggleActive from "../../../components/ModalToggleActive";
+import ModalUpdateRole from "../../../components/ModalUpdateRole";
 
-interface Toggle {
-  index: number;
-  isEdit: boolean;
-  value: {
-    phone: string;
-    role: string;
-    clinic: string;
-    name: string;
-  };
-}
 const ROLES_MAPPING = [
   { name: "Bác sĩ", value: "doctor" },
   { name: "Lễ Tân", value: "staff" },
 ];
-
+function classNames(...classes: any[]) {
+  return classes.filter(Boolean).join(" ");
+}
 function RolesPage() {
   const [phone, setPhone] = useState<string>();
   const [name, setName] = useState<string>();
   const [load, setLoad] = useState<boolean>(false);
+  const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
+  const [selectedUpdateItem, setSelectedUpdateItem] = useState<Role | null>(null);
+  const [openModalToggle, setOpenModalToggle] = useState<boolean>(false);
+  const [selectedToggle, setSelectedToggle] = useState<{
+    id: string;
+    status: boolean;
+  } | null>(null);
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
   const roles: Role[] = useSelector((state: RootState) => state.roles);
   const dispatch = useDispatch();
   const [filterRoles, setFilterRoles] = useState<Role[] | null>(null);
-  useEffect(() => {
-    if (!clinics) {
-      getAllClinic();
-    }
-  }, [clinics]);
-  useEffect(() => {
-    if (!roles) {
-      getAllRoles();
-    }
-  });
-  useEffect(() => {
-    setFilterRoles(roles);
-  }, [roles]);
   const addNewRoles = async (event: any) => {
     try {
       setLoad(true);
@@ -99,7 +89,6 @@ function RolesPage() {
   const createPersonnel = async (table: string, info: any) => {
     const { data, error } = await supabase.from(`${table}s`).insert([info]);
   };
-
   const checkCreatePersonnel = async (table: string, phone: string) => {
     let { data, error } = await supabase
       .from(`${table}s`)
@@ -118,56 +107,6 @@ function RolesPage() {
     return false;
   };
 
-  // ==update edit start==//
-  // const editRole = async (phone: string) => {
-  //   try {
-  //     const _phone = toggle.value.phone;
-  //     const _clinic = toggle.value.clinic;
-  //     const _role = toggle.value.role;
-  //     const _name = toggle.value.name;
-
-  //     const { data, error } = await supabase
-  //       .from("roles")
-  //       .update({ phone: _phone, clinic_id: _clinic, name: _name })
-  //       .eq("phone", phone)
-  //       .select(`*,clinic_id(*)`);
-  //     console.log(data);
-  //     if (error != null) {
-  //       toast.error(error.message);
-  //     }
-  //     if (data) {
-  //       let index = roles.findIndex((item) => item.phone == phone);
-  //       roles[index] = data[0];
-  //       toast.success(`Đã sửa ${phone}`);
-  //       setToggle({
-  //         index: -1,
-  //         isEdit: false,
-  //         value: {
-  //           phone: "",
-  //           role: "",
-  //           clinic: "",
-  //           name: "",
-  //         },
-  //       });
-  //       await updateEditPersonnel(_role, phone, _phone, _clinic);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //   }
-  // };
-
-  const updateEditPersonnel = async (
-    table: string,
-    oldPhone: string,
-    newPhone: string,
-    clinic_id: string
-  ) => {
-    const { data, error } = await supabase
-      .from(`${table}s`)
-      .update({ phone: newPhone, clinic_id: clinic_id })
-      .eq("phone", oldPhone);
-  };
   // ==update edit end==//
 
   // ==get data start==//
@@ -194,14 +133,13 @@ function RolesPage() {
       dispatch(rolesAction("roles", data));
     }
   };
-  // ==get data end==//
 
   const handlerSearch = (e: any) => {
     if (e.target.value === "") {
       setFilterRoles(roles);
     } else {
       setFilterRoles(() => {
-        const pattern = new RegExp(e.target.value, "g");
+        const pattern = new RegExp(e.target.value);
         const tmp = roles.filter((item: Role) => {
           return pattern.test(item.phone);
         });
@@ -227,6 +165,29 @@ function RolesPage() {
       setFilterRoles(filterByPosition);
     }
   };
+  useEffect(() => {
+    if (!clinics) {
+      getAllClinic();
+    }
+  }, [clinics]);
+  useEffect(() => {
+    if (!roles) {
+      getAllRoles();
+    }
+  }, [roles]);
+  useEffect(() => {
+    setFilterRoles(roles);
+  }, [roles]);
+  // const convertZaloPhoneToPhone = (phone: string) => {
+  //   if (phone.length == 10) return phone;
+  //   const remoteSpace = phone.replace(/\s/g, "");
+  //   const newPhone = 0 + remoteSpace.slice(5);
+  //   return newPhone;
+  // };
+  // useEffect(() => {
+  //   const a = convertZaloPhoneToPhone("(+84) 366387684");
+  //   console.log(a);
+  // }, []);
   return (
     <>
       <Head>
@@ -388,35 +349,40 @@ function RolesPage() {
                     scope="col"
                     className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                   >
-                    SỐ ĐIỆN THOẠI
+                    Số điện thoại
                   </th>
                   <th
                     scope="col"
                     className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                   >
-                    TÊN NHÂN SỰ
+                    Tên nhân sự
                   </th>
                   <th
                     scope="col"
                     className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                   >
-                    CHỨC VỤ
+                    Chức vụ
                   </th>
                   <th
                     scope="col"
                     className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                   >
-                    CƠ SỞ
+                    Cơ sở
                   </th>
-                  {/* <th
+                  <th
+                    scope="col"
+                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                  >
+                    Trạng tháí
+                  </th>
+                  <th
                     scope="col"
                     className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     <span className="sr-only">Edit</span>
-                  </th> */}
+                  </th>
                 </tr>
               </thead>
-
               <tbody>
                 {filterRoles && filterRoles.length > 0 ? (
                   filterRoles.map((item, index) => (
@@ -424,20 +390,58 @@ function RolesPage() {
                       key={item.id}
                       className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700"
                     >
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                      <td className="whitespace-nowrap py-3.5 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                         {index + 1}
                       </td>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                      <td className="whitespace-nowrap py-3.5 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                         {item.phone}
                       </td>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                      <td className="whitespace-nowrap py-3.5 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                         {item.name || "Đang cập nhật"}
                       </td>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                      <td className="whitespace-nowrap py-3.5 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                         {ROLES_MAPPING.filter((el) => el.value === item.position)[0].name}
                       </td>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                      <td className="whitespace-nowrap py-3.5 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                         {item.clinic_id.name}
+                      </td>
+                      <td className="whitespace-nowrap text-center py-3.5 pl-4 pr-3  text-sm text-gray-500">
+                        <Switch
+                          checked={item.active}
+                          onClick={() => {
+                            setSelectedToggle({
+                              id: `${item.phone}:${item.id}:${item.position}`, // this id is phone:id:position
+                              status: !item.active,
+                            });
+                            setOpenModalToggle(true);
+                          }}
+                          className={classNames(
+                            item.active ? "bg-indigo-600" : "bg-gray-200",
+                            "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                          )}
+                        >
+                          <span
+                            aria-hidden="true"
+                            className={classNames(
+                              item.active ? "translate-x-5" : "translate-x-0",
+                              "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                            )}
+                          />
+                        </Switch>
+                      </td>
+                      <td className="relative whitespace-nowrap py-3.5 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
+                        <div className="flex gap-3 ">
+                          <div
+                            onClick={() => {
+                              console.log(item);
+                              setSelectedUpdateItem(item);
+                              setOpenModalUpdate(true);
+                            }}
+                            className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                          >
+                            Chỉnh sửa
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -448,6 +452,22 @@ function RolesPage() {
             </table>
           </div>
         </div>
+        {openModalToggle && selectedToggle && (
+          <ModalToggleActive
+            id={selectedToggle.id}
+            status={selectedToggle.status}
+            title="nhân sự"
+            type="roles"
+            setOpenModalToggle={setOpenModalToggle}
+          />
+        )}
+        {openModalUpdate && selectedUpdateItem && (
+          <ModalUpdateRole
+            role={selectedUpdateItem}
+            title="nhân sự"
+            setOpenModalUpdate={setOpenModalUpdate}
+          />
+        )}
       </div>
     </>
   );
