@@ -63,12 +63,12 @@ const navigation = [
   //   icon: IdentificationIcon,
   //   pathName: "customer-resources",
   // },
-  // {
-  //   name: "Danh sách coupons",
-  //   href: "/dashboard/coupons",
-  //   icon: GiftIcon,
-  //   pathName: "coupons",
-  // },
+  {
+    name: "Danh sách coupons",
+    href: "/dashboard/coupons",
+    icon: GiftIcon,
+    pathName: "coupons",
+  },
 ];
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");

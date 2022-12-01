@@ -134,7 +134,7 @@ export default function Example() {
                   {users &&
                     users.map((user: any, index) => (
                       <tr key={index}>
-                        <td className=" whitespace-nowrap px-3 py-3.5 pr-3 text-sm text-gray-500">
+                        <td className=" whitespace-nowrap px-3 py-3.5 pl-6 text-sm text-gray-500">
                           {index + 1}
                         </td>
                         <td className="whitespace-nowrap px-3 py-3.5 pr-3 text-sm sm:pl-6">

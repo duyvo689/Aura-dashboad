@@ -1,4 +1,5 @@
-import { XCircleIcon } from "@heroicons/react/24/outline";
+import { Listbox, Transition } from "@headlessui/react";
+import { CheckIcon, ChevronUpDownIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { Widget } from "@uploadcare/react-widget";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -12,11 +13,47 @@ import UploadCareAPI from "../../../services/uploadCareAPI";
 import convertImg from "../../../utils/helpers/convertImg";
 import { Banner } from "../../../utils/types";
 const UPLOADCARE_KEY = process.env.NEXT_PUBLIC_UPLOADCARE as string;
+function classNames(...classes: any[]) {
+  return classes.filter(Boolean).join(" ");
+}
+const bannerType = [
+  {
+    name: "OA",
+  },
+  { name: "Link" },
+  { name: "Dịch vụ" },
+];
+const renderTypeBanner = (type: string) => {
+  return (
+    <div className="space-y-6 sm:space-y-5">
+      <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+        <label
+          htmlFor="username"
+          className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+        >
+          {type} (Nếu có)
+        </label>
+        <div className="mt-1 sm:col-span-2 sm:mt-0">
+          <div className="flex max-w-lg rounded-md shadow-sm">
+            <input
+              type="text"
+              name="link"
+              id="link"
+              placeholder={`Đường dẫn ${type} cho banner`}
+              className="block w-full flex-1  rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 function CreateBanner() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [bannerImage, setBannerImage] = useState<string | null>(null);
   const widgetApi = useRef<any>(null);
   const banners: Banner[] = useSelector((state: RootState) => state.banners);
+  const [selectedType, setSelectedType] = useState(bannerType[0]);
   const router = useRouter();
   const dispatch = useDispatch();
   const getAllBanner = async () => {
@@ -80,21 +117,93 @@ function CreateBanner() {
                 htmlFor="username"
                 className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
               >
-                Link liên kết (Nếu có)
+                Loại
               </label>
               <div className="mt-1 sm:col-span-2 sm:mt-0">
-                <div className="flex max-w-lg rounded-md shadow-sm">
-                  <input
-                    type="text"
-                    name="link"
-                    id="link"
-                    placeholder="Đường dẫn liên kết cho banner"
-                    className="block w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  />
-                </div>
+                <Listbox value={selectedType}>
+                  {({ open }) => (
+                    <div className="flex max-w-lg rounded-md shadow-sm">
+                      <div className="block w-full flex-1">
+                        <div className="relative mt-1">
+                          <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+                            <span className="flex items-center">
+                              <span className="ml-3 block truncate">
+                                {selectedType.name}
+                              </span>
+                            </span>
+                            <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                              <ChevronUpDownIcon
+                                className="h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                              />
+                            </span>
+                          </Listbox.Button>
+
+                          <Transition
+                            show={open}
+                            leave="transition ease-in duration-100"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                          >
+                            <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                              {bannerType.map((item, index: number) => (
+                                <Listbox.Option
+                                  key={index}
+                                  onClick={() => {
+                                    setSelectedType({ name: item.name });
+                                  }}
+                                  className={({ active }) =>
+                                    classNames(
+                                      active
+                                        ? "text-white bg-indigo-600"
+                                        : "text-gray-900",
+                                      "relative cursor-default select-none py-2 pl-3 pr-9"
+                                    )
+                                  }
+                                  value={item.name}
+                                >
+                                  {({ selected, active }) => (
+                                    <>
+                                      <div className="flex items-center">
+                                        <span
+                                          className={classNames(
+                                            selected ? "font-semibold" : "font-normal",
+                                            "ml-3 block truncate"
+                                          )}
+                                        >
+                                          {item.name}
+                                        </span>
+                                      </div>
+
+                                      {selected ? (
+                                        <span
+                                          className={classNames(
+                                            active ? "text-white" : "text-indigo-600",
+                                            "absolute inset-y-0 right-0 flex items-center pr-4"
+                                          )}
+                                        >
+                                          <CheckIcon
+                                            className="h-5 w-5"
+                                            aria-hidden="true"
+                                          />
+                                        </span>
+                                      ) : null}
+                                    </>
+                                  )}
+                                </Listbox.Option>
+                              ))}
+                            </Listbox.Options>
+                          </Transition>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </Listbox>
               </div>
             </div>
           </div>
+          {selectedType && renderTypeBanner(selectedType.name)}
+
           <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
             <label
               htmlFor="cover-photo"
