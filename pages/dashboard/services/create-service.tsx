@@ -122,7 +122,7 @@ export default function CreateService() {
         <div className="sm:flex-auto">
           <h1 className="text-xl font-semibold text-gray-900">THÊM DỊCH VỤ MỚI</h1>
           <p className="mt-2 text-sm text-gray-700">
-            Thêm mới dịch vụ. Thông tin sẽ được hiển thị trên cả 3 MiniApp.
+            Thêm mới một dịch vụ. Thông tin sẽ được hiển thị trên cả 3 MiniApp.
           </p>
         </div>
         <Link href="/dashboard/services">
