@@ -85,26 +85,26 @@ function SideBar() {
         <div className="mt-5 flex flex-grow flex-col">
           <nav className="flex-1 space-y-1 px-2 pb-4">
             {navigation.map((item) => (
-              <Link
-                href={item.href}
-                key={item.name}
-                className={classNames(
-                  pathname.split("/")[2] === item.pathName
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
-                  "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                )}
-              >
-                <item.icon
+              <Link href={item.href} key={item.name}>
+                <div
                   className={classNames(
                     pathname.split("/")[2] === item.pathName
                       ? "bg-gray-100 text-gray-900"
-                      : "text-gray-400 group-hover:text-gray-500",
-                    "mr-3 flex-shrink-0 h-6 w-6"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                    "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                   )}
-                  aria-hidden="true"
-                />
-                {item.name}
+                >
+                  <item.icon
+                    className={classNames(
+                      pathname.split("/")[2] === item.pathName
+                        ? "bg-gray-100 text-gray-900"
+                        : "text-gray-400 group-hover:text-gray-500",
+                      "mr-3 flex-shrink-0 h-6 w-6"
+                    )}
+                    aria-hidden="true"
+                  />
+                  {item.name}
+                </div>
               </Link>
             ))}
           </nav>
