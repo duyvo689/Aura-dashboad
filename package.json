@@ -17,7 +17,7 @@
     "@mui/styled-engine-sc": "^5.10.14",
     "@supabase/supabase-js": "^2.0.4",
     "@tippyjs/react": "^4.2.6",
-    "@uploadcare/react-widget": "^2.3.0",
+    "@uploadcare/react-widget": "^2.2.0",
     "axios": "^1.2.0",
     "flowbite": "^1.5.4",
     "flowbite-react": "^0.3.5",

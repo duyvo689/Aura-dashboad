@@ -8,6 +8,7 @@ import {
   BanknotesIcon,
   IdentificationIcon,
   ClipboardDocumentCheckIcon,
+  GiftIcon,
 } from "@heroicons/react/24/outline";
 import mainLogo from "../public/images/mainlogo.svg";
 import Link from "next/link";
@@ -61,6 +62,12 @@ const navigation = [
   //   href: "/dashboard/customer-resources",
   //   icon: IdentificationIcon,
   //   pathName: "customer-resources",
+  // },
+  // {
+  //   name: "Danh sách coupons",
+  //   href: "/dashboard/coupons",
+  //   icon: GiftIcon,
+  //   pathName: "coupons",
   // },
 ];
 function classNames(...classes: any[]) {

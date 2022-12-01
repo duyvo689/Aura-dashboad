@@ -1,4 +1,13 @@
-import { Role, User, Clinic, Service, Category, Payment, Customer } from "../../utils/types";
+import {
+  Role,
+  User,
+  Clinic,
+  Service,
+  Category,
+  Payment,
+  Customer,
+  Coupon,
+} from "../../utils/types";
 const rolesAction = (type: any, roles: Role[] | null) => {
   return {
     type,
@@ -54,6 +63,12 @@ const customerAction = (type: any, customers: Customer[] | null) => {
     customers,
   };
 };
+const couponsAction = (type: any, coupons: Coupon[] | null) => {
+  return {
+    type,
+    coupons,
+  };
+};
 export {
   bannersAction,
   adminAction,
@@ -62,5 +77,6 @@ export {
   servicesAction,
   categoryAction,
   paymentAction,
-  customerAction
+  customerAction,
+  couponsAction,
 };

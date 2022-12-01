@@ -57,13 +57,26 @@ interface Customer {
   created_at: string;
   name: string;
 }
-
+interface Coupon {
+  id: string;
+  created_at: string;
+  name: string;
+  image: string;
+  price?: number;
+  percent?: number;
+  start_date: string;
+  end_date: string;
+  description: string;
+  active: boolean;
+  service_id?: Service;
+}
 interface OpenModal {
   isOpen: boolean;
   id: string;
   name: string;
 }
 export type {
+  Coupon,
   Role,
   User,
   Banner,
