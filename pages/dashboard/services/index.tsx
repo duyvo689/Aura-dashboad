@@ -22,6 +22,7 @@ export default function ServicePage() {
     id: string;
     status: boolean;
   } | null>(null);
+  const [pagination, setPagination] = useState(1);
   const [filterService, setFilterService] = useState<Service[] | null>(null);
   const dispatch = useDispatch();
   const getAllService = async () => {
@@ -203,58 +204,60 @@ export default function ServicePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {filterService && filterService?.length > 0 ? (
-                      filterService?.map((service: Service, index: number) => (
-                        <tr key={index}>
-                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                            {index + 1}
-                          </td>
-                          <td className="whitespace-wrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                            {service.name}
-                          </td>
-                          <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                            <div className="w-24 h-16">
-                              <img
-                                className="w-full h-full rounded"
-                                src={service.image}
-                              />
-                            </div>
-                          </td>
-                          <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                            {convertVnd(service.price)}
-                          </td>
-                          <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                            {service.category_id.name}
-                          </td>
-                          <td className="py-4 px-3 text-sm text-gray-500">
-                            <span className="mint-ellipsis-three">
-                              {service.description}
-                            </span>
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            <Switch
-                              checked={service.active}
-                              onClick={() => {
-                                setSelectedToggle({
-                                  id: service.id,
-                                  status: !service.active,
-                                });
-                                setOpenModalToggle(true);
-                              }}
-                              className={classNames(
-                                service.active ? "bg-indigo-600" : "bg-gray-200",
-                                "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                              )}
-                            >
-                              <span
-                                aria-hidden="true"
+                    {filterService && filterService.length > 0 ? (
+                      filterService
+                        .slice((pagination - 1) * 10, pagination * 10)
+                        .map((service: Service, index: number) => (
+                          <tr key={index}>
+                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
+                              {index + 1}
+                            </td>
+                            <td className="whitespace-wrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
+                              {service.name}
+                            </td>
+                            <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                              <div className="w-24 h-16">
+                                <img
+                                  className="w-full h-full rounded"
+                                  src={service.image}
+                                />
+                              </div>
+                            </td>
+                            <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                              {convertVnd(service.price)}
+                            </td>
+                            <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                              {service.category_id.name}
+                            </td>
+                            <td className="py-4 px-3 text-sm text-gray-500">
+                              <span className="mint-ellipsis-three">
+                                {service.description}
+                              </span>
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                              <Switch
+                                checked={service.active}
+                                onClick={() => {
+                                  setSelectedToggle({
+                                    id: service.id,
+                                    status: !service.active,
+                                  });
+                                  setOpenModalToggle(true);
+                                }}
                                 className={classNames(
-                                  service.active ? "translate-x-5" : "translate-x-0",
-                                  "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                  service.active ? "bg-indigo-600" : "bg-gray-200",
+                                  "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 )}
-                              />
-                            </Switch>
-                            {/* <span
+                              >
+                                <span
+                                  aria-hidden="true"
+                                  className={classNames(
+                                    service.active ? "translate-x-5" : "translate-x-0",
+                                    "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                  )}
+                                />
+                              </Switch>
+                              {/* <span
                               className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
                                 service.active
                                   ? "bg-green-100 text-green-800"
@@ -263,27 +266,18 @@ export default function ServicePage() {
                             >
                               {service.active ? "Đang hoạt động" : "Không hoạt động"}
                             </span> */}
-                          </td>
-                          <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
-                            <div className="flex gap-3 ">
-                              <Link href={`/dashboard/services/edit/${service.id}`}>
-                                <div className="text-indigo-600 hover:text-indigo-900 cursor-pointer">
-                                  Chỉnh sửa
-                                </div>
-                              </Link>
-                              {/* <div
-                                className="text-red-500 cursor-pointer"
-                                onClick={() => {
-                                  setSelectedDeleteId(service.id);
-                                  setOpenModalDelete(true);
-                                }}
-                              >
-                                Xoá
-                              </div> */}
-                            </div>
-                          </td>
-                        </tr>
-                      ))
+                            </td>
+                            <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
+                              <div className="flex gap-3 ">
+                                <Link href={`/dashboard/services/edit/${service.id}`}>
+                                  <div className="text-indigo-600 hover:text-indigo-900 cursor-pointer">
+                                    Chỉnh sửa
+                                  </div>
+                                </Link>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
                     ) : (
                       <tr className=" block mt-4 text-left">
                         Không tìm thấy dữ liệu phù hợp
@@ -291,6 +285,54 @@ export default function ServicePage() {
                     )}
                   </tbody>
                 </table>
+                <nav
+                  className="flex items-center justify-between border-t border-gray-200 bg-white py-4"
+                  aria-label="Pagination"
+                >
+                  <div className="hidden sm:block">
+                    <p className="text-sm text-gray-700">
+                      Hiển{" "}
+                      <span className="font-medium"> {(pagination - 1) * 10 + 1}</span>{" "}
+                      đến{" "}
+                      <span className="font-medium">
+                        {pagination * 10 > filterService.length
+                          ? filterService.length
+                          : pagination * 10}
+                      </span>{" "}
+                      trên <span className="font-medium">{filterService.length}</span> kết
+                      quả
+                    </p>
+                  </div>
+                  <div className="flex flex-1 justify-between sm:justify-end">
+                    <button
+                      onClick={() => {
+                        setPagination((preState) => (preState <= 1 ? 1 : preState - 1));
+                      }}
+                      className={`  ${
+                        pagination > 1
+                          ? "relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-800"
+                          : "relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      Trước
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setPagination((preState) =>
+                          preState * 10 > filterService.length ? preState : preState + 1
+                        );
+                      }}
+                      className={`${
+                        pagination * 10 < filterService.length
+                          ? "relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-800"
+                          : "relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      Sau
+                    </button>
+                  </div>
+                </nav>
               </div>
             </div>
           </div>
