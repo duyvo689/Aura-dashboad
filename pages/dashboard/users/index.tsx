@@ -112,12 +112,7 @@ export default function Example() {
                     >
                       Họ tên
                     </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Số điện thoại
-                    </th>
+
                     <th
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
@@ -139,10 +134,10 @@ export default function Example() {
                   {users &&
                     users.map((user: any, index) => (
                       <tr key={index}>
-                        <td className="pl-6 whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        <td className=" whitespace-nowrap px-3 py-3.5 pl-6 text-sm text-gray-500">
                           {index + 1}
                         </td>
-                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
+                        <td className="whitespace-nowrap px-3 py-3.5 pr-3 text-sm sm:pl-6">
                           <div className="flex items-center">
                             <div className="h-10 w-10 flex-shrink-0">
                               <img
@@ -158,15 +153,13 @@ export default function Example() {
                             <div className="ml-4">
                               <div className="font-medium text-gray-900">{user.name}</div>
                               <div className="text-gray-500">
-                                Email: {user.email || "Chưa cập nhật"}
+                                {user.phone || "Chưa cập nhật"}
                               </div>
                             </div>
                           </div>
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {user.phone}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+
+                        <td className="whitespace-nowrap px-3 py-3.5 text-sm text-gray-500">
                           {moment(user.created_at).format("DD/MM/YYYY")}
                         </td>
                         {/* <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
