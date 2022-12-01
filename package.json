@@ -29,6 +29,8 @@
     "react-hot-toast": "^2.4.0",
     "react-redux": "^8.0.4",
     "redux": "^4.2.0",
+    "uploadcare-widget": "^3.20.0",
+    "uploadcare-widget-tab-effects": "^1.5.0",
     "styled-components": "^5.3.6"
   },
   "devDependencies": {
