@@ -79,7 +79,7 @@ export default function CreateCoupon() {
       return;
     }
     const { data, error } = await supabase
-      .from("counpons")
+      .from("coupons")
       .insert([_couponsInfo])
       .select("*")
       .single();
@@ -96,7 +96,7 @@ export default function CreateCoupon() {
   };
   const getAllCoupon = async () => {
     let { data: counpons, error } = await supabase
-      .from("counpons")
+      .from("coupons")
       .select(`*,service_id(*)`);
     if (error) {
       toast.error("Lỗi. Vui lòng tải lại trang");
