@@ -22,7 +22,7 @@ function CouponsPage() {
   const dispatch = useDispatch();
   const getAllCoupon = async () => {
     let { data: counpons, error } = await supabase
-      .from("counpons")
+      .from("coupons")
       .select(`*,service_id(*)`);
     if (error) {
       toast.error("Lỗi. Vui lòng tải lại trang");
