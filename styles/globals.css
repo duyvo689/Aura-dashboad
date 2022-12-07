@@ -139,4 +139,13 @@ video {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+} 
+.uploadcare--tab__content > button {
+  background-color: rgb(88 80 236) !important;
+  }
+button,
+[type='button'],
+[type='reset'],
+[type='submit'] {
+  cursor: pointer;
 }

@@ -6,7 +6,7 @@ import {
   MapPinIcon,
   NewspaperIcon,
   BanknotesIcon,
-  IdentificationIcon,
+  WalletIcon,
   ClipboardDocumentCheckIcon,
   GiftIcon,
 } from "@heroicons/react/24/outline";
@@ -69,6 +69,12 @@ const navigation = [
     icon: GiftIcon,
     pathName: "coupons",
   },
+  // {
+  //   name: "Quản lý thanh toán",
+  //   href: "/dashboard/checkouts",
+  //   icon: WalletIcon,
+  //   pathName: "checkout",
+  // },
 ];
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
