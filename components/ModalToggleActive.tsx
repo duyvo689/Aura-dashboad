@@ -5,11 +5,12 @@ import {
   bannersAction,
   categoryAction,
   clinicsAction,
+  couponsAction,
   paymentAction,
   rolesAction,
   servicesAction,
 } from "../redux/actions/ReduxAction";
-import { Banner, Category, Clinic, Payment, Role, Service } from "../utils/types";
+import { Banner, Category, Clinic, Coupon, Payment, Role, Service } from "../utils/types";
 import { RootState } from "../redux/reducers";
 import { supabase } from "../services/supaBaseClient";
 import toast from "react-hot-toast";
@@ -24,6 +25,7 @@ function ModalToggleActive({ id, title, type, setOpenModalToggle, status }: Prop
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
   const roles: Role[] = useSelector((state: RootState) => state.roles);
   const services: Service[] = useSelector((state: RootState) => state.services);
+  const coupons: Coupon[] = useSelector((state: RootState) => state.coupons);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const remove = async () => {
@@ -95,6 +97,23 @@ function ModalToggleActive({ id, title, type, setOpenModalToggle, status }: Prop
         roles[index] = updatedRoles;
         toast.success("Thao tác thành công");
         dispatch(rolesAction("roles", roles));
+      }
+    }
+    if (type === "coupons") {
+      const { data, error } = await supabase
+        .from("coupons")
+        .update([{ active: status }])
+        .eq("id", id)
+        .select(`*`)
+        .single();
+      if (error) {
+        console.log(error);
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại");
+      } else if (data) {
+        let index = coupons.findIndex((item) => item.id == id);
+        coupons[index] = data;
+        toast.success("Thao tác thành công");
+        dispatch(couponsAction("coupons", coupons));
       }
     }
     setOpenModalToggle(false);

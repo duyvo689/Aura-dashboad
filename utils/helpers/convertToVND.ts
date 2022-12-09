@@ -4,4 +4,8 @@ const convertVnd = (amount: number) => {
     currency: "VND",
   }).format(amount);
 };
-export { convertVnd };
+//300,000đ to 300000
+const getAllNumberFromString = (value: string) => {
+  return parseInt(value.replace(/[^0-9]/g, ""));
+};
+export { convertVnd, getAllNumberFromString };

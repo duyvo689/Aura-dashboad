@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
+import ModalToggleActive from "../../../components/ModalToggleActive";
 import { couponsAction } from "../../../redux/actions/ReduxAction";
 import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
@@ -44,7 +45,7 @@ function CouponsPage() {
           <div className="sm:flex sm:items-center">
             <div className="sm:flex-auto">
               <h1 className="text-xl font-semibold text-gray-900">
-                Danh sách Coupon {coupons.length}
+                Danh sách Coupon ({coupons.length})
               </h1>
               <p className="mt-2 text-sm text-gray-700">
                 Danh sách thông tin tất cả các mã giảm giá đang được áp dụng tại MiniApp
@@ -193,6 +194,15 @@ function CouponsPage() {
         </>
       ) : (
         <div>Loading...</div>
+      )}
+      {openModalToggle && selectedToggle && (
+        <ModalToggleActive
+          id={selectedToggle.id}
+          status={selectedToggle.status}
+          title="coupons"
+          type="coupons"
+          setOpenModalToggle={setOpenModalToggle}
+        />
       )}
     </div>
   );

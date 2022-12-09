@@ -11,6 +11,8 @@ import { RootState } from "../../../redux/reducers";
 import UploadCareAPI from "../../../services/uploadCareAPI";
 import convertImg from "../../../utils/helpers/convertImg";
 import { Widget } from "@uploadcare/react-widget";
+import { getAllNumberFromString } from "../../../utils/helpers/convertToVND";
+import { NumericFormat } from "react-number-format";
 
 export default function CreateCoupon() {
   const [couponImage, setCouponImage] = useState<string | null>(null);
@@ -58,9 +60,9 @@ export default function CreateCoupon() {
     let _price = null;
     let _percent = null;
     if (couponType && couponType === "percent") {
-      _percent = event.target.percent.value;
+      _percent = getAllNumberFromString(event.target.percent.value);
     } else {
-      _price = event.target.price.value;
+      _price = getAllNumberFromString(event.target.price.value);
     }
     const _start_date = event.target.start_date.value;
     const _end_date = event.target.end_date.value;
@@ -73,6 +75,7 @@ export default function CreateCoupon() {
       description: _description,
       image: couponImage || "",
     };
+    console.log(_couponsInfo);
     let isValid = validateForm(_couponsInfo);
     if (!isValid || !couponImage) {
       setLoad(false);
@@ -162,14 +165,14 @@ export default function CreateCoupon() {
               </div>
               <div className="sm:col-span-3 mt-6">
                 <label
-                  htmlFor="location"
+                  htmlFor="couponType"
                   className="block text-sm font-medium text-gray-700"
                 >
                   Loại Coupon
                 </label>
                 <select
-                  id="location"
-                  name="location"
+                  id="couponType"
+                  name="couponType"
                   className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   defaultValue="price"
                   onChange={(e) => {
@@ -190,12 +193,11 @@ export default function CreateCoupon() {
                     Phần trăm
                   </label>
                   <div className="mt-1">
-                    <input
-                      type="number"
+                    <NumericFormat
                       name="percent"
-                      id="percent"
-                      required
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      allowLeadingZeros
+                      className="block w-full rounded-md border-gray-300  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      suffix={"%"}
                     />
                   </div>
                 </div>
@@ -209,13 +211,12 @@ export default function CreateCoupon() {
                   </label>
                   <div className="relative mt-1 rounded-md shadow-sm">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center"></div>
-                    <input
-                      type="number"
+                    <NumericFormat
                       name="price"
-                      id="price"
+                      allowLeadingZeros
                       className="block w-full rounded-md border-gray-300  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      placeholder="0.00"
-                      aria-describedby="price-currency"
+                      thousandSeparator=","
+                      suffix="đ"
                     />
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-7">
                       <span className="text-gray-500 sm:text-sm" id="price-currency">

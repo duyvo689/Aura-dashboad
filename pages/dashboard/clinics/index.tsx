@@ -128,7 +128,7 @@ export default function ClinicPage() {
                           scope="col"
                           className="whitespace-nowrap px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                         >
-                          Tình trạng
+                          Trạng thái
                         </th>
                         <th
                           scope="col"

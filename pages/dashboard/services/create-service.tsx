@@ -12,6 +12,7 @@ import { RootState } from "../../../redux/reducers";
 import convertImg from "../../../utils/helpers/convertImg";
 import router from "next/router";
 import { Widget } from "@uploadcare/react-widget";
+import { getAllNumberFromString } from "../../../utils/helpers/convertToVND";
 
 export default function CreateService() {
   const [serviceImage, setServiceImage] = useState<string | null>(null);
@@ -54,7 +55,7 @@ export default function CreateService() {
       return;
     }
     const _name = event.target.elements.name.value;
-    const _price = event.target.elements.price.value;
+    const _price =getAllNumberFromString(event.target.elements.price.value);
     const _category = event.target.elements.category.value;
     const _description = event.target.elements.description.value;
     let _serviceInfo = {
