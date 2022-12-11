@@ -438,13 +438,15 @@ function RolesPage() {
                       <td
                         onClick={
                           item.verify
-                            ? () => {}
+                            ? () => {
+                                toast.success("Đã xác thực");
+                              }
                             : () => {
                                 setSelectedVerifyItem(item);
                                 setOpenModalToggle(true);
                               }
                         }
-                        className="whitespace-nowrap py-3.5 pl-4 pr-3 text-sm font-medium sm:pl-6"
+                        className="whitespace-nowrap py-3.5 pl-4 pr-3 text-sm font-medium sm:pl-6 cursor-pointer"
                       >
                         <div
                           className={`${

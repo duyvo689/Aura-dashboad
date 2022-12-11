@@ -15,6 +15,7 @@ import router from "next/router";
 import { adminAction } from "../redux/actions/ReduxAction";
 import mainLogo from "../public/images/mainlogo.svg";
 import { supabase } from "../services/supaBaseClient";
+import toast from "react-hot-toast";
 export interface LoginProps {}
 
 export default function SignInPage(props: LoginProps) {
@@ -72,12 +73,16 @@ export default function SignInPage(props: LoginProps) {
                 ) : (
                   <ButtonDefault title={"Sign in"} />
                 )}
-                <Link
-                  href="/forgot-password"
-                  className="mt-9 text-black text-center block hover:text-gray-500 mb-14"
+                {/* <Link href="/forgot-password"> */}
+                <div
+                  onClick={() => {
+                    toast.success("Tính năng đang phát triển");
+                  }}
+                  className="mt-9 text-black text-center block mb-14"
                 >
-                  Forgot your password?
-                </Link>
+                  Forgot your password ?
+                </div>
+                {/* </Link> */}
               </form>
             </div>
           </div>
