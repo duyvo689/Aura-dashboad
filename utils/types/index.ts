@@ -6,6 +6,7 @@ interface Role {
   created_at: string;
   clinic_id: Clinic;
   active: boolean;
+  verify: boolean;
 }
 
 interface User {

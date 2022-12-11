@@ -15,6 +15,7 @@ import ModalUpdateRole from "../../../components/ModalUpdateRole";
 const ROLES_MAPPING = [
   { name: "Bác sĩ", value: "doctor" },
   { name: "Lễ Tân", value: "staff" },
+  { name: "Quản lý", value: "manager" },
 ];
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
@@ -25,6 +26,7 @@ function RolesPage() {
   const [load, setLoad] = useState<boolean>(false);
   const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
   const [selectedUpdateItem, setSelectedUpdateItem] = useState<Role | null>(null);
+  const [selectedVerifyItem, setSelectedVerifyItem] = useState<Role | null>(null);
   const [openModalToggle, setOpenModalToggle] = useState<boolean>(false);
   const [selectedToggle, setSelectedToggle] = useState<{
     id: string;
@@ -52,6 +54,7 @@ function RolesPage() {
         clinic_id: _clinic,
         phone: _phone,
         name: _name,
+        verify: true,
       };
 
       const _infoPersonnel = {
@@ -124,9 +127,16 @@ function RolesPage() {
     }
   };
   const getAllRoles = async () => {
-    let { data, error } = await supabase.from("roles").select(`*,clinic_id(*)`);
+    let { data, error } = await supabase
+      .from("roles")
+      .select(`*,clinic_id(*)`)
+      .order("created_at", { ascending: false });
     if (error) {
       toast(error.message);
+      return;
+    }
+    console.log(data, error);
+    if (error) {
       return;
     }
     if (data) {
@@ -157,7 +167,6 @@ function RolesPage() {
   };
 
   const onChangePersonnel = async (position: string) => {
-    console.log(position);
     if (position === "") {
       setFilterRoles(roles);
     } else {
@@ -178,16 +187,7 @@ function RolesPage() {
   useEffect(() => {
     setFilterRoles(roles);
   }, [roles]);
-  // const convertZaloPhoneToPhone = (phone: string) => {
-  //   if (phone.length == 10) return phone;
-  //   const remoteSpace = phone.replace(/\s/g, "");
-  //   const newPhone = 0 + remoteSpace.slice(5);
-  //   return newPhone;
-  // };
-  // useEffect(() => {
-  //   const a = convertZaloPhoneToPhone("(+84) 366387684");
-  //   console.log(a);
-  // }, []);
+
   return (
     <>
       <Head>
@@ -336,48 +336,54 @@ function RolesPage() {
             </div>
           </div>
           <div className="w-full h-[80vh] overflow-x-auto relative shadow-md sm:rounded-lg">
-            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <table className="w-full text-sm text-center text-gray-500 dark:text-gray-400">
               <thead className="bg-gray-50">
                 <tr>
                   <th
                     scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                    className="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     STT
                   </th>
                   <th
                     scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                    className="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     Số điện thoại
                   </th>
                   <th
                     scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                    className="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     Tên nhân sự
                   </th>
                   <th
                     scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                    className="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     Chức vụ
                   </th>
                   <th
                     scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                    className="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     Cơ sở
                   </th>
                   <th
                     scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                    className="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     Trạng tháí
                   </th>
                   <th
                     scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                    className="py-3.5 pl-4 pr-3 text-sm font-semibold text-gray-900 sm:pl-6 text-center"
+                  >
+                    Xác thực
+                  </th>
+                  <th
+                    scope="col"
+                    className="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-6"
                   >
                     <span className="sr-only">Edit</span>
                   </th>
@@ -403,7 +409,7 @@ function RolesPage() {
                         {ROLES_MAPPING.filter((el) => el.value === item.position)[0].name}
                       </td>
                       <td className="whitespace-nowrap py-3.5 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        {item.clinic_id.name}
+                        {item.clinic_id?.name}
                       </td>
                       <td className="whitespace-nowrap text-center py-3.5 pl-4 pr-3  text-sm text-gray-500">
                         <Switch
@@ -429,11 +435,31 @@ function RolesPage() {
                           />
                         </Switch>
                       </td>
+                      <td
+                        onClick={
+                          item.verify
+                            ? () => {}
+                            : () => {
+                                setSelectedVerifyItem(item);
+                                setOpenModalToggle(true);
+                              }
+                        }
+                        className="whitespace-nowrap py-3.5 pl-4 pr-3 text-sm font-medium sm:pl-6"
+                      >
+                        <div
+                          className={`${
+                            item.verify
+                              ? "text-green-600 bg-green-200"
+                              : "text-red-600 bg-red-200"
+                          } rounded-full text-center p-1.5`}
+                        >
+                          {item.verify ? "Đã xác thực" : "Chưa xác thực"}
+                        </div>
+                      </td>
                       <td className="relative whitespace-nowrap py-3.5 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
                         <div className="flex gap-3 ">
                           <div
                             onClick={() => {
-                              console.log(item);
                               setSelectedUpdateItem(item);
                               setOpenModalUpdate(true);
                             }}
@@ -458,6 +484,15 @@ function RolesPage() {
             status={selectedToggle.status}
             title="nhân sự"
             type="roles"
+            setOpenModalToggle={setOpenModalToggle}
+          />
+        )}
+        {openModalToggle && selectedVerifyItem && (
+          <ModalToggleActive
+            id={selectedVerifyItem.id}
+            status={selectedVerifyItem.verify}
+            title="xác thực người dùng"
+            type="verify"
             setOpenModalToggle={setOpenModalToggle}
           />
         )}

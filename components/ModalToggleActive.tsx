@@ -30,16 +30,7 @@ function ModalToggleActive({ id, title, type, setOpenModalToggle, status }: Prop
   const dispatch = useDispatch();
   const remove = async () => {
     setIsLoading(true);
-    // if (type === "banners") {
-    //   const { data, error } = await supabase.from("banners").delete().eq("id", id);
-    //   if (error) {
-    //     toast.error("Có lỗi xảy ra. Vui lòng thử lại");
-    //   } else {
-    //     const tmpBanners = banners.filter((banner) => banner.id !== id);
-    //     toast("Thao tác thành công");
-    //     dispatch(bannersAction("banners", tmpBanners));
-    //   }
-    // }
+
     if (type === "clinics") {
       const { data, error } = await supabase
         .from(" clinics")
@@ -116,6 +107,22 @@ function ModalToggleActive({ id, title, type, setOpenModalToggle, status }: Prop
         dispatch(couponsAction("coupons", coupons));
       }
     }
+    if (type === "verify") {
+      const { data, error } = await supabase
+        .from("roles")
+        .update([{ verify: true }])
+        .eq("id", id)
+        .select(`*,clinic_id(*)`)
+        .single();
+      if (error) {
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại");
+      } else if (data) {
+        let index = roles.findIndex((item) => item.id == id);
+        roles[index] = data;
+        dispatch(rolesAction("roles", roles));
+        toast.success("Thao tác thành công");
+      }
+    }
     setOpenModalToggle(false);
     setIsLoading(false);
   };
@@ -159,7 +166,7 @@ function ModalToggleActive({ id, title, type, setOpenModalToggle, status }: Prop
             </div>
             <div className="p-6 space-y-6">
               <p className="text-base text-start leading-relaxed text-gray-500 dark:text-gray-400">
-                Bạn có chắc là muốn thực hiện thao tác này
+                Bạn có chắc là muốn thực hiện thao tác này ?
               </p>
             </div>
             <div className="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600">
