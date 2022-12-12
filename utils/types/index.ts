@@ -8,7 +8,24 @@ interface Role {
   active: boolean;
   verify: boolean;
 }
-
+export interface Patient {
+  id: number;
+  created_at: string;
+  avatar: string;
+  name: string;
+  phone: string;
+  email?: string;
+  address?: string;
+}
+export interface Doctor {
+  id: string;
+  name: string;
+  phone: string;
+  age: number;
+  avatar: string;
+  clinic_id: Clinic;
+  created_at: string;
+}
 interface User {
   id: number;
   created_at: string;
@@ -77,6 +94,22 @@ interface OpenModal {
   id: string;
   name: string;
 }
+interface Booking {
+  id: string;
+  created_at?: Date;
+  service_id: Service[];
+  date: string;
+  clinic_id: Clinic;
+  time_type: string;
+  patient_id: Patient;
+  doctor_id: Doctor[];
+  description: string;
+  status: number;
+  price: number;
+  is_have_rebooking: boolean;
+  old_booking_id?: Booking | null;
+  image_details: string[] | null;
+}
 export type {
   Coupon,
   Role,
@@ -88,4 +121,5 @@ export type {
   Payment,
   Customer,
   OpenModal,
+  Booking,
 };
