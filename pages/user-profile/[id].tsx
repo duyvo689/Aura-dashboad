@@ -23,7 +23,6 @@ const UserProfilePage = () => {
     if (error) {
       toast.error("Có lỗi xảy ra. Vui lòng thử lại");
     } else if (bookings) {
-      console.log(bookings);
       setBookings(bookings);
     }
   };
@@ -38,7 +37,6 @@ const UserProfilePage = () => {
     if (error) {
       toast.error("Có lỗi xảy ra. Vui lòng thử lại");
     } else if (user) {
-      console.log(user);
       setUser(user);
     }
   };
@@ -61,11 +59,17 @@ const UserProfilePage = () => {
             </div>
             <div className="col-span-4">
               <div className="max-w-full max-h-screen overflow-y-auto flex justify-center">
-                <Process booking={bookings[0]} user={user} />
+                {bookings.length > 0 ? (
+                  <Process booking={bookings[0]} user={user} />
+                ) : (
+                  <div className="flex justify-center col-span-4">
+                    Khách hàng chưa có booking
+                  </div>
+                )}
               </div>
             </div>
             <div className="col-span-1 sticky top-0">
-              <BookingHistory bookings={bookings} />
+              {bookings.length > 0 ? <BookingHistory bookings={bookings} /> : null}
             </div>
           </div>
         )}

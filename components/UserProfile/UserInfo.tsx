@@ -20,7 +20,7 @@ function UserInfo({ userInfo }: Props) {
         </div>
         <div className="flex gap-1 items-center">
           <MapPinIcon className="w-5 h-5" />
-          <div className="text-sm text-[#6b7280]">Quận 3, Thành phố Hồ Chí Minh</div>
+          <div className="text-sm text-[#6b7280]">{"Chưa cập nhật"}</div>
         </div>
       </div>
       <div className="text-sm ">

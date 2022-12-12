@@ -8,6 +8,7 @@ interface Props {
   user: Patient;
 }
 function Process({ booking, user }: Props) {
+  console.log(booking);
   return (
     <div className="px-12 shadow-lg w-3/4 flex flex-col gap-6">
       <div className="flex  items-center gap-2">
