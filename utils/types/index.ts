@@ -110,8 +110,30 @@ interface Booking {
   old_booking_id?: Booking | null;
   image_details: string[] | null;
 }
+interface Checkout {
+  created_at: string;
+  booking_id: string;
+  patient_id: string;
+  totalPrice: number;
+  is_rebooking: boolean;
+  date: string;
+  coupons_id?: Coupon;
+  totalCoupon: number;
+}
+interface Coupon {
+  id: string;
+  created_at: string;
+  name: string;
+  description: string;
+  image: string;
+  percent?: number;
+  price?: number;
+  service_id?: Service;
+  end_date: string;
+  start_date: string;
+}
 export type {
-  Coupon,
+  Checkout,
   Role,
   User,
   Banner,

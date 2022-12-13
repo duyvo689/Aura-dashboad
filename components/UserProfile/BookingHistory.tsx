@@ -9,7 +9,6 @@ interface Props {
 function BookingHistory({ bookings }: Props) {
   const [amount, setAmount] = useState(4);
   const filtered = bookings.length > 0 ? bookings.slice(0, amount) : [];
-
   return (
     <div>
       <div className="text-base font-bold">Lịch sử đặt hẹn</div>
