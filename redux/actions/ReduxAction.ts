@@ -70,6 +70,7 @@ const couponsAction = (type: any, coupons: Coupon[] | null) => {
   };
 };
 export {
+  usersAction,
   bannersAction,
   adminAction,
   rolesAction,

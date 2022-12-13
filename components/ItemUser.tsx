@@ -55,7 +55,7 @@ function ItemUser({ index, user }: Props) {
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
         {user?.last_update}
       </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+      {/* <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
         {user?.last_update}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
@@ -63,15 +63,15 @@ function ItemUser({ index, user }: Props) {
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
         {user?.last_update}
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+      </Table.Cell> */}
+      {/* <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
         <a
           href="/tables"
           className="font-medium text-blue-600 hover:underline dark:text-blue-500"
         >
           Edit
         </a>
-      </Table.Cell>
+      </Table.Cell> */}
     </Table.Row>
   );
 }
