@@ -1,4 +1,4 @@
-import { Button } from "flowbite-react";
+import { Button, Table } from "flowbite-react";
 import moment from "moment";
 import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
@@ -8,14 +8,16 @@ import { User } from "../../../utils/types";
 import { CSVLink, CSVDownload } from "react-csv";
 import { DocumentArrowDownIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-
+import { io } from "socket.io-client";
+import { mainApi } from "../../../api/endpoint";
+import ItemUser from "../../../components/ItemUser";
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Example() {
   const [users, setUsers] = useState<User[] | null>(null);
-
+  const [socket, setSocket] = useState<any | null>(null);
   const callData = async (tab: string) => {
     tab == "user" && (await getAllUser());
     tab == "doctor" && (await getAllDoctor());
@@ -57,7 +59,26 @@ export default function Example() {
   useEffect(() => {
     getAllUser();
   }, []);
-
+  useEffect(() => {
+    if (!socket) {
+      setSocket(
+        io(mainApi, {
+          withCredentials: true,
+          transports: ["websocket", "polling"],
+        })
+      );
+    }
+    if (socket) {
+      socket.on("pancake_hook", (data: any) => {
+        const index = users?.findIndex((item) => item.id === data.id);
+        if (users && index) {
+          users[index] = data;
+          console.log(data);
+          setUsers(users);
+        }
+      });
+    }
+  }, [socket]);
   return (
     <div className="px-4 sm:px-6 lg:px-8 mt-6">
       <Head>
@@ -95,10 +116,49 @@ export default function Example() {
               </Button>
             </Button.Group>
           </div> */}
-          <div className="mt-8 flex flex-col">
+          <Table className="overflow-x-auto mt-8">
+            <Table.Head>
+              <Table.HeadCell className="whitespace-nowrap">STT</Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">Họtên</Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">Avatar</Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">Tuổi</Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">Ngày tạo</Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">Chi nhánh</Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">Quận Huyện</Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">Trạng thái KH</Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">
+                Trạng thái chi tiết
+              </Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">
+                Dạng tương tác
+              </Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">
+                Kết quả tương tác
+              </Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">
+                Nhân viên LiveChat
+              </Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">Nguồn khách</Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">
+                Cập nhật gần nhât
+              </Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">Chi nhánh</Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">Chi nhánh</Table.HeadCell>
+              <Table.HeadCell className="whitespace-nowrap">
+                <span className="sr-only">Edit</span>
+              </Table.HeadCell>
+            </Table.Head>
+            <Table.Body className="divide-y">
+              {users.length > 0 &&
+                users.map((item, index) => {
+                  return <ItemUser key={index} user={item} index={index} />;
+                })}
+            </Table.Body>
+          </Table>
+          {/* <div className="mt-8 flex flex-col overflow-x-auto">
             <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+              <div className="inline-block overflow-x-auto w-full py-2 align-middle md:px-6 lg:px-8">
+                <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                   <table className="min-w-full divide-y divide-gray-300">
                     <thead className="bg-gray-50">
                       <tr>
@@ -114,13 +174,77 @@ export default function Example() {
                         >
                           Họ tên
                         </th>
+                        <th
+                          scope="col"
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                        >
+                          Avatar
+                        </th>
+                        <th
+                          scope="col"
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                        >
+                          Tuổi
+                        </th>
+                        <th
+                          scope="col"
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                        >
+                          Chi Nhánh
+                        </th>
+                        <th
+                          scope="col"
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                        >
+                          Trạng thái KH
+                        </th>
+                        <th
+                          scope="col"
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                        >
+                          Trạng thái chi tiết
+                        </th>
 
+                        <th
+                          scope="col"
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                        >
+                          Dạng tương tác
+                        </th>
+                        <th
+                          scope="col"
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                        >
+                          Kết quả tương tác
+                        </th>
+                        <th
+                          scope="col"
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                        >
+                          Nhân viên LiveChat
+                        </th>
+                        <th
+                          scope="col"
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                        >
+                          Nguồn khách
+                        </th>
+                        <th
+                          scope="col"
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                        >
+                          Ngày cập nhật gần nhất
+                        </th>
                         <th
                           scope="col"
                           className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                         >
-                          Ngày gia nhập
+                          Ngày tạo
                         </th>
+                        <th
+                          scope="col"
+                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                        ></th>
                         <th
                           scope="col"
                           className="relative py-3.5 pl-3 pr-4 sm:pr-6 md:pr-0"
@@ -177,7 +301,7 @@ export default function Example() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </main>
       ) : (
         <div>Loading...</div>

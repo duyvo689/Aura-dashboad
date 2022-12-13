@@ -1,77 +1,77 @@
 import { Table } from "flowbite-react";
+import moment from "moment";
 import Link from "next/link";
+import { crmStatus, interacType } from "../constants/crm";
 import { formatPhoneNumber } from "../utils/helpers/formatPhoneNumber";
 import { User } from "../utils/types";
 
 interface Props {
   index: number;
-  item: User;
+  user: User;
 }
 
-function ItemUser({ index, item }: Props) {
+function ItemUser({ index, user }: Props) {
   return (
-    <Table.Row className="bg-white text-center ">
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900">
-        {index + 1}
+    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {index}
       </Table.Cell>
-      <Table.Cell>{item.id}</Table.Cell>
-      <Table.Cell>{item.name}</Table.Cell>
-      <Table.Cell>{item.phone ? formatPhoneNumber(item.phone) : "..."}</Table.Cell>
-      <Table.Cell>
-        <div className="flex justify-center">
-          <img className="w-10 h-10" src={item.avatar} />
-        </div>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user.name}
       </Table.Cell>
-      {/* <Table.Cell>
-        <div className="flex gap-1 justify-end">
-          <button
-            className="text-primary"
-            // onClick={() => {
-            //   setChain(item);
-            //   setOpenModal(true);
-            //   setIndexGenre(index);
-            // }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-              />
-            </svg>
-          </button>
-          <button
-            className="text-red-500 hover:text-red-700 cursor-pointer"
-            onClick={() => {
-              //   setOpenDelete(true);
-              //   setChain(item);
-              //   setIndexGenre(index);
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
-          </button>
-        </div>
-      </Table.Cell> */}
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user.avatar ? <img src={user.avatar} /> : null}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.age}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {moment(user.created_at).format("DD/MM/YYYY")}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.clinic}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.district}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.status ? crmStatus[user?.status - 1].title : null}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.status ? user?.details_status : null}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.interact_type ? interacType[user?.interact_type - 1].title : null}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.interact_result}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.live_chat}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.customer_resource}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.last_update}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.last_update}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.last_update}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {user?.last_update}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        <a
+          href="/tables"
+          className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+        >
+          Edit
+        </a>
+      </Table.Cell>
     </Table.Row>
   );
 }

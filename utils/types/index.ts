@@ -30,8 +30,20 @@ interface User {
   id: number;
   created_at: string;
   phone: string;
-  avatar: string;
+  avatar?: string;
   name: string;
+  zalo_id?: string;
+  status?: number;
+  details_status?: number;
+  interact_type?: number;
+  interact_result?: string;
+  district?: string;
+  live_chat?: string;
+  last_update?: string;
+  age?: number;
+  customer_resource?: string;
+  gender?: string;
+  clinic?: string;
 }
 interface Banner {
   id: string;
