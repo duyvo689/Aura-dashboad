@@ -146,6 +146,7 @@ interface Coupon {
 }
 export type {
   Checkout,
+  Coupon,
   Role,
   User,
   Banner,
