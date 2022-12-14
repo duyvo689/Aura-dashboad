@@ -34,9 +34,10 @@ interface User {
   name: string;
   zalo_id?: string;
   status?: number;
+  address?: string;
   details_status?: number;
   interact_type?: number;
-  interact_result?: string;
+  interact_result?: number;
   district?: string;
   live_chat?: string;
   last_update?: string;

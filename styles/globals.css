@@ -149,3 +149,9 @@ button,
 [type='submit'] {
   cursor: pointer;
 }
+.css-166bipr-Input input, .css-qbdosj-Input input:focus{
+box-shadow: none !important;
+}
+.css-13cymwt-control:hover {
+border-color:#2684FF !important
+}
