@@ -4,38 +4,35 @@ import Head from "next/head";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { supabase } from "../../../services/supaBaseClient";
-import { Clinic, User } from "../../../utils/types";
-import { CSVLink, CSVDownload } from "react-csv";
-import {
-  ChevronDownIcon,
-  DocumentArrowDownIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
-import Link from "next/link";
+import { Clinic, CustomerStatus, User } from "../../../utils/types";
+import { CSVLink } from "react-csv";
+import { DocumentArrowDownIcon } from "@heroicons/react/24/outline";
+
 import { io } from "socket.io-client";
 import { mainApi } from "../../../api/endpoint";
 import ItemUser from "../../../components/ItemUser";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/reducers";
-import { clinicsAction, usersAction } from "../../../redux/actions/ReduxAction";
+import {
+  clinicsAction,
+  customerStatusAction,
+  usersAction,
+} from "../../../redux/actions/ReduxAction";
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 import * as React from "react";
-import { DataGrid, GridColumns, GridRowsProp } from "@mui/x-data-grid";
-import VNProvinces from "../../../constants/VNProvince";
+
 import SearchBar from "../../../components/SearchBar";
-import { Dialog, Disclosure, Menu, Popover, Transition } from "@headlessui/react";
+
 import FilterBar from "../../../components/FilterBar";
-// import clinics from "../clinics";
-// import {
-//   randomCreatedDate,
-//   randomTraderName,
-//   randomUpdatedDate,
-// } from "@mui/x-data-grid-generator";
+
 export default function Example() {
   const users: User[] = useSelector((state: RootState) => state.users);
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
+  const customerStatus: CustomerStatus[] = useSelector(
+    (state: RootState) => state.customerStatus
+  );
   // const [filterUser, setFilterUser] = useState<User[] | null>(null);
   const dispatch = useDispatch();
   const [socket, setSocket] = useState<any | null>(null);
@@ -52,40 +49,17 @@ export default function Example() {
       dispatch(clinicsAction("clinics", clinics));
     }
   };
-  useEffect(() => {
-    if (!clinics) {
-      getAllClinic();
+  const getAllCustomerStatus = async () => {
+    let { data, error } = await supabase.from("customer_status").select("*");
+    if (error) {
+      toast(error.message);
+      return;
     }
-  }, []);
-
-  // const callData = async (tab: string) => {
-  //   tab == "user" && (await getAllUser());
-  //   tab == "doctor" && (await getAllDoctor());
-  //   tab == "staff" && (await getAllStaff());
-  // };
-
-  // const getAllStaff = async () => {
-  //   let { data, error } = await supabase.from("staffs").select(`*`);
-  //   if (error) {
-  //     toast(error.message);
-  //     return;
-  //   }
-  //   if (data) {
-  //     setUsers(data);
-  //   }
-  // };
-
-  // const getAllDoctor = async () => {
-  //   let { data, error } = await supabase.from("doctors").select(`*`);
-  //   if (error) {
-  //     toast(error.message);
-  //     return;
-  //   }
-  //   if (data) {
-  //     setUsers(data);
-  //   }
-  // };
-
+    if (data) {
+      console.log(data);
+      dispatch(customerStatusAction("customerStatus", data));
+    }
+  };
   const getAllUser = async () => {
     const { data: allUsers, error } = await supabase
       .from("users")
@@ -104,7 +78,13 @@ export default function Example() {
     if (!users) {
       getAllUser();
     }
-  }, [users]);
+    if (!clinics) {
+      getAllClinic();
+    }
+    if (!customerStatus) {
+      getAllCustomerStatus();
+    }
+  }, []);
   useEffect(() => {
     if (users) {
       if (!socket) {
@@ -139,7 +119,7 @@ export default function Example() {
         <title>Người Dùng</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      {users ? (
+      {users && customerStatus ? (
         <main className="flex flex-col gap-4">
           <div className="sm:flex sm:items-center">
             <div className="sm:flex-auto">
@@ -158,7 +138,7 @@ export default function Example() {
             </div>
           </div>
           <SearchBar />
-          <FilterBar />
+          <FilterBar customerStatus={customerStatus} />
           <Table className="mt-8 min-w-full divide-y divide-gray-200">
             <Table.Head className="bg-gray-50 sticky top-0">
               <Table.HeadCell className="whitespace-nowrap text-center z-10 bg-gray-50  sticky min-w-[100px] left-0">

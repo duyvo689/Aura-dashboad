@@ -9,6 +9,7 @@ import {
   WalletIcon,
   ClipboardDocumentCheckIcon,
   GiftIcon,
+  PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 import mainLogo from "../public/images/mainlogo.svg";
 import Link from "next/link";
@@ -68,6 +69,12 @@ const navigation = [
     href: "/dashboard/coupons",
     icon: GiftIcon,
     pathName: "coupons",
+  },
+  {
+    name: "Quản lý tình trạng KH",
+    href: "/dashboard/customer-status",
+    icon: PencilSquareIcon,
+    pathName: "customer-status",
   },
   // {
   //   name: "Quản lý thanh toán",

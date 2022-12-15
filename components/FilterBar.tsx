@@ -1,12 +1,17 @@
 import { Dialog, Disclosure, Menu, Popover, Transition } from "@headlessui/react";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Fragment, useState } from "react";
+import { CustomerStatus } from "../utils/types";
+import _ from "lodash";
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
-
-function FilterBar() {
+interface Props {
+  customerStatus: CustomerStatus[];
+}
+function FilterBar({ customerStatus }: Props) {
   const [open, setOpen] = useState(false);
+  let grouped_data = _.groupBy(customerStatus, "type");
   const sortOptions = [
     { name: "Phú Yên ", value: "12" },
     { name: "Đồng Tháp", value: "32" },
@@ -14,40 +19,24 @@ function FilterBar() {
   ];
   const filters = [
     {
-      id: "brand",
+      id: "status",
       name: "Trạng thái KH",
-      options: [
-        { value: "clothing-company", label: "Clothing Company" },
-        { value: "fashion-inc", label: "Fashion Inc." },
-        { value: "shoes-n-more", label: "Shoes 'n More" },
-      ],
+      options: grouped_data.customer_status,
     },
     {
-      id: "color",
+      id: "details_status",
       name: "Trạng thái chi tiết",
-      options: [
-        { value: "white", label: "White" },
-        { value: "black", label: "Black" },
-        { value: "grey", label: "Grey" },
-      ],
+      options: grouped_data.status_details,
     },
     {
-      id: "sizes",
+      id: "interact_type",
       name: "Dạng tương tác",
-      options: [
-        { value: "s", label: "S" },
-        { value: "m", label: "M" },
-        { value: "l", label: "L" },
-      ],
+      options: grouped_data.interact_type,
     },
     {
-      id: "sizes",
-      name: "Nhận viên live chat",
-      options: [
-        { value: "s", label: "S" },
-        { value: "m", label: "M" },
-        { value: "l", label: "L" },
-      ],
+      id: "interact_result",
+      name: "Kết quả tưong tác",
+      options: grouped_data.interact_result,
     },
   ];
   const [filterOptions, setFilterOptions] = useState<any>({
@@ -57,12 +46,9 @@ function FilterBar() {
   });
 
   return (
-    <div className="bg-gray-50">
-      <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:max-w-7xl lg:px-8">
-        <section
-          aria-labelledby="filter-heading"
-          className="border-t border-gray-200 py-6"
-        >
+    <div className="bg-gray-50 z-30">
+      <div className="max-w-screen px-4 text-center sm:px-6 lg:px-8">
+        <section aria-labelledby="filter-heading" className=" py-3">
           <div className="flex items-center justify-between">
             <Menu as="div" className="relative inline-block text-left">
               <div>
@@ -143,11 +129,11 @@ function FilterBar() {
                     <Popover.Panel className="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <form className="space-y-4">
                         {section.options.map((option, optionIdx) => (
-                          <div key={option.value} className="flex items-center">
+                          <div key={optionIdx} className="flex items-center">
                             <input
                               id={`filter-${section.id}-${optionIdx}`}
                               name={`${section.id}[]`}
-                              defaultValue={option.value}
+                              defaultValue={option.id}
                               type="checkbox"
                               className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                             />
@@ -155,7 +141,7 @@ function FilterBar() {
                               htmlFor={`filter-${section.id}-${optionIdx}`}
                               className="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900"
                             >
-                              {option.label}
+                              {option.name}
                             </label>
                           </div>
                         ))}

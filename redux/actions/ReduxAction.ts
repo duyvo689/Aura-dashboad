@@ -7,6 +7,7 @@ import {
   Payment,
   Customer,
   Coupon,
+  CustomerStatus,
 } from "../../utils/types";
 const rolesAction = (type: any, roles: Role[] | null) => {
   return {
@@ -69,6 +70,12 @@ const couponsAction = (type: any, coupons: Coupon[] | null) => {
     coupons,
   };
 };
+const customerStatusAction = (type: any, customerStatus: CustomerStatus[] | null) => {
+  return {
+    type,
+    customerStatus,
+  };
+};
 export {
   usersAction,
   bannersAction,
@@ -80,4 +87,5 @@ export {
   paymentAction,
   customerAction,
   couponsAction,
+  customerStatusAction,
 };

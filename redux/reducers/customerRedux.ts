@@ -4,7 +4,7 @@ interface CUSTOMER {
   type: string;
 }
 
-const adminRedux = (state = [], action: CUSTOMER) => {
+const adminRedux = (state = null, action: CUSTOMER) => {
   switch (action.type) {
     case "customers":
       return action.customers;

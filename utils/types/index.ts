@@ -145,6 +145,13 @@ interface Coupon {
   end_date: string;
   start_date: string;
 }
+interface CustomerStatus {
+  id: string;
+  created_at: string;
+  active: boolean;
+  name: string;
+  type: string;
+}
 export type {
   Checkout,
   Coupon,
@@ -158,4 +165,5 @@ export type {
   Customer,
   OpenModal,
   Booking,
+  CustomerStatus,
 };
