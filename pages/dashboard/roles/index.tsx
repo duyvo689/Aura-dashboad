@@ -135,7 +135,7 @@ function RolesPage() {
       toast(error.message);
       return;
     }
-    console.log(data, error);
+
     if (error) {
       return;
     }

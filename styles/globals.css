@@ -155,3 +155,6 @@ box-shadow: none !important;
 .css-13cymwt-control:hover {
 border-color:#2684FF !important
 }
+.modal-create-booking input[type="text"] ,.modal-create-booking textarea {
+  background-color: white !important;
+}

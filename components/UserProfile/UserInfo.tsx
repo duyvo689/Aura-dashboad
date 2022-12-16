@@ -12,7 +12,11 @@ function UserInfo({ userInfo }: Props) {
   return (
     <div className="flex flex-col gap-4 ">
       <div className="flex flex-col gap-2">
-        <img src={userInfo.avatar} className="w-20 h-20 rounded-lg" alt="User Profile" />
+        <img
+          src={userInfo.avatar ? userInfo.avatar : "../images/default-avatar.png"}
+          className="w-20 h-20 rounded-lg"
+          alt="User Profile"
+        />
         <div className="text-xl font-bold">{userInfo.name}</div>
         <div className="flex gap-1 items-center">
           <UserPlusIcon className="w-5 h-5" />

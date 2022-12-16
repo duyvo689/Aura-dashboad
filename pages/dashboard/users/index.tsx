@@ -4,7 +4,14 @@ import Head from "next/head";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { supabase } from "../../../services/supaBaseClient";
-import { Clinic, CustomerStatus, CustomerStatusReturn, User } from "../../../utils/types";
+import {
+  Clinic,
+  CustomerStatus,
+  CustomerStatusReturn,
+  Doctor,
+  Service,
+  User,
+} from "../../../utils/types";
 import { CSVLink } from "react-csv";
 import { DocumentArrowDownIcon } from "@heroicons/react/24/outline";
 
@@ -16,6 +23,8 @@ import { RootState } from "../../../redux/reducers";
 import {
   clinicsAction,
   customerStatusAction,
+  doctorAction,
+  servicesAction,
   usersAction,
 } from "../../../redux/actions/ReduxAction";
 function classNames(...classes: any) {
@@ -30,6 +39,8 @@ import FilterBar from "../../../components/FilterBar";
 export default function Example() {
   const users: User[] = useSelector((state: RootState) => state.users);
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
+  const doctors: Doctor[] = useSelector((state: RootState) => state.doctors);
+  const services: Service[] = useSelector((state: RootState) => state.services);
   const customerStatus: CustomerStatusReturn = useSelector(
     (state: RootState) => state.customerStatus
   );
@@ -72,6 +83,31 @@ export default function Example() {
       dispatch(usersAction("users", allUsers));
     }
   };
+  const getAllDoctor = async () => {
+    const { data: doctors, error } = await supabase
+      .from("doctors")
+      .select("*,clinic_id(*)")
+      .neq("name", null);
+    if (error) {
+      toast.error("Lỗi. Thử lại");
+    } else if (doctors) {
+      dispatch(doctorAction("doctors", doctors));
+    }
+  };
+  const getAllService = async () => {
+    let { data, error } = await supabase
+      .from("services")
+      .select(`*`)
+      .match({ active: true });
+    if (error) {
+      toast(error.message);
+      return;
+    }
+    if (data) {
+      console.log(data);
+      dispatch(servicesAction("services", data));
+    }
+  };
   useEffect(() => {
     if (!users) {
       getAllUser();
@@ -81,6 +117,12 @@ export default function Example() {
     }
     if (!customerStatus) {
       getAllCustomerStatus();
+    }
+    if (!doctors) {
+      getAllDoctor();
+    }
+    if (!services) {
+      getAllService();
     }
   }, []);
   useEffect(() => {
@@ -117,13 +159,13 @@ export default function Example() {
   }, [users]);
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 mt-6">
+    <div className="px-4 sm:px-6 lg:px-8 mt-6 h-screen">
       <Head>
         <title>Người Dùng</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
       {filterUser && customerStatus ? (
-        <main className="flex flex-col gap-4">
+        <main className="flex flex-col gap-4 ">
           <div className="sm:flex sm:items-center">
             <div className="sm:flex-auto">
               <h1 className="text-xl font-semibold text-gray-900">
@@ -146,7 +188,7 @@ export default function Example() {
             setFilterUser={setFilterUser}
             filterUser={users}
           />
-          <Table className="mt-8 min-w-full min-h-full  divide-y divide-gray-200">
+          <Table className="mt-8  divide-y divide-gray-200">
             <Table.Head className="bg-gray-50 sticky top-0">
               <Table.HeadCell className="whitespace-nowrap text-center z-10 bg-gray-50  sticky min-w-[100px] left-0">
                 STT
@@ -195,7 +237,7 @@ export default function Example() {
               </Table.HeadCell>
             </Table.Head>
             <Table.Body className="bg-white divide-y divide-gray-200">
-              {filterUser.length > 0 &&
+              {filterUser.length > 0 ? (
                 clinics &&
                 filterUser.map((item, index) => {
                   return (
@@ -206,7 +248,14 @@ export default function Example() {
                       customerStatusGroup={customerStatus.group}
                     />
                   );
-                })}
+                })
+              ) : (
+                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-center max-h-2 ">
+                  <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white bg-white text-center">
+                    Không có dữ liệu
+                  </Table.Cell>
+                </Table.Row>
+              )}
             </Table.Body>
           </Table>
         </main>

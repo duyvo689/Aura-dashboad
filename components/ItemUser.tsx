@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { Table, TextInput } from "flowbite-react";
+import { Button, Table, TextInput } from "flowbite-react";
 import moment from "moment";
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import { LiveChat, statusMapping } from "../constants/crm";
@@ -13,6 +13,7 @@ import { usersAction } from "../redux/actions/ReduxAction";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/reducers";
 import NewBookingModal from "./NewBookingModal";
+import Link from "next/link";
 interface Props {
   index: number;
   user: User;
@@ -37,7 +38,7 @@ function ItemUser({ index, user, customerStatusGroup }: Props) {
   const [newPhone, setNewPhone] = useState<string>(user.phone);
   const [newAge, setNewAge] = useState<number | null>(user.age ? user.age : null);
   const users: User[] = useSelector((state: RootState) => state.users);
-
+  const [openCreateBookingModal, setOpenCreateBookingModal] = useState(false);
   const [edit, setEdit] = useState<string>("");
   const deleteEdit = useRef(null);
   useOutsideAlerter(deleteEdit);
@@ -82,34 +83,35 @@ function ItemUser({ index, user, customerStatusGroup }: Props) {
       toast.success("Cập nhật thành công");
     }
   };
-  // console.log(
-  //   LiveChat.find((item) => {
-  //     return item.value === user.live_chat;
-  //   })
-  // );
 
   return (
-    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-center ">
+    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-center max-h-2 ">
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white bg-white sticky z-10 left-0 min-w-[100px]">
         {index}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white bg-white sticky z-10 left-[100px] min-w-[250px]">
-        <div className="flex items-center gap-3">
-          {user.avatar ? (
-            <img src={user.avatar} className="w-10 h-10 rounded-full" />
-          ) : (
-            <img src="../images/default-avatar.png" className="w-10 h-10 rounded-full" />
-          )}
-          <div className="flex flex-col items-start justify-start ">
-            <div className="text-base text-sky-700">{user.name}</div>
-            <div className="flex gap-1">
-              <MapPinIcon className="w-4 h-4 rounded-full" />
-              <div className="text-sm text-slate-400">
-                {user?.address ? user.address : "Chưa cập nhật"}
+        <Link href={`/user-profile/${user.id}`}>
+          <div className="flex items-center gap-3 cursor-pointer">
+            {user.avatar ? (
+              <img src={user.avatar} className="w-10 h-10 rounded-full" />
+            ) : (
+              <img
+                src="../images/default-avatar.png"
+                className="w-10 h-10 rounded-full"
+              />
+            )}
+            <div className="flex flex-col items-start justify-start ">
+              <div className="text-base text-sky-700">{user.name}</div>
+              <div className="flex gap-1">
+                {/* <MapPinIcon className="w-4 h-4 rounded-full" /> */}
+                <div className="text-sm">Mã KH: </div>
+                <div className="text-sm text-slate-400 font-normal">
+                  {`KH-${user.id.split("-")[0].toUpperCase()}`}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </Link>
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
         <div ref={edit === "phone" ? deleteEdit : null}>
@@ -385,7 +387,19 @@ function ItemUser({ index, user, customerStatusGroup }: Props) {
         <div className="flex gap-1">
           {/* <CalendarIcon stroke="red" /> */}
           {/* <div className="text-green-300 text-base font-bold">Đặt lịch hẹn</div> */}
-          <NewBookingModal />
+          <Button
+            onClick={() => {
+              setOpenCreateBookingModal(true);
+            }}
+          >
+            Đặt lịch hẹn
+          </Button>
+          {openCreateBookingModal && (
+            <NewBookingModal
+              user={user}
+              setOpenCreateBookingModal={setOpenCreateBookingModal}
+            />
+          )}
         </div>
       </Table.Cell>
     </Table.Row>

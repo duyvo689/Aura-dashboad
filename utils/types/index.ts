@@ -22,12 +22,12 @@ export interface Doctor {
   name: string;
   phone: string;
   age: number;
-  avatar: string;
+  avatar: string | null;
   clinic_id: Clinic;
   created_at: string;
 }
 interface User {
-  id: number;
+  id: string;
   created_at: string;
   phone: string;
   avatar: string | null;
@@ -60,6 +60,7 @@ interface Clinic {
   address: string;
   description: string;
   active: boolean;
+  district: string | null;
 }
 interface Service {
   id: string;

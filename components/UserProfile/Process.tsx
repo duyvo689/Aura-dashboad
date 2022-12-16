@@ -17,7 +17,11 @@ function Process({ booking, user, checkout }: Props) {
     <div className="p-6 drop-shadow-md border rounded-lg w-full">
       <div className="flex flex-col gap-6">
         <div className="flex  items-center gap-2">
-          <img className="w-10 h-10 rounded-full" src={user.avatar} alt="profile image" />
+          <img
+            className="w-10 h-10 rounded-full"
+            src={user.avatar ? user.avatar : "../images/default-avatar.png"}
+            alt="profile image"
+          />
           <div>
             <div className="block">{user.name}</div>
             <div>
@@ -85,7 +89,10 @@ function Process({ booking, user, checkout }: Props) {
               {booking.doctor_id.map((item, index) => {
                 return (
                   <div key={index} className="flex items-center gap-2">
-                    <img className="w-12 h-12 rounded-full" src={item.avatar} />
+                    <img
+                      className="w-12 h-12 rounded-full"
+                      src={item.avatar ? item.avatar : "../images/default-avatar.png"}
+                    />
                     <div className="flex flex-col gap-1">
                       <div>
                         Họ tên: <span className="font-bold"> {item.name}</span>

@@ -8,6 +8,7 @@ import {
   Customer,
   Coupon,
   CustomerStatus,
+  Doctor,
 } from "../../utils/types";
 const rolesAction = (type: any, roles: Role[] | null) => {
   return {
@@ -76,6 +77,12 @@ const customerStatusAction = (type: any, customerStatus: CustomerStatus[] | null
     customerStatus,
   };
 };
+const doctorAction = (type: any, doctors: Doctor[] | null) => {
+  return {
+    type,
+    doctors,
+  };
+};
 export {
   usersAction,
   bannersAction,
@@ -88,4 +95,5 @@ export {
   customerAction,
   couponsAction,
   customerStatusAction,
+  doctorAction,
 };

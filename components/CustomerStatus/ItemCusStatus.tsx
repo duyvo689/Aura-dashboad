@@ -2,7 +2,7 @@ import { Switch } from "@headlessui/react";
 import { Table } from "flowbite-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { statusMapping } from "../../constants/crm";
+import { statusMapping, statusTypeColor } from "../../constants/crm";
 import { RootState } from "../../redux/reducers";
 import { CustomerStatus } from "../../utils/types";
 import ModalToggleActive from "../ModalToggleActive";
@@ -13,7 +13,7 @@ interface Props {
   index: number;
 }
 type ObjectKey = keyof typeof statusMapping;
-
+type ColorTypeKey = keyof typeof statusTypeColor;
 function ItemCusStatus({ index, customerStatus }: Props) {
   const [openModalToggle, setOpenModalToggle] = useState<boolean>(false);
   const [selectedToggle, setSelectedToggle] = useState<{
@@ -29,8 +29,14 @@ function ItemCusStatus({ index, customerStatus }: Props) {
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white bg-white">
         {customerStatus.name}
       </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white bg-white">
-        {statusMapping[customerStatus.type as ObjectKey]}
+      <Table.Cell>
+        <div
+          className={`whitespace-nowrap font-medium inline-block py-1 px-2 rounded-full ${
+            statusTypeColor[customerStatus.type as ColorTypeKey]
+          }`}
+        >
+          {statusMapping[customerStatus.type as ObjectKey]}
+        </div>
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white bg-white">
         <Switch

@@ -1,30 +1,16 @@
 import { Switch } from "@headlessui/react";
-import Tippy from "@tippyjs/react";
-import moment from "moment";
+
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import ModalDelete from "../../../components/ModalDelete";
 import ModalToggleActive from "../../../components/ModalToggleActive";
 import { clinicsAction } from "../../../redux/actions/ReduxAction";
 import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
 import { uploadImageProduct } from "../../../utils/funtions";
 import { Clinic, OpenModal } from "../../../utils/types";
-import NewModalDelete from "../services/modal-delete";
-
-interface Toggle {
-  index: number;
-  isEdit: boolean;
-  value: {
-    name: string;
-    description: string;
-    image: string;
-    address: string;
-  };
-}
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -96,37 +82,43 @@ export default function ClinicPage() {
                       <tr>
                         <th
                           scope="col"
-                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
+                          className="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
                         >
                           STT
                         </th>
                         <th
                           scope="col"
-                          className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                          className="py-3.5 px-3 text-center text-sm font-semibold text-gray-900"
                         >
                           Tên phòng khám
                         </th>
                         <th
                           scope="col"
-                          className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                          className="py-3.5 px-3 text-center text-sm font-semibold text-gray-900"
                         >
                           Hình ảnh
                         </th>
                         <th
                           scope="col"
-                          className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                          className="py-3.5 px-3 text-center text-sm font-semibold text-gray-900"
                         >
                           Địa chỉ
                         </th>
                         <th
                           scope="col"
-                          className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                          className="py-3.5 px-3 text-center text-sm font-semibold text-gray-900 whitespace-nowrap"
+                        >
+                          Vị trí
+                        </th>
+                        <th
+                          scope="col"
+                          className="py-3.5 px-3 text-center text-sm font-semibold text-gray-900"
                         >
                           Mô tả
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                          className="whitespace-nowrap px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                         >
                           Trạng thái
                         </th>
@@ -157,6 +149,9 @@ export default function ClinicPage() {
                           </td>
                           <td className="py-4 px-3 text-sm text-gray-500">
                             {clinic.address}
+                          </td>
+                          <td className="py-4 px-3 text-sm text-gray-500 whitespace-nowrap">
+                            {clinic.district ? clinic.district : "Chưa cập nhật"}
                           </td>
                           <td className="py-4 px-3 text-sm text-gray-500">
                             <span className="mint-ellipsis-three">

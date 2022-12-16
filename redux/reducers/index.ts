@@ -10,6 +10,7 @@ import paymentyRedux from "./paymentyRedux";
 import customerRedux from "./customerRedux";
 import couponRedux from "./couponRedux";
 import customerStatusRedux from "./customerStatusRedux";
+import doctorRedux from "./doctorRedux";
 const rootReducer = combineReducers({
   admin: adminRedux,
   roles: roleRedux,
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   customers: customerRedux,
   coupons: couponRedux,
   customerStatus: customerStatusRedux,
+  doctors: doctorRedux,
 });
 export type RootState = ReturnType<typeof rootReducer>;
 

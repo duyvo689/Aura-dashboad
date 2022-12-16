@@ -8,10 +8,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { clinicsAction } from "../../../../redux/actions/ReduxAction";
 import { RootState } from "../../../../redux/reducers";
 import { supabase } from "../../../../services/supaBaseClient";
-import UploadCareAPI from "../../../../services/uploadCareAPI";
 import convertImg from "../../../../utils/helpers/convertImg";
 import { Clinic } from "../../../../utils/types";
-
+import Select from "react-select";
+import VNProvinces from "../../../../constants/VNProvince";
 function UpdateClinic() {
   const { id } = useRouter().query;
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -39,6 +39,7 @@ function UpdateClinic() {
     const _name = e.target.name.value;
     const _description = e.target.description.value;
     const _address = e.target.address.value;
+    const _district = e.target.district.value;
     let _image = clinic.avatar;
 
     if (newClinicImg) {
@@ -51,6 +52,7 @@ function UpdateClinic() {
         description: _description,
         avatar: _image,
         address: _address,
+        district: _district,
       })
       .eq("id", id)
       .select()
@@ -163,8 +165,35 @@ function UpdateClinic() {
                       />
                     </div>
                   </div>
+                  <div className="sm:col-span-3 mt-6">
+                    <label
+                      htmlFor="address"
+                      className="block text-sm font-medium text-gray-700 "
+                    >
+                      Vị trí
+                    </label>
+                    <div className="mt-1">
+                      <Select
+                        name="district"
+                        placeholder={"Chọn cơ sở"}
+                        defaultValue={
+                          clinic.district
+                            ? VNProvinces.find((item) => item.value === clinic.district)
+                            : null
+                        }
+                        noOptionsMessage={({ inputValue }) =>
+                          !inputValue ? inputValue : "Không có dữ liệu"
+                        }
+                        options={VNProvinces}
+                        // onChange={(e) => {
+                        //   setSelectedDistrict(e?.value ? e.value : null);
+                        // }}
+                      ></Select>
+                    </div>
+                  </div>
                 </div>
               </div>
+
               <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                 <div className="sm:col-span-6">
                   <label

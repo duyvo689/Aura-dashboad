@@ -20,7 +20,7 @@ interface CheckedList {
 type ObjectKey = keyof CheckedList;
 const filterChecked = (userStatus: CustomerStatus | null, listStatus: string[]) => {
   if (!userStatus) return false;
-  if (listStatus.length === 0) return true;
+  if (listStatus.length === 0) return false;
   return listStatus.includes(userStatus.id);
 };
 function FilterBar({ customerStatusGroup, setFilterUser, filterUser }: Props) {
@@ -30,7 +30,7 @@ function FilterBar({ customerStatusGroup, setFilterUser, filterUser }: Props) {
     interact_type: [],
     interact_result: [],
   });
-  console.log(filterOptions);
+
   const sortOptions = [
     { name: "Phú Yên ", value: "12" },
     { name: "Đồng Tháp", value: "32" },
@@ -73,25 +73,30 @@ function FilterBar({ customerStatusGroup, setFilterUser, filterUser }: Props) {
   };
 
   useEffect(() => {
-    console.log("hello");
     if (
       filterOptions.status.length === 0 &&
       filterOptions.details_status.length == 0 &&
       filterOptions.interact_type.length === 0 &&
       filterOptions.interact_result.length === 0
     ) {
-      setFilterUser(filterUser);
+      setFilterUser([...filterUser]);
     } else {
-      const newFilter = filterUser
-        .filter((item) => filterChecked(item.status, filterOptions.status))
-        .filter((item) =>
-          filterChecked(item.details_status, filterOptions.details_status)
-        )
-        .filter((item) => filterChecked(item.interact_type, filterOptions.interact_type))
-        .filter((item) =>
-          filterChecked(item.interact_result, filterOptions.interact_result)
-        );
-      setFilterUser(newFilter);
+      const newFilter1 = filterUser.filter((item) =>
+        filterChecked(item.status, filterOptions.status)
+      );
+      const newFilter2 = filterUser.filter((item) =>
+        filterChecked(item.details_status, filterOptions.details_status)
+      );
+      const newFilter3 = filterUser.filter((item) =>
+        filterChecked(item.interact_type, filterOptions.interact_type)
+      );
+      const newFilter4 = filterUser.filter((item) =>
+        filterChecked(item.interact_result, filterOptions.interact_result)
+      );
+
+      setFilterUser(
+        _.uniqBy([...newFilter1, ...newFilter2, ...newFilter3, ...newFilter4], "id")
+      );
     }
   }, [filterOptions]);
 
@@ -100,10 +105,10 @@ function FilterBar({ customerStatusGroup, setFilterUser, filterUser }: Props) {
       <div className="max-w-screen px-4 text-center sm:px-6 lg:px-8">
         <section aria-labelledby="filter-heading" className=" py-3">
           <div className="flex items-center justify-between">
-            <Menu as="div" className="relative inline-block text-left">
+            {/* <Menu as="div" className="relative inline-block text-left">
               <div>
                 <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                  {/* {filterOptions.clinic ? filterOptions.clinic.name : "Chi nhánh"} */}
+                  {filterOptions.clinic ? filterOptions.clinic.name : "Chi nhánh"}
                   <ChevronDownIcon
                     className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                     aria-hidden="true"
@@ -147,8 +152,23 @@ function FilterBar({ customerStatusGroup, setFilterUser, filterUser }: Props) {
                   </div>
                 </Menu.Items>
               </Transition>
-            </Menu>
-
+            </Menu> */}
+            <div>
+              <button
+                type="button"
+                className="text-gray-500"
+                onClick={() => {
+                  setFilterOptions({
+                    status: [],
+                    details_status: [],
+                    interact_type: [],
+                    interact_result: [],
+                  });
+                }}
+              >
+                Loại bỏ
+              </button>
+            </div>
             <Popover.Group className="hidden sm:flex sm:items-baseline sm:space-x-8">
               {filters.map((section, sectionIdx) => (
                 <Popover

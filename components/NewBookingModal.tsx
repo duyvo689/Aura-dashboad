@@ -1,15 +1,38 @@
+/* eslint-disable @next/next/no-img-element */
 import { Button, Checkbox, Label, Modal, Textarea, TextInput } from "flowbite-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { LiveChat } from "../constants/crm";
 import { RootState } from "../redux/reducers";
-import { Clinic, Doctor, Service } from "../utils/types";
+import { Clinic, Doctor, Service, User } from "../utils/types";
 import Select from "react-select";
-function NewBookingModal() {
-  const [open, setOpen] = useState(false);
+import { convertVnd } from "../utils/helpers/convertToVND";
+import { createBookingCode } from "../utils/helpers/createBookingCode";
+import moment from "moment";
+import { supabase } from "../services/supaBaseClient";
+import toast from "react-hot-toast";
+import CalendarBooking from "../public/lottie/calendar-booking.json";
+import Lottie from "lottie-react";
+interface Props {
+  user: User;
+  setOpenCreateBookingModal: any;
+}
+type ConvertDoctor = {
+  value: string;
+  label: string;
+  image: string | null;
+  phone: string;
+};
+function NewBookingModal({ user, setOpenCreateBookingModal }: Props) {
+  const [isLoading, setIsLoading] = useState(false);
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
   const services: Service[] = useSelector((state: RootState) => state.services);
-  const tempClinic = clinics.map((item) => {
+  const doctors: Doctor[] = useSelector((state: RootState) => state.doctors);
+  const [selectedClinic, setSelectedClinic] = useState<string | null>(null);
+  const [convertDoctorSelect, setConvertDoctorSelect] = useState<ConvertDoctor[] | null>(
+    null
+  );
+  const convertClinicSelect = clinics.map((item) => {
     return {
       value: item.id,
       label: item.name,
@@ -17,7 +40,7 @@ function NewBookingModal() {
       address: item.address,
     };
   });
-  const tempServices = services?.map((item) => {
+  const convertServiceSelect = services.map((item) => {
     return {
       value: item.id,
       label: item.name,
@@ -25,20 +48,57 @@ function NewBookingModal() {
       price: item.price,
     };
   });
-
+  useEffect(() => {
+    if (selectedClinic !== null && doctors) {
+      setConvertDoctorSelect(
+        doctors
+          .filter((item) => item.clinic_id.id === selectedClinic)
+          .map((item) => {
+            return {
+              value: item.id,
+              label: item.name,
+              image: item.avatar,
+              phone: item.phone,
+            };
+          })
+      );
+    }
+  }, [selectedClinic, doctors]);
+  const createNewBooking = async (e: any) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const doctor = doctors.find((item) => item.id === e.target.doctor.value);
+    const service = services.find((item) => (item.id = e.target.service.value));
+    const newBookingOpt = {
+      id: createBookingCode(),
+      date: moment(e.target.date.value).format(),
+      time_type: moment(e.target.date.value).format("H:mm"),
+      description: e.target.description.value,
+      clinic_id: e.target.clinic.value,
+      doctor_id: [doctor],
+      service_id: [service],
+      patient_id: user.id,
+      status: 2,
+    };
+    const { data: newBooking, error: newBookingError } = await supabase
+      .from("bookings")
+      .insert([newBookingOpt])
+      .select(`*,clinic_id(*),patient_id(*)`)
+      .single();
+    if (newBookingError) {
+      toast.error("Lỗi.Thử lại");
+    } else if (newBooking) {
+      toast.success("Tạo booking thành công");
+      setOpenCreateBookingModal(false);
+    }
+    setIsLoading(false);
+  };
   return (
     <React.Fragment>
-      <Button
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
-        Đặt lịch hẹn
-      </Button>
-      <Modal show={open} size="3xl" popup={true}>
+      <Modal show={true} size="3xl" popup={true}>
         <Modal.Header
           onClick={() => {
-            setOpen(false);
+            setOpenCreateBookingModal(false);
           }}
         />
         <Modal.Body>
@@ -46,83 +106,155 @@ function NewBookingModal() {
             <h3 className="text-xl font-medium text-gray-900 dark:text-white">
               Đặt lịch hẹn mới
             </h3>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="name" value="Tên khách hàng" />
+            {/* <div className="flex items-center justify-center">
+              <Lottie
+                animationData={CalendarBooking}
+                loop={true}
+                className="w-2/3 h-2/3"
+              />
+            </div> */}
+            <form onSubmit={createNewBooking} className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="customerName"
+                  value="Tên khách hàng"
+                  className="required"
+                />
+                <TextInput
+                  id="customerName"
+                  placeholder="Nguyen Van A"
+                  defaultValue={user.name}
+                  type="text"
+                  required={true}
+                />
               </div>
-              <TextInput id="name" placeholder="Nguyen Van A" required={true} />
-            </div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="name" value="Chọn Cơ sở" />
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="clinic" value="Chọn Cơ sở" className="required" />
+                {convertClinicSelect && (
+                  <Select
+                    id="clinic"
+                    name="clinic"
+                    placeholder="Chọn cơ sở"
+                    options={convertClinicSelect}
+                    onChange={(e) => {
+                      setSelectedClinic(e ? e.value : null);
+                      setConvertDoctorSelect(null);
+                    }}
+                    formatOptionLabel={(convertClinicSelect) => (
+                      <div className="flex gap-2 items-center">
+                        <img
+                          src={convertClinicSelect.image}
+                          className="w-10 h-10 rounded-full"
+                          alt="country-image"
+                        />
+                        <span className="text-sm font-normal">
+                          {convertClinicSelect.label}
+                        </span>
+                      </div>
+                    )}
+                  ></Select>
+                )}
               </div>
-              {tempClinic && (
+              {convertDoctorSelect && (
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="doctor" value="Bác sĩ" className="required" />
+                  <Select
+                    id="doctor"
+                    name="doctor"
+                    placeholder="Chọn bác sĩ"
+                    options={convertDoctorSelect}
+                    formatOptionLabel={(convertDoctorSelect) => (
+                      <div className="flex gap-2 items-center">
+                        <img
+                          src={
+                            convertDoctorSelect.image
+                              ? convertDoctorSelect.image
+                              : "../images/default-avatar.png"
+                          }
+                          className="w-10 h-10 rounded-full"
+                          alt="country-image"
+                        />
+                        <div className="flex flex-col">
+                          <span className="text-sm font-normal">
+                            {convertDoctorSelect.label}
+                          </span>
+                          <span className="text-sm font-semibold">
+                            {convertDoctorSelect.phone}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    noOptionsMessage={({ inputValue }) =>
+                      !inputValue && "Không có dữ liệu"
+                    }
+                  ></Select>
+                </div>
+              )}
+              <div className="flex flex-col  gap-2">
+                <Label htmlFor="service" value="Dịch vụ" className="required" />
                 <Select
-                  placeholder="Vui lòng chọn"
-                  options={tempClinic}
-                  formatOptionLabel={(tempClinic) => (
+                  id="service"
+                  name="service"
+                  placeholder="Chọn dịch vụ"
+                  options={convertServiceSelect}
+                  formatOptionLabel={(convertServiceSelect) => (
                     <div className="flex gap-2 items-center">
                       <img
-                        src={tempClinic.image}
+                        src={convertServiceSelect.image}
                         className="w-10 h-10 rounded-full"
                         alt="country-image"
                       />
-                      <span className="text-sm font-normal">{tempClinic.label}</span>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-normal">
+                          {convertServiceSelect.label}
+                        </span>
+                        <span className="text-sm font-semibold">
+                          {convertVnd(convertServiceSelect.price)}
+                        </span>
+                      </div>
                     </div>
                   )}
                 ></Select>
-              )}
-            </div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="name" value="Bác sĩ" />
               </div>
-              <TextInput id="name" placeholder="Nguyen Van A" required={true} />
-            </div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="service" value="Dịch vụ" />
+              <div>
+                <div className="mb-2 block required">
+                  <Label htmlFor="date" value="Ngày giờ" />
+                </div>
+                <TextInput
+                  name="date"
+                  type="datetime-local"
+                  id="date"
+                  placeholder="Nguyen Van A"
+                  required={true}
+                />
               </div>
-              <Select
-                placeholder="Vui lòng chọn"
-                options={tempServices}
-                formatOptionLabel={(tempServices) => (
-                  <div className="flex gap-2 items-center">
-                    <img
-                      src={tempServices.image}
-                      className="w-10 h-10 rounded-full"
-                      alt="country-image"
-                    />
-                    <span className="text-sm font-normal">{tempServices.label}</span>
-                  </div>
-                )}
-              ></Select>
-            </div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="name" value="Ngày giờ" />
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="description" value="Ghi chú" />
+                <Textarea
+                  name="description"
+                  id="description"
+                  placeholder="Ghi chú giúp bác sĩ hiểu rõ hơn khách hàng...."
+                  rows={4}
+                />
               </div>
-              <TextInput
-                type="datetime-local"
-                id="name"
-                placeholder="Nguyen Van A"
-                required={true}
-              />
-            </div>
-            <div id="textarea">
-              <div className="mb-2 block">
-                <Label htmlFor="comment" value="Ghi chú" />
+              <div className="flex gap-3">
+                <Button type={`${isLoading ? "button" : "submit"}`}>
+                  {isLoading ? "Đang tạo đặt hẹn..." : "Tạo đặt hẹn"}
+                </Button>
+                <Button
+                  onClick={
+                    isLoading
+                      ? () => {}
+                      : () => {
+                          setOpenCreateBookingModal(false);
+                        }
+                  }
+                  color="failure"
+                >
+                  Huỷ
+                </Button>
               </div>
-              <Textarea
-                id="comment"
-                placeholder="Ghi chú giúp bác sĩ hiểu rõ hơn khách hàng...."
-                required={true}
-                rows={4}
-              />
-            </div>
-            <div className="w-full">
-              <Button>Đặt hẹn</Button>
-            </div>
+            </form>
           </div>
         </Modal.Body>
       </Modal>

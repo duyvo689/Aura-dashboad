@@ -12,6 +12,7 @@ import { statusType } from "../../../constants/crm";
 import Select from "react-select";
 function CustomerStatusPage() {
   const [load, setLoad] = useState(false);
+  const [content, setContent] = useState<string | null>(null);
   const selectInputRef = useRef<any>();
   const dispatch = useDispatch();
 
@@ -76,26 +77,34 @@ function CustomerStatusPage() {
       <main className="flex gap-6 mt-4 mx-6">
         <div className="w-[30%]">
           <form className="flex flex-col gap-4" onSubmit={addNewCustomerStatus}>
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="type" className="required" value="Tên" />
-              <input
-                type="text"
-                name="name"
-                id="name"
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="type" className="required" value="Loại" />
-              </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="type" className="required" value="Loại" />
               <Select
+                id="type"
                 ref={selectInputRef}
                 name="type"
                 placeholder={"Vui lòng chọn"}
                 options={statusType}
+                onChange={() => {
+                  setContent("");
+                }}
               ></Select>
             </div>
+            {content !== null ? (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="type" className="required" value="Nội dung" />
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  onChange={(e) => {
+                    setContent(e.target.value);
+                  }}
+                  value={content}
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                />
+              </div>
+            ) : null}
             <Button size="sm" type="submit">
               {load ? "Đang tạo mới..." : "Tạo mới"}
             </Button>
@@ -108,7 +117,7 @@ function CustomerStatusPage() {
                 STT
               </Table.HeadCell>
               <Table.HeadCell className="whitespace-nowrap text-center">
-                Tên trạng thái
+                Nội dung
               </Table.HeadCell>
               <Table.HeadCell className="whitespace-nowrap text-center">
                 Loại

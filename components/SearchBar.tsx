@@ -3,6 +3,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { User } from "../utils/types";
 import moment from "moment";
 import { supabase } from "../services/supaBaseClient";
+import Link from "next/link";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -56,7 +57,7 @@ export default function SearchBar() {
           id="default-search"
           value={keyword}
           className="block w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="Tìm kiếm khách hàng"
+          placeholder="Tìm kiếm theo tên hoặc số điện thoại"
           onChange={(e) => {
             setKeyword(e.target.value);
           }}
@@ -77,40 +78,51 @@ export default function SearchBar() {
                   setKeyword("");
                 }}
               >
-                <div className="flex gap-2 items-center">
-                  <img
-                    className="w-10 h-10"
-                    src={item.avatar ? item.avatar : "../images/default-avatar.png"}
-                    alt={item.name}
-                  />
-                  <div className="flex flex-col">
-                    <span
-                      className={classNames(
-                        "text-sm font-normal ",
-                        "ml-3 block truncate"
-                      )}
-                    >
-                      {item.name}
-                    </span>
-                    <span
-                      className={classNames("text-sm font-normal", "ml-3 block truncate")}
-                    >
-                      SĐT:{item.phone}
-                    </span>
+                <Link href={`/user-profile/${item.id}`}>
+                  <div className="flex gap-2 items-center">
+                    <img
+                      className="w-10 h-10"
+                      src={item.avatar ? item.avatar : "../images/default-avatar.png"}
+                      alt={item.name}
+                    />
+                    <div className="flex flex-col">
+                      <span
+                        className={classNames(
+                          "text-sm font-normal ",
+                          "ml-3 block truncate"
+                        )}
+                      >
+                        {item.name}
+                      </span>
+                      <span
+                        className={classNames(
+                          "text-sm font-normal",
+                          "ml-3 block truncate"
+                        )}
+                      >
+                        SĐT:{item.phone}
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span
+                        className={classNames(
+                          "text-sm font-normal",
+                          "ml-3 block truncate"
+                        )}
+                      >
+                        {moment(item.created_at).format("DD/MM/YYYY")}
+                      </span>
+                      <span
+                        className={classNames(
+                          "text-sm font-normal",
+                          "ml-3 block truncate"
+                        )}
+                      >
+                        {item.id}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span
-                      className={classNames("text-sm font-normal", "ml-3 block truncate")}
-                    >
-                      {moment(item.created_at).format("DD/MM/YYYY")}
-                    </span>
-                    <span
-                      className={classNames("text-sm font-normal", "ml-3 block truncate")}
-                    >
-                      {item.id}
-                    </span>
-                  </div>
-                </div>
+                </Link>
               </li>
             ))
           )}

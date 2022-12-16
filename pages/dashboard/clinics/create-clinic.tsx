@@ -6,14 +6,13 @@ import { supabase } from "../../../services/supaBaseClient";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
 import Link from "next/link";
-import { uploadImageProduct } from "../../../utils/funtions";
 import { clinicsAction } from "../../../redux/actions/ReduxAction";
 import { Clinic } from "../../../utils/types";
 import { RootState } from "../../../redux/reducers";
-import UploadCareAPI from "../../../services/uploadCareAPI";
 import convertImg from "../../../utils/helpers/convertImg";
 import { Widget } from "@uploadcare/react-widget";
-
+import Select from "react-select";
+import VNProvinces from "../../../constants/VNProvince";
 export default function CreateClinic() {
   const [clinicImage, setClinicImg] = useState<string | null>(null);
   const [load, setLoad] = useState<boolean>(false);
@@ -24,11 +23,12 @@ export default function CreateClinic() {
     description: "Mô Tả Cơ Sở!",
     address: "Địa Chỉ!",
     avatar: "Hình Ảnh Cơ Sở!",
+    district: "Tỉnh thành của cơ sở",
   };
 
   // Check validate
   function validateForm(form: any) {
-    let fields = ["name", "address", "description", "avatar"];
+    let fields = ["name", "address", "description", "avatar", "district"];
     let i,
       l = fields.length;
     let fieldname;
@@ -48,12 +48,13 @@ export default function CreateClinic() {
     const _name = event.target.elements.name.value;
     const _address = event.target.elements.address.value;
     const _description = event.target.elements.description.value;
-
+    const _district = event.target.district.value;
     let _serviceInfo = {
       name: _name,
       address: _address,
       description: _description,
       avatar: clinicImage || "",
+      district: _district,
     };
     let isValid = validateForm(_serviceInfo);
     if (!isValid || !clinicImage) return;
@@ -141,6 +142,7 @@ export default function CreateClinic() {
                   />
                 </div>
               </div>
+
               <div className="sm:col-span-3 mt-6">
                 <label
                   htmlFor="address"
@@ -156,6 +158,24 @@ export default function CreateClinic() {
                     required
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   />
+                </div>
+              </div>
+              <div className="sm:col-span-3 mt-6">
+                <label
+                  htmlFor="address"
+                  className="block text-sm font-medium text-gray-700 required"
+                >
+                  Địa Chỉ Cơ Sở
+                </label>
+                <div className="mt-1">
+                  <Select
+                    name="district"
+                    placeholder={"Vui lòng chọn"}
+                    options={VNProvinces}
+                    // onChange={(e) => {
+                    //   setSelectedDistrict(e?.value ? e.value : null);
+                    // }}
+                  ></Select>
                 </div>
               </div>
             </div>

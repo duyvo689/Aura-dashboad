@@ -41,3 +41,9 @@ export const statusMapping = {
   interact_type: "Dạng tương tác",
   interact_result: "Kết quả tương tác",
 };
+export const statusTypeColor = {
+  status: "text-white bg-red-400",
+  details_status: "text-white bg-gray-400",
+  interact_type: "text-white bg-green-400",
+  interact_result: "text-white bg-indigo-400",
+};

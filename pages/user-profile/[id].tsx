@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useRouter } from "next/router";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import BookingHistory from "../../components/UserProfile/BookingHistory";
@@ -7,9 +7,11 @@ import Process from "../../components/UserProfile/Process";
 import UserInfo from "../../components/UserProfile/UserInfo";
 import { supabase } from "../../services/supaBaseClient";
 import { Booking, Checkout, Patient } from "../../utils/types";
-
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/router";
 const UserProfilePage = () => {
   const { id } = useRouter().query;
+  const router = useRouter();
   const [bookings, setBookings] = useState<Booking[] | null>(null);
   const [user, setUser] = useState<Patient | null>(null);
   const fetchBookingOfUser = async (id: string) => {
@@ -70,23 +72,35 @@ const UserProfilePage = () => {
       </Head>
       <main className="max-w-screen max-h-screen p-4">
         {user && bookings && (
-          <div className="grid 2xl:grid-cols-6 lg:grid-cols-4  gap-4 relative">
-            <div className="col-span-1 sticky top-0">
-              <UserInfo userInfo={user} />
+          <div className="flex flex-col gap-10">
+            <div
+              className="mt-4 sm:mt-0 flex items-center cursor-pointer"
+              onClick={() => {
+                router.back();
+              }}
+            >
+              <ChevronLeftIcon className="w-6 h-6" />
+              <div className="text-base font-normal">Trở về trang trước</div>
             </div>
-            <div className="2xl:col-span-4 lg:col-span-2">
-              <div className="max-w-full max-h-screen overflow-y-auto flex justify-center">
-                {bookings.length > 0 ? (
-                  <Process booking={bookings[0]} user={user} checkout={checkout} />
-                ) : (
-                  <div className="flex justify-center col-span-4">
-                    Khách hàng chưa có booking
-                  </div>
-                )}
+
+            <div className="grid 2xl:grid-cols-6 lg:grid-cols-4  gap-4 relative">
+              <div className="col-span-1 sticky top-0">
+                <UserInfo userInfo={user} />
               </div>
-            </div>
-            <div className="col-span-1 sticky top-0 ">
-              {bookings.length > 0 ? <BookingHistory bookings={bookings} /> : null}
+              <div className="2xl:col-span-4 lg:col-span-2">
+                <div className="max-w-full max-h-screen overflow-y-auto flex justify-center">
+                  {bookings.length > 0 ? (
+                    <Process booking={bookings[0]} user={user} checkout={checkout} />
+                  ) : (
+                    <div className="flex justify-center col-span-4">
+                      Khách hàng chưa có booking
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="col-span-1 sticky top-0 ">
+                {bookings.length > 0 ? <BookingHistory bookings={bookings} /> : null}
+              </div>
             </div>
           </div>
         )}
