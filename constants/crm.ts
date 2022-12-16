@@ -30,14 +30,14 @@ export const LiveChat = [
   { value: "Toàn", label: "Toàn" },
 ];
 export const statusType = [
-  { value: "customer_status", label: "Trạng thái khách hàng" },
-  { value: "status_details", label: "Trạng thái chi tiết" },
+  { value: "status", label: "Trạng thái khách hàng" },
+  { value: "details_status", label: "Trạng thái chi tiết" },
   { value: "interact_type", label: "Dạng tương tác" },
   { value: "interact_result", label: "Kết quả tương tác" },
 ];
 export const statusMapping = {
-  customer_status: "Trạng thái khách hàng",
-  status_details: "Trạng thái chi tiết",
+  status: "Trạng thái khách hàng",
+  details_status: "Trạng thái chi tiết",
   interact_type: "Dạng tương tác",
   interact_result: "Kết quả tương tác",
 };

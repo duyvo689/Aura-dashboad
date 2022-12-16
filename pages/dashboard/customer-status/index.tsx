@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../../../services/supaBaseClient";
-import { CustomerStatus } from "../../../utils/types";
+import { CustomerStatus, CustomerStatusReturn } from "../../../utils/types";
 import { customerStatusAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
 import { RootState } from "../../../redux/reducers";
@@ -19,7 +19,7 @@ function CustomerStatusPage() {
   const onClear = () => {
     selectInputRef.current.clearValue();
   };
-  const customerStatus: CustomerStatus[] = useSelector(
+  const customerStatus: CustomerStatusReturn = useSelector(
     (state: RootState) => state.customerStatus
   );
   const getAllCustomerStatus = async () => {
@@ -58,7 +58,7 @@ function CustomerStatusPage() {
       if (error != null) {
         toast.error(error.message);
       } else if (data) {
-        dispatch(customerStatusAction("customerStatus", [data, ...customerStatus]));
+        dispatch(customerStatusAction("customerStatus", [data, ...customerStatus.data]));
         toast.success(`Đã thêm ${name}`);
         onClear();
         event.target.reset();
@@ -122,8 +122,8 @@ function CustomerStatusPage() {
             </Table.Head>
             <Table.Body className="bg-white divide-y divide-gray-200">
               {customerStatus &&
-                customerStatus.length > 0 &&
-                customerStatus.map((item, index) => {
+                customerStatus.data.length > 0 &&
+                customerStatus.data.map((item, index) => {
                   return (
                     <ItemCusStatus key={index} customerStatus={item} index={index} />
                   );

@@ -4,7 +4,7 @@ import Head from "next/head";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { supabase } from "../../../services/supaBaseClient";
-import { Clinic, CustomerStatus, User } from "../../../utils/types";
+import { Clinic, CustomerStatus, CustomerStatusReturn, User } from "../../../utils/types";
 import { CSVLink } from "react-csv";
 import { DocumentArrowDownIcon } from "@heroicons/react/24/outline";
 
@@ -30,10 +30,10 @@ import FilterBar from "../../../components/FilterBar";
 export default function Example() {
   const users: User[] = useSelector((state: RootState) => state.users);
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
-  const customerStatus: CustomerStatus[] = useSelector(
+  const customerStatus: CustomerStatusReturn = useSelector(
     (state: RootState) => state.customerStatus
   );
-  // const [filterUser, setFilterUser] = useState<User[] | null>(null);
+  const [filterUser, setFilterUser] = useState<User[] | null>(null);
   const dispatch = useDispatch();
   const [socket, setSocket] = useState<any | null>(null);
   const getAllClinic = async () => {
@@ -56,14 +56,13 @@ export default function Example() {
       return;
     }
     if (data) {
-      console.log(data);
       dispatch(customerStatusAction("customerStatus", data));
     }
   };
   const getAllUser = async () => {
     const { data: allUsers, error } = await supabase
       .from("users")
-      .select("*")
+      .select("*,status(*),details_status(*),interact_type(*),interact_result(*)")
       .order("created_at", { ascending: false });
     if (error) {
       toast.error(error.message);
@@ -71,7 +70,6 @@ export default function Example() {
     }
     if (allUsers) {
       dispatch(usersAction("users", allUsers));
-      // setFilterUser(allUsers);
     }
   };
   useEffect(() => {
@@ -112,6 +110,11 @@ export default function Example() {
       }
     }
   }, [socket, users]);
+  useEffect(() => {
+    if (users !== null) {
+      setFilterUser(users);
+    }
+  }, [users]);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 mt-6">
@@ -119,7 +122,7 @@ export default function Example() {
         <title>Người Dùng</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      {users && customerStatus ? (
+      {filterUser && customerStatus ? (
         <main className="flex flex-col gap-4">
           <div className="sm:flex sm:items-center">
             <div className="sm:flex-auto">
@@ -138,8 +141,12 @@ export default function Example() {
             </div>
           </div>
           <SearchBar />
-          <FilterBar customerStatus={customerStatus} />
-          <Table className="mt-8 min-w-full divide-y divide-gray-200">
+          <FilterBar
+            customerStatusGroup={customerStatus.group}
+            setFilterUser={setFilterUser}
+            filterUser={users}
+          />
+          <Table className="mt-8 min-w-full min-h-full  divide-y divide-gray-200">
             <Table.Head className="bg-gray-50 sticky top-0">
               <Table.HeadCell className="whitespace-nowrap text-center z-10 bg-gray-50  sticky min-w-[100px] left-0">
                 STT
@@ -188,11 +195,16 @@ export default function Example() {
               </Table.HeadCell>
             </Table.Head>
             <Table.Body className="bg-white divide-y divide-gray-200">
-              {users.length > 0 &&
+              {filterUser.length > 0 &&
                 clinics &&
-                users.map((item, index) => {
+                filterUser.map((item, index) => {
                   return (
-                    <ItemUser key={index} user={item} index={index} clinics={clinics} />
+                    <ItemUser
+                      key={index}
+                      user={item}
+                      index={index}
+                      customerStatusGroup={customerStatus.group}
+                    />
                   );
                 })}
             </Table.Body>

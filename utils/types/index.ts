@@ -30,21 +30,21 @@ interface User {
   id: number;
   created_at: string;
   phone: string;
-  avatar?: string;
+  avatar: string | null;
   name: string;
-  zalo_id?: string;
-  status?: number;
-  address?: string;
-  details_status?: number;
-  interact_type?: number;
-  interact_result?: number;
-  district?: string;
-  live_chat?: string;
-  last_update?: string;
-  age?: number;
-  customer_resource?: string;
-  gender?: string;
-  clinic?: string;
+  zalo_id: string | null;
+  status: CustomerStatus | null;
+  details_status: CustomerStatus | null;
+  interact_type: CustomerStatus | null;
+  interact_result: CustomerStatus | null;
+  address: string | null;
+  district: string | null;
+  live_chat: string | null;
+  last_update: string | null;
+  age: number | null;
+  customer_resource: string | null;
+  gender: string | null;
+  clinic: string | null;
 }
 interface Banner {
   id: string;
@@ -152,6 +152,17 @@ interface CustomerStatus {
   name: string;
   type: string;
 }
+interface CustomerStatusGroup {
+  status: CustomerStatus[];
+  details_status: CustomerStatus[];
+  interact_type: CustomerStatus[];
+  interact_result: CustomerStatus[];
+}
+
+interface CustomerStatusReturn {
+  group: CustomerStatusGroup;
+  data: CustomerStatus[];
+}
 export type {
   Checkout,
   Coupon,
@@ -166,4 +177,6 @@ export type {
   OpenModal,
   Booking,
   CustomerStatus,
+  CustomerStatusReturn,
+  CustomerStatusGroup,
 };

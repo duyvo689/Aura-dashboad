@@ -1,15 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 import { Table, TextInput } from "flowbite-react";
 import moment from "moment";
-import { MapPinIcon, CalendarIcon } from "@heroicons/react/24/outline";
-import {
-  crmStatus,
-  detailsStatus,
-  interacteResult,
-  interacType,
-  LiveChat,
-} from "../constants/crm";
-import { Clinic, User } from "../utils/types";
+import { MapPinIcon } from "@heroicons/react/24/outline";
+import { LiveChat, statusMapping } from "../constants/crm";
+import { Clinic, CustomerStatusGroup, CustomerStatusReturn, User } from "../utils/types";
 import VNProvinces from "../constants/VNProvince";
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
@@ -22,18 +16,23 @@ import NewBookingModal from "./NewBookingModal";
 interface Props {
   index: number;
   user: User;
-  clinics: Clinic[];
+  customerStatusGroup: CustomerStatusGroup;
 }
+type ObjectKey = keyof typeof statusMapping;
 const hiddenTempValue = "temp";
-function ItemUser({ index, user, clinics }: Props) {
-  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
-  const [selectedCustomerStatus, setSelectedCustomerStatus] = useState<number | null>(
-    null
+function ItemUser({ index, user, customerStatusGroup }: Props) {
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(user.district);
+  const [selectedCustomerStatus, setSelectedCustomerStatus] = useState<string | null>(
+    user.status ? user.status.id : null
   );
-  const [selectedDetailsStatus, setSelectedDetailsStatus] = useState<number | null>(null);
-  const [selectedInteractType, setSelectedInteractType] = useState<number | null>(null);
-  const [selectedInteractResult, setSelectedInteractResult] = useState<number | null>(
-    null
+  const [selectedDetailsStatus, setSelectedDetailsStatus] = useState<string | null>(
+    user.details_status ? user.details_status.id : null
+  );
+  const [selectedInteractType, setSelectedInteractType] = useState<string | null>(
+    user.interact_type ? user.interact_type.id : null
+  );
+  const [selectedInteractResult, setSelectedInteractResult] = useState<string | null>(
+    user.interact_result ? user.interact_result.id : null
   );
   const [newPhone, setNewPhone] = useState<string>(user.phone);
   const [newAge, setNewAge] = useState<number | null>(user.age ? user.age : null);
@@ -42,7 +41,6 @@ function ItemUser({ index, user, clinics }: Props) {
   const [edit, setEdit] = useState<string>("");
   const deleteEdit = useRef(null);
   useOutsideAlerter(deleteEdit);
-
   function useOutsideAlerter(ref: any) {
     useEffect(() => {
       /**
@@ -66,18 +64,17 @@ function ItemUser({ index, user, clinics }: Props) {
   const updateUser = async (field: string, value: any) => {
     const updatedObj: any = {};
     updatedObj[field] = value;
-    console.log(updatedObj);
+
     const { data, error } = await supabase
       .from("users")
       .update(updatedObj)
       .eq("id", user.id)
-      .select()
+      .select("*,status(*),details_status(*),interact_type(*),interact_result(*)")
       .single();
     if (error) {
       toast.error("Lỗi.Thử lại");
     } else if (data) {
       const index = users.findIndex((item) => item.id === data.id);
-
       if (users) {
         users[index] = data;
         dispatch(usersAction("users", [...users]));
@@ -90,6 +87,7 @@ function ItemUser({ index, user, clinics }: Props) {
   //     return item.value === user.live_chat;
   //   })
   // );
+
   return (
     <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-center ">
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white bg-white sticky z-10 left-0 min-w-[100px]">
@@ -161,7 +159,7 @@ function ItemUser({ index, user, clinics }: Props) {
             type="number"
             name="age"
             id="age"
-            defaultValue={user?.age}
+            defaultValue={user.age ? user.age : undefined}
             onChange={(e) => {
               setNewAge(parseInt(e.target.value));
             }}
@@ -224,18 +222,26 @@ function ItemUser({ index, user, clinics }: Props) {
               setEdit("status");
             }}
           >
-            {user.status ? crmStatus[user.status - 1].label : hiddenTempValue}
+            {user.status ? user.status.name : hiddenTempValue}
           </span>
           <Select
             className={`${edit === "status" ? "block" : "hidden"}`}
             placeholder={"Vui lòng chọn"}
-            defaultValue={user.status ? crmStatus[user.status - 1] : null}
-            options={crmStatus}
+            defaultValue={
+              user.status ? { label: user.status.name, value: user.status.id } : null
+            }
+            options={customerStatusGroup.status.map((item) => {
+              return {
+                label: item.name,
+                value: item.id,
+              };
+            })}
             onChange={(e) => {
               setSelectedCustomerStatus(e?.value ? e.value : null);
             }}
             onBlur={() => {
-              if (selectedCustomerStatus !== user?.status) {
+              const oldStatus = user.status ? user.status.id : null;
+              if (selectedCustomerStatus !== oldStatus) {
                 updateUser("status", selectedCustomerStatus);
               }
             }}
@@ -252,23 +258,30 @@ function ItemUser({ index, user, clinics }: Props) {
               setEdit("details_status");
             }}
           >
-            {user.details_status
-              ? detailsStatus[user.details_status - 1].label
-              : hiddenTempValue}
+            {user.details_status ? user.details_status.name : hiddenTempValue}
           </span>
           <Select
             className={`${edit === "details_status" ? "block" : "hidden"}`}
             placeholder={"Vui lòng chọn"}
             defaultValue={
-              user.details_status ? detailsStatus[user.details_status - 1] : null
+              user.details_status
+                ? { label: user.details_status.name, value: user.details_status.id }
+                : null
             }
-            options={detailsStatus}
+            options={customerStatusGroup.details_status.map((item) => {
+              return {
+                label: item.name,
+                value: item.id,
+              };
+            })}
             onChange={(e) => {
               setSelectedDetailsStatus(e?.value ? e.value : null);
             }}
             onBlur={() => {
-              console.log(selectedDetailsStatus);
-              if (selectedDetailsStatus !== user?.details_status) {
+              const oldDetailsStatus = user.details_status
+                ? user.details_status.id
+                : null;
+              if (selectedDetailsStatus !== oldDetailsStatus) {
                 updateUser("details_status", selectedDetailsStatus);
               }
             }}
@@ -285,20 +298,28 @@ function ItemUser({ index, user, clinics }: Props) {
               setEdit("interact_type");
             }}
           >
-            {user.interact_type
-              ? interacType[user.interact_type - 1].label
-              : hiddenTempValue}
+            {user.interact_type ? user.interact_type.name : hiddenTempValue}
           </span>
           <Select
             className={`${edit === "interact_type" ? "block" : "hidden"}`}
             placeholder={"Vui lòng chọn"}
-            defaultValue={user.interact_type ? interacType[user.interact_type - 1] : null}
-            options={interacType}
+            defaultValue={
+              user.interact_type
+                ? { label: user.interact_type.name, value: user.interact_type.id }
+                : null
+            }
+            options={customerStatusGroup.interact_type.map((item) => {
+              return {
+                label: item.name,
+                value: item.id,
+              };
+            })}
             onChange={(e) => {
               setSelectedInteractType(e?.value ? e.value : null);
             }}
             onBlur={() => {
-              if (selectedInteractType !== user?.interact_type) {
+              const oldInteractType = user.interact_type ? user.interact_type.id : null;
+              if (selectedInteractType !== oldInteractType) {
                 updateUser("interact_type", selectedInteractType);
               }
             }}
@@ -315,22 +336,30 @@ function ItemUser({ index, user, clinics }: Props) {
               setEdit("interact_result");
             }}
           >
-            {user.interact_result
-              ? interacteResult[user.interact_result - 1].label
-              : hiddenTempValue}
+            {user.interact_result ? user.interact_result.name : hiddenTempValue}
           </span>
           <Select
             className={`${edit === "interact_result" ? "block" : "hidden"}`}
             placeholder={"Vui lòng chọn"}
             defaultValue={
-              user.interact_result ? interacteResult[user.interact_result - 1] : null
+              user.interact_result
+                ? { label: user.interact_result.id, value: user.interact_result.name }
+                : null
             }
-            options={interacteResult}
+            options={customerStatusGroup.interact_result.map((item) => {
+              return {
+                value: item.id,
+                label: item.name,
+              };
+            })}
             onChange={(e) => {
               setSelectedInteractResult(e?.value ? e.value : null);
             }}
             onBlur={() => {
-              if (selectedInteractResult !== user?.interact_result) {
+              const oldInteractResult = user.interact_result
+                ? user.interact_result.id
+                : null;
+              if (selectedInteractResult !== oldInteractResult) {
                 updateUser("interact_result", selectedInteractResult);
               }
             }}
@@ -359,23 +388,6 @@ function ItemUser({ index, user, clinics }: Props) {
           <NewBookingModal />
         </div>
       </Table.Cell>
-      {/* <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-        {user?.last_update}
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-        {user?.last_update}
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-        {user?.last_update}
-      </Table.Cell> */}
-      {/* <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-        <a
-          href="/tables"
-          className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-        >
-          Edit
-        </a>
-      </Table.Cell> */}
     </Table.Row>
   );
 }

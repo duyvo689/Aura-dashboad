@@ -1,17 +1,36 @@
 import { Dialog, Disclosure, Menu, Popover, Transition } from "@headlessui/react";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Fragment, useState } from "react";
-import { CustomerStatus } from "../utils/types";
+import { Fragment, useEffect, useState } from "react";
+import { CustomerStatus, CustomerStatusGroup, User } from "../utils/types";
 import _ from "lodash";
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 interface Props {
-  customerStatus: CustomerStatus[];
+  customerStatusGroup: CustomerStatusGroup;
+  setFilterUser: any;
+  filterUser: User[];
 }
-function FilterBar({ customerStatus }: Props) {
-  const [open, setOpen] = useState(false);
-  let grouped_data = _.groupBy(customerStatus, "type");
+interface CheckedList {
+  status: string[];
+  details_status: string[];
+  interact_type: string[];
+  interact_result: string[];
+}
+type ObjectKey = keyof CheckedList;
+const filterChecked = (userStatus: CustomerStatus | null, listStatus: string[]) => {
+  if (!userStatus) return false;
+  if (listStatus.length === 0) return true;
+  return listStatus.includes(userStatus.id);
+};
+function FilterBar({ customerStatusGroup, setFilterUser, filterUser }: Props) {
+  const [filterOptions, setFilterOptions] = useState<CheckedList>({
+    status: [],
+    details_status: [],
+    interact_type: [],
+    interact_result: [],
+  });
+  console.log(filterOptions);
   const sortOptions = [
     { name: "Phú Yên ", value: "12" },
     { name: "Đồng Tháp", value: "32" },
@@ -21,29 +40,60 @@ function FilterBar({ customerStatus }: Props) {
     {
       id: "status",
       name: "Trạng thái KH",
-      options: grouped_data.customer_status,
+      options: customerStatusGroup.status,
     },
     {
       id: "details_status",
       name: "Trạng thái chi tiết",
-      options: grouped_data.status_details,
+      options: customerStatusGroup.details_status,
     },
     {
       id: "interact_type",
       name: "Dạng tương tác",
-      options: grouped_data.interact_type,
+      options: customerStatusGroup.interact_type,
     },
     {
       id: "interact_result",
       name: "Kết quả tưong tác",
-      options: grouped_data.interact_result,
+      options: customerStatusGroup.interact_result,
     },
   ];
-  const [filterOptions, setFilterOptions] = useState<any>({
-    clinic: null,
-    status: null,
-    interactType: null,
-  });
+  const handlerCheckedFilter = (e: any) => {
+    if (e.target.checked) {
+      filterOptions[e.target.name as ObjectKey].push(e.target.value);
+    } else {
+      filterOptions[e.target.name as ObjectKey] = filterOptions[
+        e.target.name as ObjectKey
+      ].filter((item) => item !== e.target.value);
+    }
+    setFilterOptions((preState: any) => {
+      preState[e.target.name as ObjectKey] = filterOptions[e.target.name as ObjectKey];
+      return { ...preState };
+    });
+  };
+
+  useEffect(() => {
+    console.log("hello");
+    if (
+      filterOptions.status.length === 0 &&
+      filterOptions.details_status.length == 0 &&
+      filterOptions.interact_type.length === 0 &&
+      filterOptions.interact_result.length === 0
+    ) {
+      setFilterUser(filterUser);
+    } else {
+      const newFilter = filterUser
+        .filter((item) => filterChecked(item.status, filterOptions.status))
+        .filter((item) =>
+          filterChecked(item.details_status, filterOptions.details_status)
+        )
+        .filter((item) => filterChecked(item.interact_type, filterOptions.interact_type))
+        .filter((item) =>
+          filterChecked(item.interact_result, filterOptions.interact_result)
+        );
+      setFilterUser(newFilter);
+    }
+  }, [filterOptions]);
 
   return (
     <div className="bg-gray-50 z-30">
@@ -53,7 +103,7 @@ function FilterBar({ customerStatus }: Props) {
             <Menu as="div" className="relative inline-block text-left">
               <div>
                 <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                  {filterOptions.clinic ? filterOptions.clinic.name : "Chi nhánh"}
+                  {/* {filterOptions.clinic ? filterOptions.clinic.name : "Chi nhánh"} */}
                   <ChevronDownIcon
                     className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                     aria-hidden="true"
@@ -132,10 +182,18 @@ function FilterBar({ customerStatus }: Props) {
                           <div key={optionIdx} className="flex items-center">
                             <input
                               id={`filter-${section.id}-${optionIdx}`}
-                              name={`${section.id}[]`}
-                              defaultValue={option.id}
+                              name={`${option.type}`}
+                              value={option.id}
                               type="checkbox"
+                              checked={
+                                filterOptions[option.type as ObjectKey].indexOf(
+                                  option.id
+                                ) === -1
+                                  ? false
+                                  : true
+                              }
                               className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                              onChange={handlerCheckedFilter}
                             />
                             <label
                               htmlFor={`filter-${section.id}-${optionIdx}`}

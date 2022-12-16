@@ -14,7 +14,6 @@ interface Props {
 }
 type ObjectKey = keyof typeof statusMapping;
 
-const myVar = "name" as ObjectKey;
 function ItemCusStatus({ index, customerStatus }: Props) {
   const [openModalToggle, setOpenModalToggle] = useState<boolean>(false);
   const [selectedToggle, setSelectedToggle] = useState<{
