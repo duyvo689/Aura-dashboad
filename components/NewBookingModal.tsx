@@ -23,6 +23,20 @@ type ConvertDoctor = {
   image: string | null;
   phone: string;
 };
+// const setDefaultClinic = (clinic: string | null, allClinic: Clinic[]) => {
+//   if (!clinic) return null;
+//   const defaultClinic = allClinic.find((item) => item.district === clinic);
+//   if (defaultClinic) {
+//     return {
+//       value: defaultClinic.id,
+//       label: defaultClinic.name,
+//       image: defaultClinic.avatar,
+//       address: defaultClinic.address,
+//     };
+//   } else {
+//     return null;
+//   }
+// };
 function NewBookingModal({ user, setOpenCreateBookingModal }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
@@ -32,6 +46,8 @@ function NewBookingModal({ user, setOpenCreateBookingModal }: Props) {
   const [convertDoctorSelect, setConvertDoctorSelect] = useState<ConvertDoctor[] | null>(
     null
   );
+  //if mapping default clinic from user
+
   const convertClinicSelect = clinics.map((item) => {
     return {
       value: item.id,
@@ -93,6 +109,7 @@ function NewBookingModal({ user, setOpenCreateBookingModal }: Props) {
     }
     setIsLoading(false);
   };
+
   return (
     <React.Fragment>
       <Modal show={true} size="3xl" popup={true}>
@@ -106,13 +123,7 @@ function NewBookingModal({ user, setOpenCreateBookingModal }: Props) {
             <h3 className="text-xl font-medium text-gray-900 dark:text-white">
               Đặt lịch hẹn mới
             </h3>
-            {/* <div className="flex items-center justify-center">
-              <Lottie
-                animationData={CalendarBooking}
-                loop={true}
-                className="w-2/3 h-2/3"
-              />
-            </div> */}
+
             <form onSubmit={createNewBooking} className="flex flex-col gap-3">
               <div className="flex flex-col gap-2">
                 <Label
@@ -135,6 +146,7 @@ function NewBookingModal({ user, setOpenCreateBookingModal }: Props) {
                     id="clinic"
                     name="clinic"
                     placeholder="Chọn cơ sở"
+                    // defaultValue={setDefaultClinic(user.district, clinics)}
                     options={convertClinicSelect}
                     onChange={(e) => {
                       setSelectedClinic(e ? e.value : null);

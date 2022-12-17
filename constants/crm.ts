@@ -47,3 +47,25 @@ export const statusTypeColor = {
   interact_type: "text-white bg-green-400",
   interact_result: "text-white bg-indigo-400",
 };
+// export const Clinics = [
+//   { value: "Ba Tháng Hai", label: "Ba Tháng Hai" },
+//   { value: "Phú Yên", label: "Phú Yên" },
+//   { value: "Đồng Tháp", label: "Đồng Tháp" },
+//   { value: "Toàn", label: "Ba Tháng Hai" },
+//   { value: "Toàn", label: "Ba Tháng Hai" },
+//   { value: "Toàn", label: "Ba Tháng Hai" },
+//   { value: "Toàn", label: "Ba Tháng Hai" },
+//   { value: "Toàn", label: "Ba Tháng Hai" },
+//   { value: "Toàn", label: "Ba Tháng Hai" },
+// ];
+const CLINICS = [
+  "Ba Tháng Hai",
+  "Phú Yên",
+  "Đồng Tháp",
+  "Cà Mau",
+  "Rạch Giá",
+  "Long Xuyên",
+  "Vĩnh Long",
+  "Cần Thơ",
+  "Chưa xác định",
+];

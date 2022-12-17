@@ -18,10 +18,11 @@ interface Props {
   index: number;
   user: User;
   customerStatusGroup: CustomerStatusGroup;
+  clinics: Clinic[];
 }
-type ObjectKey = keyof typeof statusMapping;
+
 const hiddenTempValue = "temp";
-function ItemUser({ index, user, customerStatusGroup }: Props) {
+function ItemUser({ index, user, customerStatusGroup, clinics }: Props) {
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(user.district);
   const [selectedCustomerStatus, setSelectedCustomerStatus] = useState<string | null>(
     user.status ? user.status.id : null
@@ -34,6 +35,9 @@ function ItemUser({ index, user, customerStatusGroup }: Props) {
   );
   const [selectedInteractResult, setSelectedInteractResult] = useState<string | null>(
     user.interact_result ? user.interact_result.id : null
+  );
+  const [selectedClinic, setSelectedClinic] = useState<string | null>(
+    user.clinic ? user.clinic : null
   );
   const [newPhone, setNewPhone] = useState<string>(user.phone);
   const [newAge, setNewAge] = useState<number | null>(user.age ? user.age : null);
@@ -179,8 +183,38 @@ function ItemUser({ index, user, customerStatusGroup }: Props) {
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
         {moment(user.created_at).format("DD/MM/YYYY")}
       </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-        {user.clinic}
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white min-w-[200px]">
+        <div ref={edit === "clinic" ? deleteEdit : null}>
+          <span
+            className={`${edit === "clinic" ? "hidden" : "block"} cursor-pointer ${
+              user?.clinic ? "opacity-100" : "opacity-0"
+            }`}
+            onClick={() => {
+              setEdit("clinic");
+            }}
+          >
+            {user.clinic ? user.clinic : hiddenTempValue}
+          </span>
+          <Select
+            className={`${edit === "clinic" ? "block" : "hidden"}`}
+            placeholder={"Vui lòng chọn"}
+            defaultValue={user.clinic ? { label: user.clinic, value: user.clinic } : null}
+            options={clinics.map((item) => {
+              return {
+                label: item.district as string,
+                value: item.district as string,
+              };
+            })}
+            onChange={(e) => {
+              setSelectedClinic(e?.value ? e.value : null);
+            }}
+            onBlur={() => {
+              if (selectedClinic !== user.clinic) {
+                updateUser("clinic", selectedClinic);
+              }
+            }}
+          ></Select>
+        </div>
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white  min-w-[200px] ">
         <div ref={edit === "district" ? deleteEdit : null}>

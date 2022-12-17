@@ -137,14 +137,14 @@ export default function Example() {
       }
       if (socket) {
         socket.on("pancake_hook", (data: any) => {
+          console.log(data);
           const index = users?.findIndex((item) => item.id === data.id);
-          console.log(users);
+
           if (users) {
             if (index === -1) {
               dispatch(usersAction("users", [data, ...users]));
             } else {
               users[index] = data;
-
               dispatch(usersAction("users", [...users]));
             }
           }
@@ -246,6 +246,7 @@ export default function Example() {
                       user={item}
                       index={index}
                       customerStatusGroup={customerStatus.group}
+                      clinics={clinics}
                     />
                   );
                 })

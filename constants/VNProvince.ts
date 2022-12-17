@@ -1,5 +1,10 @@
 const VNProvinces = [
   {
+    label: "Ba Tháng Hai",
+    value: "Ba Tháng Hai",
+  },
+
+  {
     label: "Cần Thơ",
     value: "Cần Thơ",
   },
