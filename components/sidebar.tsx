@@ -71,6 +71,12 @@ const navigation = [
     pathName: "coupons",
   },
   {
+    name: "Quản lý đặt hẹn",
+    href: "/dashboard/bookings",
+    icon: PencilSquareIcon,
+    pathName: "bookings",
+  },
+  {
     name: "Quản lý tình trạng KH",
     href: "/dashboard/customer-status",
     icon: PencilSquareIcon,

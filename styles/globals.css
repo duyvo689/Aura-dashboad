@@ -158,3 +158,13 @@ border-color:#2684FF !important
 .modal-create-booking input[type="text"] ,.modal-create-booking textarea {
   background-color: white !important;
 }
+
+
+/** Calendar **/
+.custom-calendar .Calendar__weekDays {
+  text-align: center !important;
+  color:rgb(107 114 128 /1) !important;
+}
+.custom-calendar .Calendar__monthYear {
+  font-weight:600;
+}
