@@ -161,6 +161,9 @@ border-color:#2684FF !important
 
 
 /** Calendar **/
+.custom-calendar {
+  width: 100% !important;
+}
 .custom-calendar .Calendar__weekDays {
   text-align: center !important;
   color:rgb(107 114 128 /1) !important;

@@ -311,17 +311,16 @@ export default function Example() {
       </header>
       <div className="grid grid-cols-8">
         {!isLoading ? (
-          <div className="col-span-5">
+          <div className="col-span-5 2xl:col-span-6">
             {bookings && bookings.data.length > 0 ? (
-              <div className="col-start-1 col-end-2 row-start-1 grid divide-y divide-gray-200">
-                <div className="row-end-1 h-7"></div>
+              <div className="col-start-1 col-end-2 row-start-1 grid divide-y divide-gray-200 px-4">
                 {Object.keys(bookings.groupByTime).map((item, index: number) => {
                   return (
                     <div key={index} className="flex">
                       <div className="text-right text-sm font-bold leading-5 text-gray-400 p-4 border-r border-gray-200  flex items-center justify-center">
                         {item.slice(0, -3)}
                       </div>
-                      <div className="w-full p-3">
+                      <div className="w-full p-4">
                         {bookings ? (
                           <div className="flex flex-col gap-3 ">
                             {bookings.groupByTime[item.toString()]?.map(
@@ -422,12 +421,12 @@ export default function Example() {
             )}
           </div>
         ) : (
-          <div className="col-span-5">
+          <div className="col-span-5 2xl:col-span-6">
             <div className="p-4">Đang tải dữ liệu...</div>
           </div>
         )}
-        <div className="col-span-3">
-          <div className=" max-w-md items-center border-l border-gray-100 px-8 py-4 bg-white md:block">
+        <div className="col-span-3 2xl:col-span-2">
+          <div className=" max-w-md items-center border-l border-gray-100 px-8 py-4 bg-white">
             <Calendar
               calendarClassName="custom-calendar"
               colorPrimary="#9c88ff"
