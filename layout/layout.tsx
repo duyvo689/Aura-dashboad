@@ -13,7 +13,6 @@ export default function Layout({ children }: any) {
       pathname.split("/")[1] !== "forgot-password" ? (
         <div className="flex h-screen overflow-hidden">
           <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-          {/* Content area */}
           <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
             <main>

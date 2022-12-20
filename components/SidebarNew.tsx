@@ -101,7 +101,7 @@ const navigations: Navigation[] = [
   // },
 ];
 
-function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
+function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
   const { pathname } = useRouter();
 
   const trigger = useRef(null);
@@ -133,21 +133,12 @@ function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
     document.addEventListener("keydown", keyHandler);
     return () => document.removeEventListener("keydown", keyHandler);
   });
-  useEffect(() => {
-    const storedSidebarExpanded = localStorage.getItem("sidebar-expanded");
-    setSidebarExpanded(
-      storedSidebarExpanded === null ? false : storedSidebarExpanded === "true"
-    );
-  }, []);
-
-  //   useEffect(() => {
-  //     localStorage.setItem("sidebar-expanded", sidebarExpanded.toString());
-  //     if (sidebarExpanded) {
-  //       document.querySelector("body").classList.add("sidebar-expanded");
-  //     } else {
-  //       document.querySelector("body").classList.remove("sidebar-expanded");
-  //     }
-  //   }, [sidebarExpanded]);
+  // useEffect(() => {
+  //   const storedSidebarExpanded = localStorage.getItem("sidebar-expanded");
+  //   setSidebarExpanded(
+  //     storedSidebarExpanded === null ? false : storedSidebarExpanded === "true"
+  //   );
+  // }, []);
 
   return (
     <div>
@@ -196,44 +187,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
                             "!text-indigo-500"
                           }`}
                         />
-                        {/* <svg className="shrink-0 h-6 w-6" viewBox="0 0 24 24">
-                          <path
-                            className={`fill-current text-slate-400 ${
-                              (pathname === "/" || pathname.includes(item.pathName)) &&
-                              "!text-indigo-500"
-                            }`}
-                            d="M12 0C5.383 0 0 5.383 0 12s5.383 12 12 12 12-5.383 12-12S18.617 0 12 0z"
-                          />
-                          <path
-                            className={`fill-current text-slate-600 ${
-                              (pathname === "/" || pathname.includes(item.pathName)) &&
-                              "text-indigo-600"
-                            }`}
-                            d="M12 3c-4.963 0-9 4.037-9 9s4.037 9 9 9 9-4.037 9-9-4.037-9-9-9z"
-                          />
-                          <path
-                            className={`fill-current text-slate-400 ${
-                              (pathname === "/" || pathname.includes(item.pathName)) &&
-                              "text-indigo-200"
-                            }`}
-                            d="M12 15c-1.654 0-3-1.346-3-3 0-.462.113-.894.3-1.285L6 6l4.714 3.301A2.973 2.973 0 0112 9c1.654 0 3 1.346 3 3s-1.346 3-3 3z"
-                          />
-                        </svg> */}
 
-                        {/* <svg className="shrink-0 h-6 w-6" viewBox="0 0 24 24">
-                      <path
-                        className={`fill-current text-slate-600 ${
-                          pathname.includes("calendar") && "text-indigo-500"
-                        }`}
-                        d="M1 3h22v20H1z"
-                      />
-                      <path
-                        className={`fill-current text-slate-400 ${
-                          pathname.includes("calendar") && "text-indigo-300"
-                        }`}
-                        d="M21 3h2v4H1V3h2V1h4v2h10V1h4v2Z"
-                      />
-                    </svg> */}
                         <span className="text-sm font-medium ml-3 block duration-200 text-white">
                           {item.name}
                         </span>
@@ -267,4 +221,4 @@ function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
   );
 }
 
-export default Sidebar;
+export default SidebarNew;
