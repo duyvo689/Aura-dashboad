@@ -337,30 +337,54 @@ function RolesPage() {
           <div className="w-full overflow-x-auto relative shadow-md sm:rounded-lg">
             <CountRecord amount={20} title={"Danh sách nhân sự"} />
             <table className="w-full text-sm  text-gray-500 dark:text-gray-400">
-              <thead className="bg-slate-100 text-slate-500 uppercase font-semibold text-xs border border-slate-200">
+              <thead className="bg-slate-100 text-slate-500 uppercase font-semibold text-xs border border-slate-200 ">
                 <tr>
-                  <th scope="col" className="py-3 px-2 whitespace-normal ">
+                  <th
+                    scope="col"
+                    className="py-3 px-2 whitespace-normal first:px-4 last:px-4 "
+                  >
                     STT
                   </th>
-                  <th scope="col" className="py-3 px-2 whitespace-normal ">
+                  <th
+                    scope="col"
+                    className="py-3 px-2 whitespace-normal first:px-4 last:px-4  "
+                  >
                     Số điện thoại
                   </th>
-                  <th scope="col" className="py-3 px-2 whitespace-normal ">
+                  <th
+                    scope="col"
+                    className="py-3 px-2 whitespace-normal first:px-4 last:px-4 "
+                  >
                     Tên nhân sự
                   </th>
-                  <th scope="col" className="py-3 px-2 whitespace-normal ">
+                  <th
+                    scope="col"
+                    className="py-3 px-2 whitespace-normal first:px-4 last:px-4 "
+                  >
                     Chức vụ
                   </th>
-                  <th scope="col" className="py-3 px-2 whitespace-normal ">
+                  <th
+                    scope="col"
+                    className="py-3 px-2 whitespace-normal first:px-4 last:px-4  "
+                  >
                     Cơ sở
                   </th>
-                  <th scope="col" className="py-3 px-2 whitespace-normal ">
+                  <th
+                    scope="col"
+                    className="py-3 px-2 whitespace-normal first:px-4 last:px-4 "
+                  >
                     Trạng thái
                   </th>
-                  <th scope="col" className="py-3 px-2 whitespace-normal">
+                  <th
+                    scope="col"
+                    className="py-3 px-2 whitespace-normal first:px-4 last:px-4 "
+                  >
                     Xác thực
                   </th>
-                  <th scope="col" className="py-3 px-2 whitespace-normal ">
+                  <th
+                    scope="col"
+                    className="py-3 px-2 whitespace-normal first:px-4 last:px-4 "
+                  >
                     Hành động
                   </th>
                 </tr>
@@ -372,7 +396,7 @@ function RolesPage() {
                     .map((item, index) => (
                       <tr
                         key={item.id}
-                        className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700"
+                        className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700 "
                       >
                         <td className="whitespace-nowrap py-3 px-2 ">
                           {(pagination - 1) * 10 + index + 1}

@@ -14,7 +14,7 @@ import {
   GiftIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
-import SidebarLinkGroup from "./SidebarLinkGroup";
+
 interface Props {
   sidebarOpen: any;
   setSidebarOpen: any;
@@ -190,7 +190,13 @@ function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
                       }`}
                     >
                       <div className="flex items-center">
-                        <svg className="shrink-0 h-6 w-6" viewBox="0 0 24 24">
+                        <item.icon
+                          className={`w-6 h-6  text-slate-300 ${
+                            (pathname === "/" || pathname.includes(item.pathName)) &&
+                            "!text-indigo-500"
+                          }`}
+                        />
+                        {/* <svg className="shrink-0 h-6 w-6" viewBox="0 0 24 24">
                           <path
                             className={`fill-current text-slate-400 ${
                               (pathname === "/" || pathname.includes(item.pathName)) &&
@@ -212,7 +218,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
                             }`}
                             d="M12 15c-1.654 0-3-1.346-3-3 0-.462.113-.894.3-1.285L6 6l4.714 3.301A2.973 2.973 0 0112 9c1.654 0 3 1.346 3 3s-1.346 3-3 3z"
                           />
-                        </svg>
+                        </svg> */}
 
                         {/* <svg className="shrink-0 h-6 w-6" viewBox="0 0 24 24">
                       <path
