@@ -3,8 +3,11 @@ import Link from "next/link";
 import Transition from "../../utils/components/Transition";
 
 import UserAvatar from "../../images/user-avatar-32.png";
+import { RootState } from "../../redux/reducers";
+import { useSelector } from "react-redux";
 
 function UserMenu() {
+  // const user: any = useSelector((state: RootState) => state.user);
   const [dropdownOpen, setDropdownOpen] = useState<boolean | null>(false);
   const trigger = useRef(null);
   const dropdown = useRef(null);
@@ -21,14 +24,6 @@ function UserMenu() {
         document.removeEventListener("mousedown", handleClickOutside);
       };
     }, [ref]);
-    // useEffect(() => {
-    //   const keyHandler = ({ keyCode }: any) => {
-    //     if (!dropdownOpen || keyCode !== 27) return;
-    //     setDropdownOpen(false);
-    //   };
-    //   document.addEventListener("keydown", keyHandler);
-    //   return () => document.removeEventListener("keydown", keyHandler);
-    // });
   }
   useOutsideAlerter(trigger);
 

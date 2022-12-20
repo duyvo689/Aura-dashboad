@@ -1,12 +1,10 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-// import { HeaderDashboard } from "../components/header";
 import Header from "../components/Header1";
 import Sidebar from "../components/Sidebar";
 export default function Layout({ children }: any) {
   const { pathname } = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
   return (
     <>
       {pathname.split("/")[1] !== "" &&
