@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Header from "../components/Header1";
-import Sidebar from "../components/Sidebar";
+import SidebarNew from "../components/SidebarNew";
 export default function Layout({ children }: any) {
   const { pathname } = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -12,7 +12,7 @@ export default function Layout({ children }: any) {
       pathname.split("/")[1] !== "check-mail" &&
       pathname.split("/")[1] !== "forgot-password" ? (
         <div className="flex h-screen overflow-hidden">
-          <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <SidebarNew sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
             <main>
