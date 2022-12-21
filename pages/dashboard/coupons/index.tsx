@@ -142,7 +142,7 @@ function CouponsPage() {
                             <img className="w-full h-full rounded" src={item.image} />
                           </div>
                         </td>
-                        <td className="py-4 px-3 text-sm text-gray-500 mint-ellipsis-three">
+                        <td className="py-4 px-3 text-sm text-gray-500 min-ellipsis-two">
                           {item.description}
                         </td>
                         <td className="py-4 px-3 text-sm text-gray-500">

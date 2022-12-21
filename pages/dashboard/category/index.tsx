@@ -10,10 +10,15 @@ import moment from "moment";
 import ModalDelete from "../../../components/ModalDelete";
 import { RootState } from "../../../redux/reducers";
 import ModalUpdateCategory from "../../../components/ModalUpdateCategory";
-
+import CountRecord from "../../../components/CountRecord";
+import { Switch } from "@headlessui/react";
+function classNames(...classes: any) {
+  return classes.filter(Boolean).join(" ");
+}
 function CategoryPage() {
   const [name, setName] = useState<string>("");
   const [load, setLoad] = useState(false);
+
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
   const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
   const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
@@ -26,6 +31,7 @@ function CategoryPage() {
       .from("categories")
       .select("*")
       .eq("active", true);
+
     if (error) {
       toast(error.message);
       return;
@@ -68,128 +74,162 @@ function CategoryPage() {
         <title>Danh Mục</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      <main className="flex gap-6 mt-4 mx-6">
-        <div className="w-[30%]">
-          <form onSubmit={addNewCategory}>
-            <label
-              htmlFor="helper-text"
-              className="block mb-4 text-sm font-bold text-gray-900 dark:text-white"
-            >
-              THÊM DANH MỤC
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={name}
-              aria-describedby="helper-text-explanation"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Tên danh mục"
-              onChange={(e) => setName(e.target.value)}
-            />
-            <div className="justify-end flex mt-4">
-              {!name ? (
-                <button className="text-white bg-gray-400 font-medium rounded-lg text-sm px-4 py-2.5 mr-2 mb-2 cursor-not-allowed">
-                  THÊM DANH MỤC
-                </button>
-              ) : (
-                <button
-                  type={"submit"}
-                  className="text-white bg-indigo-600 hover:bg-indigo-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+      <div className="flex flex-col gap-5">
+        <div className="sm:flex sm:justify-between sm:items-center">
+          <div className="text-2xl font-bold text-slate-800">Dịch vụ ✨</div>
+        </div>
+        <div className="flex gap-6">
+          <div className="w-[30%] ">
+            <div className="w-full bg-white px-5 p-4 flex flex-col gap-6 shadow-md sm:rounded-lg">
+              <div className="text-sm font-bold text-gray-900 dark:text-white">
+                THÊM DANH MỤC SẢN PHẨM
+              </div>
+              <form onSubmit={addNewCategory}>
+                <label
+                  htmlFor="name"
+                  className=" block mb-1 text-sm font-normal text-slate-400 required"
                 >
-                  {load ? "ĐANG THÊM..." : "THÊM DANH MỤC"}
-                </button>
-              )}
+                  Tên danh mục
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={name}
+                  aria-describedby="helper-text-explanation"
+                  className="form-input w-full"
+                  placeholder="Ex: Nha khoa"
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <div className="justify-end flex mt-4">
+                  <button
+                    type={`${load ? "button" : "submit"}`}
+                    className="btn bg-indigo-500 hover:bg-indigo-600 text-white"
+                  >
+                    {load ? "Đang thêm..." : "Thêm danh mục"}
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
-        </div>
-        <div className="w-[70%] h-[84vh] overflow-x-auto relative shadow-md sm:rounded-lg mt-8">
-          <table className="min-w-full divide-y divide-gray-300 px-4">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  scope="col"
-                  className="py-3.5 px-4 text-center text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
-                >
-                  STT
-                </th>
-                <th
-                  scope="col"
-                  className="py-3.5 px-4 text-center text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
-                >
-                  TÊN DANH MỤC
-                </th>
-                <th
-                  scope="col"
-                  className="py-3.5 px-4 text-center text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
-                >
-                  NGÀY TẠO
-                </th>
+          </div>
+          {category ? (
+            <div className="w-[70%] overflow-x-auto relative shadow-md sm:rounded-lg">
+              <div className="w-full overflow-x-auto relative bg-white  sm:rounded-lg">
+                <CountRecord amount={category.length} title={"Danh sách danh mục"} />
+                <table className="w-full text-sm  text-gray-500 dark:text-gray-400">
+                  <thead className="bg-slate-100 text-slate-500 uppercase font-semibold text-xs border border-slate-200 ">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                      >
+                        STT
+                      </th>
+                      <th
+                        scope="col"
+                        className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4  "
+                      >
+                        Tên
+                      </th>
+                      <th
+                        scope="col"
+                        className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                      >
+                        Ngày tạo
+                      </th>
 
-                <th
-                  scope="col"
-                  className="py-3.5 px-4 text-center text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
-                ></th>
-              </tr>
-            </thead>
-            <tbody>
-              {category &&
-                category.length > 0 &&
-                category.map((item, index: number) => (
-                  <tr key={index}>
-                    <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                      {index + 1}
-                    </td>
-                    <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                      {item.name}
-                    </td>
-                    <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                      {moment(item.created_at).format("DD/MM/YYYY")}
-                    </td>
-                    <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                      <div className="flex gap-3 ">
-                        <div
-                          className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
-                          onClick={() => {
-                            setSelectedItemUpdate(item);
-                            setOpenModalUpdate(true);
-                          }}
+                      <th
+                        scope="col"
+                        className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                      >
+                        Trạng thái
+                      </th>
+                      <th
+                        scope="col"
+                        className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                      >
+                        Hành động
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm text-center">
+                    {category && category.length > 0 ? (
+                      category.map((item, index) => (
+                        <tr
+                          key={item.id}
+                          className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700"
                         >
-                          Chỉnh sửa
-                        </div>
+                          <td className="whitespace-nowrap py-3 px-2 ">{index + 1}</td>
+                          <td className="whitespace-nowrap py-3 px-2 ">{item.name}</td>
 
-                        <div
-                          className="text-red-500 cursor-pointer"
-                          onClick={() => {
-                            setSelectedDeleteId(item.id);
-                            setOpenModalDelete(true);
-                          }}
-                        >
-                          Xoá
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+                          <td className="whitespace-nowrap py-3 px-2 ">
+                            {item.created_at}
+                          </td>
+
+                          <td className="whitespace-nowrap text-center">
+                            <Switch
+                              checked={item.active}
+                              onClick={() => {
+                                setSelectedDeleteId(item.id);
+                                setOpenModalDelete(true);
+                              }}
+                              className={classNames(
+                                item.active ? "bg-indigo-600" : "bg-gray-200",
+                                "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                              )}
+                            >
+                              <span
+                                aria-hidden="true"
+                                className={classNames(
+                                  item.active ? "translate-x-5" : "translate-x-0",
+                                  "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                )}
+                              />
+                            </Switch>
+                          </td>
+
+                          <td className="relative whitespace-nowrap py-3 px-2 ">
+                            <div
+                              className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                              onClick={() => {
+                                setSelectedItemUpdate(item);
+                                setOpenModalUpdate(true);
+                              }}
+                            >
+                              Chỉnh sửa
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700">
+                        <td className="whitespace-nowrap py-3 px-2 ">Không có dữ liệu</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+            <div>Loading...</div>
+          )}
         </div>
-        {openModalDelete && selectedDeleteId && (
-          <ModalDelete
-            id={selectedDeleteId}
-            title="danh mục dịch vụ"
-            type="categories"
-            setOpenModalDelete={setOpenModalDelete}
-          />
-        )}
-        {openModalUpdate && selectedItemUpdate && (
-          <ModalUpdateCategory
-            category={selectedItemUpdate}
-            title="danh mục dịch vụ"
-            setOpenModalUpdate={setOpenModalUpdate}
-          />
-        )}
-      </main>
+      </div>
+      {openModalDelete && selectedDeleteId && (
+        <ModalDelete
+          id={selectedDeleteId}
+          title="danh mục dịch vụ"
+          type="categories"
+          setOpenModalDelete={setOpenModalDelete}
+        />
+      )}
+      {openModalUpdate && selectedItemUpdate && (
+        <ModalUpdateCategory
+          category={selectedItemUpdate}
+          title="danh mục dịch vụ"
+          setOpenModalUpdate={setOpenModalUpdate}
+        />
+      )}
     </>
   );
 }

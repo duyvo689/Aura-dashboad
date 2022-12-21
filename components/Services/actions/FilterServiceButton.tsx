@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import Transition from "../../utils/components/Transition";
-
-function FilterButton() {
+import Transition from "../../../utils/components/Transition";
+import { Category, Clinic, Role } from "../../../utils/types";
+interface Props {
+  categories: Category[];
+  onFilter: (idList: string[]) => void;
+}
+function FilterServiceBtn({ categories, onFilter }: Props) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
+  const [selectedFilter, setSelectedFilter] = useState<string[]>([]);
   const trigger = useRef(null);
   const dropdown = useRef(null);
 
@@ -27,15 +31,12 @@ function FilterButton() {
     }, [ref]);
   }
   useOutsideAlerter(trigger);
-
   return (
-    <div className="relative inline-flex">
+    <div className="relative inline-flex" ref={trigger}>
       <button
-        ref={trigger}
         className="btn bg-white border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-600"
         aria-haspopup="true"
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        aria-expanded={dropdownOpen}
       >
         <span className="sr-only">Filter</span>
         <wbr />
@@ -46,7 +47,7 @@ function FilterButton() {
       <Transition
         show={dropdownOpen}
         tag="div"
-        className="origin-top-right z-10 absolute top-full left-0 right-auto md:left-auto md:right-0 min-w-56 bg-white border border-slate-200 pt-1.5 rounded shadow-lg overflow-hidden mt-1"
+        className="origin-top-right z-10 absolute top-full left-0 right-auto md:left-auto md:right-0 min-w-60 bg-white border border-slate-200 pt-1.5 rounded shadow-lg overflow-hidden mt-1"
         enter="transition ease-out duration-200 transform"
         enterStart="opacity-0 -translate-y-2"
         enterEnd="opacity-100 translate-y-0"
@@ -59,57 +60,57 @@ function FilterButton() {
             Bộ lọc
           </div>
           <ul className="mb-4">
-            <li className="py-1 px-3">
-              <label className="flex items-center">
-                <input type="checkbox" className="form-checkbox" />
-                <span className="text-sm font-medium ml-2">Direct VS Indirect</span>
-              </label>
-            </li>
-            <li className="py-1 px-3">
-              <label className="flex items-center">
-                <input type="checkbox" className="form-checkbox" />
-                <span className="text-sm font-medium ml-2">Real Time Value</span>
-              </label>
-            </li>
-            <li className="py-1 px-3">
-              <label className="flex items-center">
-                <input type="checkbox" className="form-checkbox" />
-                <span className="text-sm font-medium ml-2">Top Channels</span>
-              </label>
-            </li>
-            <li className="py-1 px-3">
-              <label className="flex items-center">
-                <input type="checkbox" className="form-checkbox" />
-                <span className="text-sm font-medium ml-2">Sales VS Refunds</span>
-              </label>
-            </li>
-            <li className="py-1 px-3">
-              <label className="flex items-center">
-                <input type="checkbox" className="form-checkbox" />
-                <span className="text-sm font-medium ml-2">Last Order</span>
-              </label>
-            </li>
-            <li className="py-1 px-3">
-              <label className="flex items-center">
-                <input type="checkbox" className="form-checkbox" />
-                <span className="text-sm font-medium ml-2">Total Spent</span>
-              </label>
-            </li>
+            {categories.map((item, index: number) => {
+              return (
+                <li key={index} className="py-1 px-3">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox"
+                      checked={selectedFilter.includes(item.id)}
+                      onChange={(e: any) => {
+                        if (e.target.checked) {
+                          setSelectedFilter((preState: any) => {
+                            return [...preState, item.id];
+                          });
+                        } else {
+                          setSelectedFilter((preState: any) => {
+                            const temp = preState.filter((el: string) => el !== item.id);
+                            return temp;
+                          });
+                        }
+                      }}
+                    />
+                    <span className="text-sm font-medium ml-2">{item.name}</span>
+                  </label>
+                </li>
+              );
+            })}
           </ul>
           <div className="py-2 px-3 border-t border-slate-200 bg-slate-50">
             <ul className="flex items-center justify-between">
               <li>
-                <button className="btn-xs bg-white border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-600">
-                  Clear
+                <button
+                  onClick={() => {
+                    setSelectedFilter([]);
+                    onFilter([]);
+                    setDropdownOpen(false);
+                  }}
+                  className="btn-xs bg-white border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-600"
+                >
+                  Loại bỏ
                 </button>
               </li>
               <li>
                 <button
                   className="btn-xs bg-indigo-500 hover:bg-indigo-600 text-white"
-                  onClick={() => setDropdownOpen(false)}
+                  onClick={() => {
+                    onFilter(selectedFilter);
+                    setDropdownOpen(false);
+                  }}
                   onBlur={() => setDropdownOpen(false)}
                 >
-                  Apply
+                  Áp dụng
                 </button>
               </li>
             </ul>
@@ -120,4 +121,4 @@ function FilterButton() {
   );
 }
 
-export default FilterButton;
+export default FilterServiceBtn;

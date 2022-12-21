@@ -134,12 +134,19 @@ video {
   .colleciton-witdh {
     min-width: 720px !important;
   }
-}.mint-ellipsis-three {
+}
+.min-ellipsis-three {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 } 
+.min-ellipsis-two {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 .uploadcare--tab__content > button {
   background-color: rgb(88 80 236) !important;
   }

@@ -105,12 +105,13 @@ function BannerPage() {
                         className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700"
                       >
                         <td className="whitespace-nowrap py-3 px-2 ">{index + 1}</td>
-                        <td className="whitespace-nowrap py-3 px-2 max-w-[50px] ">
-                          <img
-                            className="w-full"
-                            src={item?.image_url || "../images/default-avatar.png"}
-                            alt={item?.id}
-                          />
+                        <td className="whitespace-nowrap py-3 px-2">
+                          <div className="w-24 h-16 mx-auto">
+                            <img
+                              className="w-full h-full rounded"
+                              src={item.image_url || "../images/default-avatar.png"}
+                            />
+                          </div>
                         </td>
                         <td className="whitespace-nowrap py-3 px-2 ">{item?.link}</td>
 

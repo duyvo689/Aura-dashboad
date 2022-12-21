@@ -22,14 +22,10 @@ function ItemCusStatus({ index, customerStatus }: Props) {
   } | null>(null);
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
   return (
-    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-center ">
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white bg-white">
-        {index}
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white bg-white">
-        {customerStatus.name}
-      </Table.Cell>
-      <Table.Cell>
+    <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700 text-center">
+      <td className="whitespace-nowrap py-3 px-2 ">{index + 1}</td>
+      <td className="whitespace-nowrap py-3 px-2 ">{customerStatus.name}</td>
+      <td className="whitespace-nowrap py-3 px-2 ">
         <div
           className={`whitespace-nowrap font-medium inline-block py-1 px-2 rounded-full ${
             statusTypeColor[customerStatus.type as ColorTypeKey]
@@ -37,8 +33,8 @@ function ItemCusStatus({ index, customerStatus }: Props) {
         >
           {statusMapping[customerStatus.type as ObjectKey]}
         </div>
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white bg-white">
+      </td>
+      <td className="whitespace-nowrap py-3 px-2 ">
         <Switch
           checked={customerStatus.active}
           onClick={() => {
@@ -61,15 +57,17 @@ function ItemCusStatus({ index, customerStatus }: Props) {
             `}
           />
         </Switch>
-      </Table.Cell>
-      <Table.Cell
-        onClick={() => {
-          setOpenModalUpdate(true);
-        }}
-        className="whitespace-nowrap font-medium text-indigo-900 dark:text-white bg-white cursor-pointer"
-      >
-        Chỉnh sửa
-      </Table.Cell>
+      </td>
+      <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
+        <div
+          onClick={() => {
+            setOpenModalUpdate(true);
+          }}
+          className="whitespace-nowrap font-medium text-indigo-900 dark:text-white bg-white cursor-pointer"
+        >
+          Chỉnh sửa
+        </div>
+      </td>
       <td className={`${openModalUpdate || openModalToggle ? "block" : "hidden"}`}>
         {openModalToggle && selectedToggle && (
           <ModalToggleActive
@@ -87,7 +85,7 @@ function ItemCusStatus({ index, customerStatus }: Props) {
           />
         )}
       </td>
-    </Table.Row>
+    </tr>
   );
 }
 

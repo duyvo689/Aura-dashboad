@@ -135,15 +135,17 @@ export default function ClinicPage() {
                       >
                         <td className="whitespace-nowrap py-3 px-2 ">{index + 1}</td>
                         <td className="whitespace-nowrap py-3 px-2 ">{item.name}</td>
-                        <td className="whitespace-nowrap py-3 px-2 max-w-[50px] ">
-                          <img
-                            className="w-full"
-                            src={item?.avatar || "../images/default-avatar.png"}
-                            alt={item?.name}
-                          />
+                        <td className="whitespace-nowrap py-3 px-2 ">
+                          <div className="w-24 h-16 mx-auto">
+                            <img
+                              className="w-full h-full rounded"
+                              src={item?.avatar || "../images/default-avatar.png"}
+                              alt={item?.name}
+                            />
+                          </div>
                         </td>
                         <td className="py-3 px-2 ">
-                          <span className="mint-ellipsis-three text-left">
+                          <span className="min-ellipsis-three text-left">
                             {item?.address}
                           </span>
                         </td>
@@ -151,7 +153,7 @@ export default function ClinicPage() {
                           {item?.district}
                         </td>
                         <td className=" py-3 px-2 ">
-                          <span className="mint-ellipsis-three text-left">
+                          <span className="min-ellipsis-three text-left">
                             {item.description}
                           </span>
                         </td>

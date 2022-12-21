@@ -10,6 +10,7 @@ import { Button, Label, Table, TextInput } from "flowbite-react";
 import ItemCusStatus from "../../../components/CustomerStatus/ItemCusStatus";
 import { statusType } from "../../../constants/crm";
 import Select from "react-select";
+import CountRecord from "../../../components/CountRecord";
 function CustomerStatusPage() {
   const [load, setLoad] = useState(false);
   const [content, setContent] = useState<string | null>(null);
@@ -74,73 +75,116 @@ function CustomerStatusPage() {
         <title>Quản lý tình trạng khách hàng</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      <main className="flex gap-6 mt-4 mx-6">
-        <div className="w-[30%]">
-          <form className="flex flex-col gap-4" onSubmit={addNewCustomerStatus}>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="type" className="required" value="Loại" />
-              <Select
-                id="type"
-                ref={selectInputRef}
-                name="type"
-                placeholder={"Vui lòng chọn"}
-                options={statusType}
-                onChange={() => {
-                  setContent("");
-                }}
-              ></Select>
-            </div>
-            {content !== null ? (
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="type" className="required" value="Nội dung" />
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  onChange={(e) => {
-                    setContent(e.target.value);
-                  }}
-                  value={content}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
+      <div className="flex flex-col gap-5">
+        <div className="sm:flex sm:justify-between sm:items-center">
+          <div className="text-2xl font-bold text-slate-800">
+            Tình trạng khách hàng ✨
+          </div>
+        </div>
+        <div className="flex gap-6">
+          <div className="w-[30%]">
+            <div className="w-full bg-white px-5 p-4 flex flex-col gap-6 sm:rounded-lg shadow-md">
+              <div className="text-sm font-bold text-gray-900 dark:text-white">
+                THÊM TÌNH TRẠNG KHÁCH HÀNG
               </div>
-            ) : null}
-            <Button size="sm" type="submit">
-              {load ? "Đang tạo mới..." : "Tạo mới"}
-            </Button>
-          </form>
+              <form className="flex flex-col gap-4" onSubmit={addNewCustomerStatus}>
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="helper-text"
+                    className=" block mb-1 text-sm font-normal text-slate-400 required"
+                  >
+                    Loại
+                  </label>
+                  <Select
+                    id="type"
+                    ref={selectInputRef}
+                    name="type"
+                    placeholder={"Vui lòng chọn"}
+                    options={statusType}
+                    onChange={() => {
+                      setContent("");
+                    }}
+                  ></Select>
+                </div>
+                {content !== null ? (
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="helper-text"
+                      className=" block mb-1 text-sm font-normal text-slate-400 required"
+                    >
+                      Nội dụng
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      id="name"
+                      onChange={(e) => {
+                        setContent(e.target.value);
+                      }}
+                      value={content}
+                      className="form-input w-full "
+                    />
+                  </div>
+                ) : null}
+                <div className="flex justify-end">
+                  <button
+                    className="btn bg-indigo-500 hover:bg-indigo-600 text-white w-32"
+                    type={load ? "button" : "submit"}
+                  >
+                    {load ? "Đang tạo mới..." : "Tạo mới"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+          {customerStatus ? (
+            <div className="w-[70%]  overflow-x-auto shadow-md relative sm:rounded-lg">
+              <div className="w-full overflow-x-auto relative bg-white  sm:rounded-lg">
+                <CountRecord
+                  amount={customerStatus.data.length}
+                  title={"Danh sách quản lý tình trạng khách hàng"}
+                />
+                <table className="w-full text-sm  text-gray-500 dark:text-gray-400">
+                  <thead className="bg-slate-100 text-slate-500 uppercase font-semibold text-xs border border-slate-200">
+                    <tr>
+                      <th scope="col" className="py-3 px-2 first:px-4 last:px-4 ">
+                        STT
+                      </th>
+                      <th scope="col" className="py-3 px-2 first:px-4 last:px-4 ">
+                        Nội dung
+                      </th>
+                      <th scope="col" className="py-3 px-2 first:px-4 last:px-4 ">
+                        Loại
+                      </th>
+                      <th scope="col" className="py-3 px-2 first:px-4 last:px-4 ">
+                        Trạng thái
+                      </th>
+                      <th scope="col" className="py-3 px-2 first:px-4 last:px-4 ">
+                        HÀNH ĐỘNG
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm text-center">
+                    {customerStatus &&
+                      customerStatus.data.length > 0 &&
+                      customerStatus.data.map((item, index) => {
+                        return (
+                          <ItemCusStatus
+                            key={index}
+                            customerStatus={item}
+                            index={index}
+                          />
+                        );
+                      })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+            <div>Loading...</div>
+          )}
         </div>
-        <div className="w-[70%] h-[84vh] overflow-x-auto relative sm:rounded-lg">
-          <Table className="min-w-full divide-y divide-gray-200">
-            <Table.Head>
-              <Table.HeadCell className="whitespace-nowrap text-center">
-                STT
-              </Table.HeadCell>
-              <Table.HeadCell className="whitespace-nowrap text-center">
-                Nội dung
-              </Table.HeadCell>
-              <Table.HeadCell className="whitespace-nowrap text-center">
-                Loại
-              </Table.HeadCell>
-              <Table.HeadCell className="whitespace-nowrap text-center">
-                Trạng thái
-              </Table.HeadCell>
-              <Table.HeadCell className="whitespace-nowrap text-center">
-                <span className="sr-only">Edit</span>
-              </Table.HeadCell>
-            </Table.Head>
-            <Table.Body className="bg-white divide-y divide-gray-200">
-              {customerStatus &&
-                customerStatus.data.length > 0 &&
-                customerStatus.data.map((item, index) => {
-                  return (
-                    <ItemCusStatus key={index} customerStatus={item} index={index} />
-                  );
-                })}
-            </Table.Body>
-          </Table>
-        </div>
-      </main>
+      </div>
     </>
   );
 }

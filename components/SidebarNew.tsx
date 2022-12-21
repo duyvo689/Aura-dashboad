@@ -2,19 +2,20 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState, useEffect, useRef } from "react";
 import mainLogo from "../public/images/mainlogo.svg";
-import {
-  UsersIcon,
-  PhotoIcon,
-  UserPlusIcon,
-  MapPinIcon,
-  NewspaperIcon,
-  BanknotesIcon,
-  WalletIcon,
-  ClipboardDocumentCheckIcon,
-  GiftIcon,
-  PencilSquareIcon,
-} from "@heroicons/react/24/outline";
 
+import {
+  DashBoardIcon,
+  EComerceIcon,
+  CommunityIcon,
+  FinanceIcon,
+  JobIcon,
+  TaskIcon,
+  MessageIcon,
+  InboxIcon,
+  CalendarIcon,
+  CampainIcon,
+} from "../components/Icons/SideBar/index";
+import SidebarLinkGroup from "./SidebarLinkGroup";
 interface Props {
   sidebarOpen: any;
   setSidebarOpen: any;
@@ -25,82 +26,91 @@ interface Navigation {
   icon: any;
   pathName: string;
 }
+interface NavigationGroup {
+  title: string;
+  active: string[];
+  navigation: {
+    name: string;
+    href: string;
+    active: string;
+  }[];
+}
 const navigations: Navigation[] = [
-  // { name: "Home", href: "/", icon: HomeIcon, pathName: "home" },
   {
     name: "Quản lý nhân sự",
     href: "/dashboard/roles",
-    icon: UserPlusIcon,
+    icon: (pathname: string) => {
+      return <TaskIcon pathname={pathname} />;
+    },
     pathName: "roles",
   },
   {
     name: "Quản lý người dùng",
     href: "/dashboard/users",
-    icon: UsersIcon,
+    icon: (pathname: string) => {
+      return <CommunityIcon pathname={pathname} />;
+    },
     pathName: "users",
-  },
-  {
-    name: "Quản lý banner",
-    href: "/dashboard/banners",
-    icon: PhotoIcon,
-    pathName: "banners",
   },
   {
     name: " Quản lý phòng khám",
     href: "/dashboard/clinics",
-    icon: MapPinIcon,
+    icon: (pathname: string) => {
+      return <EComerceIcon pathname={pathname} />;
+    },
     pathName: "clinics",
   },
   {
     name: "Quản lý dịch vụ",
     href: "/dashboard/services",
-    icon: ClipboardDocumentCheckIcon,
+    icon: (pathname: string) => {
+      return <CampainIcon pathname={pathname} />;
+    },
     pathName: "services",
-  },
-  {
-    name: "Quản lý danh mục",
-    href: "/dashboard/category",
-    icon: NewspaperIcon,
-    pathName: "category",
-  },
-  {
-    name: "Phương thức thanh toán",
-    href: "/dashboard/payments",
-    icon: BanknotesIcon,
-    pathName: "payments",
-  },
-  // {
-  //   name: "Nguồn khách hàng",
-  //   href: "/dashboard/customer-resources",
-  //   icon: IdentificationIcon,
-  //   pathName: "customer-resources",
-  // },
-  {
-    name: "Danh sách coupons",
-    href: "/dashboard/coupons",
-    icon: GiftIcon,
-    pathName: "coupons",
   },
   {
     name: "Quản lý đặt hẹn",
     href: "/dashboard/bookings",
-    icon: PencilSquareIcon,
+    icon: (pathname: string) => {
+      console.log(pathname);
+      return <CalendarIcon pathname={pathname} />;
+    },
     pathName: "bookings",
   },
-  {
-    name: "Quản lý tình trạng KH",
-    href: "/dashboard/customer-status",
-    icon: PencilSquareIcon,
-    pathName: "customer-status",
-  },
-  // {
-  //   name: "Quản lý thanh toán",
-  //   href: "/dashboard/checkouts",
-  //   icon: WalletIcon,
-  //   pathName: "checkout",
-  // },
 ];
-
+const navigationGroup: NavigationGroup[] = [
+  {
+    title: "Cài đặt",
+    active: ["category", "payments", "customer-status", "coupons", "banners"],
+    navigation: [
+      {
+        name: "Danh mục sản phẩm",
+        href: "/dashboard/category",
+        active: "category",
+      },
+      {
+        name: "Phương thức thanh toán",
+        href: "/dashboard/payments",
+        active: "payments",
+      },
+      {
+        name: "Tình trạng KH",
+        href: "/dashboard/customer-status",
+        active: "customer-status",
+      },
+      {
+        name: "Coupons",
+        href: "/dashboard/coupons",
+        active: "coupons",
+      },
+      {
+        name: "Banner",
+        href: "/dashboard/banners",
+        active: "banners",
+      },
+    ],
+  },
+];
 function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
   const { pathname } = useRouter();
 
@@ -150,7 +160,6 @@ function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
        translate-x-0
         `}
       >
-        {/* Sidebar header */}
         <div className="flex justify-between mb-10 pr-3 sm:px-2">
           <img
             ref={trigger}
@@ -165,12 +174,13 @@ function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
             <h3 className="text-xs uppercase text-slate-500 font-semibold pl-3">
               <span className="block">Điều hướng</span>
             </h3>
+            {/* Normal navigation */}
             <ul className="mt-3">
               {navigations.map((item, index: number) => {
                 return (
                   <li
                     key={index}
-                    className={`px-3 py-2 rounded-sm mb-0.5 last:mb-0 ${
+                    className={`px-3 py-2 rounded-sm mb-0.5 last:mb-0 cursor-pointer ${
                       pathname.includes(item.pathName) && "bg-slate-900"
                     }`}
                   >
@@ -181,14 +191,13 @@ function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
                       }`}
                     >
                       <div className="flex items-center">
-                        <item.icon
-                          className={`w-6 h-6  text-slate-300 ${
+                        {item.icon(pathname)}
+                        <span
+                          className={`text-sm font-medium ml-3 block duration-200 text-slate-300 ${
                             (pathname === "/" || pathname.includes(item.pathName)) &&
                             "!text-indigo-500"
                           }`}
-                        />
-
-                        <span className="text-sm font-medium ml-3 block duration-200 text-white">
+                        >
                           {item.name}
                         </span>
                       </div>
@@ -197,10 +206,116 @@ function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
                 );
               })}
             </ul>
+            {/* Group navigation */}
+            {navigationGroup &&
+              navigationGroup.map((item, index: number) => {
+                return (
+                  <SidebarLinkGroup
+                    key={index}
+                    activecondition={item.active.includes(pathname.split("/")[2])}
+                  >
+                    {(handleClick: any, open: any) => {
+                      return (
+                        <React.Fragment>
+                          <div
+                            className={`block text-slate-200 hover:text-white truncate transition duration-150 cursor-pointer ${
+                              item.active.includes(pathname.split("/")[2]) &&
+                              "hover:text-slate-200"
+                            }`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              sidebarExpanded ? handleClick() : setSidebarExpanded(true);
+                            }}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <svg className="shrink-0 h-6 w-6" viewBox="0 0 24 24">
+                                  <path
+                                    className={`fill-current text-slate-600 ${
+                                      item.active.includes(pathname.split("/")[2]) &&
+                                      "text-indigo-500"
+                                    }`}
+                                    d="M19.714 14.7l-7.007 7.007-1.414-1.414 7.007-7.007c-.195-.4-.298-.84-.3-1.286a3 3 0 113 3 2.969 2.969 0 01-1.286-.3z"
+                                  />
+                                  <path
+                                    className={`fill-current text-slate-400 ${
+                                      item.active.includes(pathname.split("/")[2]) &&
+                                      "text-indigo-300"
+                                    }`}
+                                    d="M10.714 18.3c.4-.195.84-.298 1.286-.3a3 3 0 11-3 3c.002-.446.105-.885.3-1.286l-6.007-6.007 1.414-1.414 6.007 6.007z"
+                                  />
+                                  <path
+                                    className={`fill-current text-slate-600 ${
+                                      item.active.includes(pathname.split("/")[2]) &&
+                                      "text-indigo-500"
+                                    }`}
+                                    d="M5.7 10.714c.195.4.298.84.3 1.286a3 3 0 11-3-3c.446.002.885.105 1.286.3l7.007-7.007 1.414 1.414L5.7 10.714z"
+                                  />
+                                  <path
+                                    className={`fill-current text-slate-400 ${
+                                      item.active.includes(pathname.split("/")[2]) &&
+                                      "text-indigo-300"
+                                    }`}
+                                    d="M19.707 9.292a3.012 3.012 0 00-1.415 1.415L13.286 5.7c-.4.195-.84.298-1.286.3a3 3 0 113-3 2.969 2.969 0 01-.3 1.286l5.007 5.006z"
+                                  />
+                                </svg>
+                                <span
+                                  className={`${
+                                    item.active.includes(pathname.split("/")[2])
+                                      ? "text-indigo-500"
+                                      : "text-slate-300"
+                                  }
+                                   hover:text-white text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200`}
+                                >
+                                  {item.title}
+                                </span>
+                              </div>
+                              {/* Icon */}
+                              <div className="flex shrink-0 ml-2">
+                                <svg
+                                  className={`w-3 h-3 shrink-0 ml-1 fill-current text-slate-400 ${
+                                    open && "rotate-180"
+                                  }`}
+                                  viewBox="0 0 12 12"
+                                >
+                                  <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="lg:hidden lg:sidebar-expanded:block 2xl:block">
+                            <ul className={`pl-9 mt-1 ${!open && "hidden"}`}>
+                              {item.navigation.map((navigator, index: number) => {
+                                return (
+                                  <li className="mb-1 last:mb-0" key={index}>
+                                    <Link href={navigator.href}>
+                                      <div
+                                        className={`${
+                                          !pathname.includes(navigator.active)
+                                            ? "text-slate-400"
+                                            : "text-indigo-500"
+                                        } block hover:text-slate-200 transition duration-150 truncate`}
+                                      >
+                                        <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                                          {navigator.name}
+                                        </span>
+                                      </div>
+                                    </Link>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        </React.Fragment>
+                      );
+                    }}
+                  </SidebarLinkGroup>
+                );
+              })}
           </div>
         </div>
       </div>
-      {/* Expand / collapse button */}
+
       <div className="pt-3 hidden lg:inline-flex 2xl:hidden justify-end mt-auto">
         <div className="px-3 py-2">
           <button onClick={() => setSidebarExpanded(!sidebarExpanded)}>
