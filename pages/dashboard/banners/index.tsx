@@ -15,6 +15,7 @@ import UploadCareAPI from "../../../services/uploadCareAPI";
 import convertImg from "../../../utils/helpers/convertImg";
 import ModalDelete from "../../../components/ModalDelete";
 import Link from "next/link";
+import CountRecord from "../../../components/CountRecord";
 
 function BannerPage() {
   let banners: Banner[] = useSelector((state: RootState) => state.banners);
@@ -41,119 +42,115 @@ function BannerPage() {
         <title>Banner</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      <main>
-        {banners ? (
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="sm:flex sm:items-center">
-              <div className="sm:flex-auto">
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Banners({banners.length})
-                </h1>
-                <p className="mt-2 text-sm text-gray-700">Danh sách các banner</p>
-              </div>
-              <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                <Link href="/dashboard/banners/create-banner">
-                  <button
-                    type="button"
-                    className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                  >
-                    Thêm banner
-                  </button>
-                </Link>
-              </div>
-            </div>
-            <div className="mt-8 flex flex-col">
-              <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                  <table className="min-w-full divide-y divide-gray-300">
-                    <thead>
-                      <tr>
-                        <th
-                          scope="col"
-                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
-                        >
-                          STT
-                        </th>
-                        <th
-                          scope="col"
-                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
-                        >
-                          HÌNH ẢNH
-                        </th>
-                        <th
-                          scope="col"
-                          className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                        >
-                          LINK LIÊN KẾT
-                        </th>
-                        <th
-                          scope="col"
-                          className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                        >
-                          NGÀY TẠO
-                        </th>
-                        <th
-                          scope="col"
-                          className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                        >
-                          HÀNH ĐỘNG
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {banners.map((banner: Banner, index: number) => (
-                        <tr key={index}>
-                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                            {index + 1}
-                          </td>
-                          <td className="py-4 px-3 text-sm text-gray-500 m-0">
-                            <img src={banner.image_url} className="w-40" />
-                          </td>
-                          <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                            {banner.link}
-                          </td>
-                          <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                            {moment(banner.created_at).format("DD/MM/YYYY")}
-                          </td>
-                          <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
-                            <div className="flex gap-3 cursor-pointer">
-                              <Link href={`/dashboard/banners/edit/${banner.id}`}>
-                                <div className="text-indigo-600 hover:text-indigo-900">
-                                  Chỉnh sửa
-                                  <span className="sr-only">, {banner.id}</span>
-                                </div>
-                              </Link>
-                              <div
-                                className="text-red-500"
-                                onClick={() => {
-                                  setSelectedDeleteId(banner.id);
-                                  setOpenModalDelete(true);
-                                }}
-                              >
-                                Xoá
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+      {banners ? (
+        <div className="flex flex-col gap-5">
+          <div className="sm:flex sm:justify-between sm:items-center">
+            <div className="text-2xl font-bold text-slate-800">Banners ✨</div>
+            <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+              <button className="btn bg-indigo-500 hover:bg-indigo-600 text-white">
+                <svg
+                  className="w-4 h-4 fill-current opacity-50 shrink-0"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
+                </svg>
+                <span className="hidden xs:block ml-2">Thêm banner</span>
+              </button>
             </div>
           </div>
-        ) : (
-          <div>Loading...</div>
-        )}
-        {openModalDelete && selectedDeleteId && (
-          <ModalDelete
-            id={selectedDeleteId}
-            title="banner"
-            type="banners"
-            setOpenModalDelete={setOpenModalDelete}
-          />
-        )}
-      </main>
+          <div className="bg-white border border-slate-200 rounded-sm">
+            <div className="w-full overflow-x-auto relative shadow-md sm:rounded-lg">
+              <CountRecord amount={banners.length} title={"Danh sách banner"} />
+              <table className="w-full text-sm  text-gray-500 dark:text-gray-400">
+                <thead className="bg-slate-100 text-slate-500 uppercase font-semibold text-xs border border-slate-200 ">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      STT
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Hình ảnh
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Link liên kết
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Ngày tạo
+                    </th>
+
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Hành động
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm text-center">
+                  {banners && banners.length > 0 ? (
+                    banners.map((item, index) => (
+                      <tr
+                        key={item.id}
+                        className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700"
+                      >
+                        <td className="whitespace-nowrap py-3 px-2 ">{index + 1}</td>
+                        <td className="whitespace-nowrap py-3 px-2 max-w-[50px] ">
+                          <img
+                            className="w-full"
+                            src={item?.image_url || "../images/default-avatar.png"}
+                            alt={item?.id}
+                          />
+                        </td>
+                        <td className="whitespace-nowrap py-3 px-2 ">{item?.link}</td>
+
+                        <td className="whitespace-nowrap py-3 px-2 ">
+                          {moment(item?.created_at).format("DD/MM/YYYY")}
+                        </td>
+                        <td className="relative whitespace-nowrap py-3 px-2">
+                          <div className="flex gap-3 cursor-pointer justify-center">
+                            <Link href={`/dashboard/banners/edit/${item?.id}`}>
+                              <div className="text-indigo-600 hover:text-indigo-900">
+                                Chỉnh sửa
+                                <span className="sr-only">, {item?.id}</span>
+                              </div>
+                            </Link>
+                            <div
+                              className="text-red-500"
+                              onClick={() => {
+                                setSelectedDeleteId(item?.id);
+                                setOpenModalDelete(true);
+                              }}
+                            >
+                              Xoá
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700">
+                      <td className="whitespace-nowrap py-3 px-2 ">Không có dữ liệu</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div>Loading...</div>
+      )}
     </>
   );
 }

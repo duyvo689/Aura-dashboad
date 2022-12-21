@@ -154,49 +154,49 @@ function RolesPage() {
                   <tr>
                     <th
                       scope="col"
-                      className="py-3 px-2 whitespace-normal first:px-4 last:px-4 "
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
                     >
                       STT
                     </th>
                     <th
                       scope="col"
-                      className="py-3 px-2 whitespace-normal first:px-4 last:px-4  "
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4  "
                     >
                       Số điện thoại
                     </th>
                     <th
                       scope="col"
-                      className="py-3 px-2 whitespace-normal first:px-4 last:px-4 "
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
                     >
                       Tên nhân sự
                     </th>
                     <th
                       scope="col"
-                      className="py-3 px-2 whitespace-normal first:px-4 last:px-4 "
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
                     >
                       Chức vụ
                     </th>
                     <th
                       scope="col"
-                      className="py-3 px-2 whitespace-normal first:px-4 last:px-4  "
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4  "
                     >
                       Cơ sở
                     </th>
                     <th
                       scope="col"
-                      className="py-3 px-2 whitespace-normal first:px-4 last:px-4 "
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
                     >
                       Trạng thái
                     </th>
                     <th
                       scope="col"
-                      className="py-3 px-2 whitespace-normal first:px-4 last:px-4 "
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
                     >
                       Xác thực
                     </th>
                     <th
                       scope="col"
-                      className="py-3 px-2 whitespace-normal first:px-4 last:px-4 "
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
                     >
                       Hành động
                     </th>
