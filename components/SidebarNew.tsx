@@ -104,7 +104,7 @@ const navigationGroup: NavigationGroup[] = [
         active: "coupons",
       },
       {
-        name: "Banner",
+        name: "Banners",
         href: "/dashboard/banners",
         active: "banners",
       },
@@ -122,12 +122,6 @@ function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
   useEffect(() => {
     const clickHandler = ({ target }: { target: any }) => {
       if (!sidebar.current || !trigger.current) return;
-      //   if (
-      //     !sidebarOpen ||
-      //     sidebar.current.contains(target) ||
-      //     trigger.current.contains(target)
-      //   )
-      //     return;
       setSidebarOpen(false);
     };
     document.addEventListener("click", clickHandler);
@@ -231,30 +225,34 @@ function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
                               <div className="flex items-center">
                                 <svg className="shrink-0 h-6 w-6" viewBox="0 0 24 24">
                                   <path
-                                    className={`fill-current text-slate-600 ${
-                                      item.active.includes(pathname.split("/")[2]) &&
-                                      "text-indigo-500"
+                                    className={`fill-current ${
+                                      item.active.includes(pathname.split("/")[2])
+                                        ? "text-indigo-500"
+                                        : "text-slate-600 "
                                     }`}
                                     d="M19.714 14.7l-7.007 7.007-1.414-1.414 7.007-7.007c-.195-.4-.298-.84-.3-1.286a3 3 0 113 3 2.969 2.969 0 01-1.286-.3z"
                                   />
                                   <path
-                                    className={`fill-current text-slate-400 ${
-                                      item.active.includes(pathname.split("/")[2]) &&
-                                      "text-indigo-300"
+                                    className={`fill-current  ${
+                                      item.active.includes(pathname.split("/")[2])
+                                        ? "text-indigo-300"
+                                        : "text-slate-400"
                                     }`}
                                     d="M10.714 18.3c.4-.195.84-.298 1.286-.3a3 3 0 11-3 3c.002-.446.105-.885.3-1.286l-6.007-6.007 1.414-1.414 6.007 6.007z"
                                   />
                                   <path
-                                    className={`fill-current text-slate-600 ${
-                                      item.active.includes(pathname.split("/")[2]) &&
-                                      "text-indigo-500"
+                                    className={`fill-current  ${
+                                      item.active.includes(pathname.split("/")[2])
+                                        ? "text-indigo-500"
+                                        : "text-slate-600"
                                     }`}
                                     d="M5.7 10.714c.195.4.298.84.3 1.286a3 3 0 11-3-3c.446.002.885.105 1.286.3l7.007-7.007 1.414 1.414L5.7 10.714z"
                                   />
                                   <path
-                                    className={`fill-current text-slate-400 ${
-                                      item.active.includes(pathname.split("/")[2]) &&
-                                      "text-indigo-300"
+                                    className={`fill-current ${
+                                      item.active.includes(pathname.split("/")[2])
+                                        ? "text-indigo-300"
+                                        : "text-slate-400"
                                     }`}
                                     d="M19.707 9.292a3.012 3.012 0 00-1.415 1.415L13.286 5.7c-.4.195-.84.298-1.286.3a3 3 0 113-3 2.969 2.969 0 01-.3 1.286l5.007 5.006z"
                                   />
@@ -265,7 +263,7 @@ function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
                                       ? "text-indigo-500"
                                       : "text-slate-300"
                                   }
-                                   hover:text-white text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200`}
+                                   hover:text-white text-sm font-medium ml-3  duration-200`}
                                 >
                                   {item.title}
                                 </span>
@@ -283,29 +281,28 @@ function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
                               </div>
                             </div>
                           </div>
-                          <div className="lg:hidden lg:sidebar-expanded:block 2xl:block">
-                            <ul className={`pl-9 mt-1 ${!open && "hidden"}`}>
-                              {item.navigation.map((navigator, index: number) => {
-                                return (
-                                  <li className="mb-1 last:mb-0" key={index}>
-                                    <Link href={navigator.href}>
-                                      <div
-                                        className={`${
-                                          !pathname.includes(navigator.active)
-                                            ? "text-slate-400"
-                                            : "text-indigo-500"
-                                        } block hover:text-slate-200 transition duration-150 truncate`}
-                                      >
-                                        <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                          {navigator.name}
-                                        </span>
-                                      </div>
-                                    </Link>
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          </div>
+
+                          <ul className={`pl-9 mt-1 ${!open && "hidden"}`}>
+                            {item.navigation.map((navigator, index: number) => {
+                              return (
+                                <li className="mb-1 last:mb-0" key={index}>
+                                  <Link href={navigator.href}>
+                                    <div
+                                      className={`${
+                                        !pathname.includes(navigator.active)
+                                          ? "text-slate-500"
+                                          : "text-indigo-500"
+                                      } block hover:text-slate-200 transition duration-150 truncate`}
+                                    >
+                                      <span className="text-sm font-medium duration-200">
+                                        {navigator.name}
+                                      </span>
+                                    </div>
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
                         </React.Fragment>
                       );
                     }}
@@ -316,7 +313,7 @@ function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
         </div>
       </div>
 
-      <div className="pt-3 hidden lg:inline-flex 2xl:hidden justify-end mt-auto">
+      <div className="pt-3 hidden  justify-end mt-auto">
         <div className="px-3 py-2">
           <button onClick={() => setSidebarExpanded(!sidebarExpanded)}>
             <svg

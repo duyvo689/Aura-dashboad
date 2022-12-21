@@ -1,14 +1,8 @@
-import { Fragment, useEffect, useRef, useState } from "react";
-import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  EllipsisHorizontalIcon,
-} from "@heroicons/react/20/solid";
-import { Menu, Transition } from "@headlessui/react";
+import { useEffect, useState } from "react";
+
 import moment from "moment";
-import "react-modern-calendar-datepicker/lib/DatePicker.css";
-import { Calendar } from "react-modern-calendar-datepicker";
+import "@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css";
+import { Calendar } from "@hassanmojab/react-modern-calendar-datepicker";
 import { Booking } from "../../../utils/types";
 import { supabase } from "../../../services/supaBaseClient";
 import ItemBooking from "../../../components/Bookings/ItemBooking";

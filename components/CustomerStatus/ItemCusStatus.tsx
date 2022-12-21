@@ -63,7 +63,7 @@ function ItemCusStatus({ index, customerStatus }: Props) {
           onClick={() => {
             setOpenModalUpdate(true);
           }}
-          className="whitespace-nowrap font-medium text-indigo-900 dark:text-white bg-white cursor-pointer"
+          className="whitespace-nowrap font-medium text-indigo-600 dark:text-white bg-white cursor-pointer"
         >
           Chỉnh sửa
         </div>
