@@ -218,3 +218,4 @@ function CreateNewRoles() {
     </div>
   );
 }
+export default CreateNewRoles;
