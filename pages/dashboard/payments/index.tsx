@@ -161,7 +161,10 @@ function CategoryPage() {
           {payments ? (
             <div className="w-[70%] overflow-x-auto relative shadow-md sm:rounded-lg">
               <div className="w-full overflow-x-auto relative bg-white  sm:rounded-lg">
-                <CountRecord amount={payments.length} title={"Danh sách danh mục"} />
+                <CountRecord
+                  amount={payments.length}
+                  title={"Danh sách phương thức thanh toán"}
+                />
                 <table className="w-full text-sm  text-gray-500 dark:text-gray-400">
                   <thead className="bg-slate-100 text-slate-500 uppercase font-semibold text-xs border border-slate-200">
                     <tr>

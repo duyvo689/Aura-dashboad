@@ -76,7 +76,7 @@ function CategoryPage() {
       </Head>
       <div className="flex flex-col gap-5">
         <div className="sm:flex sm:justify-between sm:items-center">
-          <div className="text-2xl font-bold text-slate-800">Dịch vụ ✨</div>
+          <div className="text-2xl font-bold text-slate-800">Danh mục sản phẩm ✨</div>
         </div>
         <div className="flex gap-6">
           <div className="w-[30%] ">

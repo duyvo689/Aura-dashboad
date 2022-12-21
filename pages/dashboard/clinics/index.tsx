@@ -71,7 +71,7 @@ export default function ClinicPage() {
           </div>
           <div className="bg-white border border-slate-200 rounded-sm">
             <div className="w-full overflow-x-auto relative shadow-md sm:rounded-lg">
-              <CountRecord amount={clinics.length} title={"Danh sách banner"} />
+              <CountRecord amount={clinics.length} title={"Danh sách chi nhánh"} />
               <table className="w-full text-sm  text-gray-500 dark:text-gray-400">
                 <thead className="bg-slate-100 text-slate-500 uppercase font-semibold text-xs border border-slate-200 ">
                   <tr>
