@@ -11,6 +11,7 @@ import customerRedux from "./customerRedux";
 import couponRedux from "./couponRedux";
 import customerStatusRedux from "./customerStatusRedux";
 import doctorRedux from "./doctorRedux";
+import oaPostRedux from "./oaPostRedux";
 const rootReducer = combineReducers({
   admin: adminRedux,
   roles: roleRedux,
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   coupons: couponRedux,
   customerStatus: customerStatusRedux,
   doctors: doctorRedux,
+  oaPosts: oaPostRedux,
 });
 export type RootState = ReturnType<typeof rootReducer>;
 

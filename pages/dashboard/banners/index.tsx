@@ -1,18 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import Head from "next/head";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../../../services/supaBaseClient";
-import { Banner, Payment } from "../../../utils/types";
-import { bannersAction, paymentAction } from "../../../redux/actions/ReduxAction";
+import { Banner } from "../../../utils/types";
+import { bannersAction } from "../../../redux/actions/ReduxAction";
 import toast from "react-hot-toast";
-import Tippy from "@tippyjs/react";
 import moment from "moment";
-import { uploadImageProduct } from "../../../utils/funtions";
 import { RootState } from "../../../redux/reducers";
-import { XCircleIcon } from "@heroicons/react/24/outline";
-import UploadCareAPI from "../../../services/uploadCareAPI";
-import convertImg from "../../../utils/helpers/convertImg";
 import ModalDelete from "../../../components/ModalDelete";
 import Link from "next/link";
 import CountRecord from "../../../components/CountRecord";
@@ -24,18 +19,22 @@ function BannerPage() {
   const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
   const dispatch = useDispatch();
   const getAllBanner = async () => {
-    let { data: banners, error } = await supabase.from("banners").select("*");
+    let { data: banners, error } = await supabase
+      .from("banners")
+      .select("*,service_id(*),link(*)");
     if (error) {
       toast(error.message);
       return;
     }
-    if (banners && banners.length > 0) {
+    if (banners) {
       dispatch(bannersAction("banners", banners));
     }
   };
   useEffect(() => {
-    getAllBanner();
-  }, []);
+    if (!banners) {
+      getAllBanner();
+    }
+  }, [banners]);
 
   return (
     <>
@@ -89,6 +88,12 @@ function BannerPage() {
                       scope="col"
                       className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
                     >
+                      Loại
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
                       Ngày tạo
                     </th>
 
@@ -116,8 +121,42 @@ function BannerPage() {
                             />
                           </div>
                         </td>
-                        <td className="whitespace-nowrap py-3 px-2 ">{item?.link}</td>
-
+                        {item.service_id && (
+                          <td className="whitespace-nowrap py-3 px-2 cursor-pointer ">
+                            <Link href={`/dashboard/services/edit/${item.service_id.id}`}>
+                              <a target="_blank" rel="noopener noreferrer">
+                                <div className="w-24 h-16 mx-auto">
+                                  <img
+                                    className="w-full h-full rounded"
+                                    src={
+                                      item.service_id.image ||
+                                      "../images/default-avatar.png"
+                                    }
+                                  />
+                                </div>
+                              </a>
+                            </Link>
+                          </td>
+                        )}
+                        {item.link && (
+                          <td className="whitespace-nowrap py-3 px-2 cursor-pointer ">
+                            <Link href={item.link.link_view}>
+                              <a target="_blank" rel="noopener noreferrer">
+                                <div className="w-24 h-16 mx-auto">
+                                  <img
+                                    className="w-full h-full rounded"
+                                    src={
+                                      item.link.thumb || "../images/default-avatar.png"
+                                    }
+                                  />
+                                </div>
+                              </a>
+                            </Link>
+                          </td>
+                        )}
+                        <td className="whitespace-nowrap py-3 px-2 ">
+                          {item?.type === "OA" ? "0A" : "Dịch vụ"}
+                        </td>
                         <td className="whitespace-nowrap py-3 px-2 ">
                           {moment(item?.created_at).format("DD/MM/YYYY")}
                         </td>

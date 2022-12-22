@@ -106,18 +106,6 @@ function UpdateBanner() {
                 >
                   Link liên kết (Nếu có)
                 </label>
-                <div className="mt-1 sm:col-span-2 sm:mt-0">
-                  <div className="flex max-w-lg rounded-md shadow-sm">
-                    <input
-                      type="text"
-                      name="link"
-                      id="link"
-                      defaultValue={banner.link}
-                      placeholder="Đường dẫn liên kết cho banner"
-                      className="block w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
               </div>
             </div>
             <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
