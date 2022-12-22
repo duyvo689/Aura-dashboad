@@ -14,6 +14,7 @@ import FilterRolesBtn from "../../../components/Roles/actions/FilterRolesBtn";
 import CountRecord from "../../../components/CountRecord";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { EditIcon } from "../../../components/Icons/Form";
+import Link from "next/link";
 const ROLES_MAPPING = [
   { name: "Bác sĩ", value: "doctor" },
   { name: "Lễ Tân", value: "staff" },
@@ -142,7 +143,9 @@ function RolesPage() {
                 >
                   <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
                 </svg>
-                <span className="hidden xs:block ml-2">Thêm nhân sự</span>
+                <Link href="/dashboard/roles/create-role">
+                  <span className="hidden xs:block ml-2">Thêm nhân sự</span>
+                </Link>
               </button>
             </div>
           </div>

@@ -13,6 +13,45 @@ import convertImg from "../../../utils/helpers/convertImg";
 import { Widget } from "@uploadcare/react-widget";
 import Select from "react-select";
 import VNProvinces from "../../../constants/VNProvince";
+import InputForm from "../../../components/Form/InputForm";
+import TextArea from "../../../components/Form/TextArea";
+import SelectForm from "../../../components/Form/SelectForm";
+import InputImage from "../../../components/Form/InputImage";
+import SubmitBtn from "../../../components/Form/SubmitBtn";
+const InputFields = [
+  {
+    type: "text",
+    title: "Tên cơ sở",
+    id: "name",
+    name: "name",
+    placeholder: "Ex Aura Cơ sở 3",
+    required: true,
+  },
+  {
+    type: "text",
+    title: "Đia chỉ cơ sở",
+    id: "address",
+    name: "address",
+    placeholder: "Ex: Tphcm",
+    required: true,
+  },
+];
+const InputTextArea = {
+  type: "textarea",
+  title: "Mô tả cơ sở",
+  id: "description",
+  name: "description",
+  placeholder: "Ex: Tphcm",
+  required: true,
+  rows: 4,
+};
+const InputSelect = {
+  title: "Thành phố",
+  name: "district",
+  required: true,
+  placeholder: "Vui lòng chọn",
+  options: VNProvinces,
+};
 export default function CreateClinic() {
   const [clinicImage, setClinicImg] = useState<string | null>(null);
   const [load, setLoad] = useState<boolean>(false);
@@ -49,19 +88,20 @@ export default function CreateClinic() {
     const _address = event.target.elements.address.value;
     const _description = event.target.elements.description.value;
     const _district = event.target.district.value;
-    let _serviceInfo = {
+    let _clinicsInfo = {
       name: _name,
       address: _address,
       description: _description,
       avatar: clinicImage || "",
       district: _district,
     };
-    let isValid = validateForm(_serviceInfo);
+
+    let isValid = validateForm(_clinicsInfo);
     if (!isValid || !clinicImage) return;
 
     const { data, error } = await supabase
       .from(" clinics")
-      .insert([_serviceInfo])
+      .insert([_clinicsInfo])
       .select("*")
       .single();
     if (error) {
@@ -99,187 +139,71 @@ export default function CreateClinic() {
         <title>Thêm Cơ Sở</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      <div className="sm:flex sm:items-center max-w-[860px] m-auto mt-6">
-        <div className="sm:flex-auto">
-          <h1 className="text-xl font-semibold text-gray-900">THÊM CƠ SỞ MỚI</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            Nhập đầy đủ các thông tin để thêm mới một cơ sở Aura ID.
-          </p>
+      <div className="flex flex-col gap-5">
+        <div className="flex justify-center">
+          <div className="sm:flex sm:justify-between sm:items-center w-2/3 ">
+            <div className="text-2xl font-bold text-slate-800">Thêm chi nhánh ✨</div>
+            <Link href="/dashboard/clinics">
+              <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                >
+                  TRỞ LẠI TRANG TRƯỚC
+                </button>
+              </div>
+            </Link>
+          </div>
         </div>
-        <Link href="/dashboard/clinics">
-          <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-            <button
-              type="button"
-              className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-            >
-              TRỞ LẠI TRANG TRƯỚC
-            </button>
-          </div>
-        </Link>
-      </div>
-      <form
-        id="myForm"
-        className="space-y-8 divide-gray-200 mb-20 max-w-[860px] m-auto"
-        onSubmit={addNewClinic}
-      >
-        <div className="space-y-8 divide-gray-200">
-          <div>
-            <div className="pt-6">
-              <div className="sm:col-span-3">
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 required"
-                >
-                  Tên Cơ Sở
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    required
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        <div className="flex justify-center">
+          <div className="bg-white rounded-lg p-6 w-2/3">
+            <form className="flex flex-col gap-5" onSubmit={addNewClinic}>
+              {InputFields.map((item, index: number) => {
+                return (
+                  <InputForm
+                    key={index}
+                    title={item.title}
+                    name={item.name}
+                    id={item.id}
+                    type={item.type}
+                    placeholder={item.placeholder}
+                    required={item.required}
                   />
-                </div>
-              </div>
+                );
+              })}
+              <SelectForm
+                name={InputSelect.name}
+                title={InputSelect.title}
+                placeholder={InputSelect.placeholder}
+                options={InputSelect.options}
+                required={InputSelect.required}
+              />
+              <TextArea
+                title={InputTextArea.title}
+                name={InputTextArea.name}
+                id={InputTextArea.id}
+                defaultValue=""
+                required={true}
+                row={5}
+              />
 
-              <div className="sm:col-span-3 mt-6">
-                <label
-                  htmlFor="address"
-                  className="block text-sm font-medium text-gray-700 required"
-                >
-                  Địa Chỉ Cơ Sở
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="text"
-                    name="address"
-                    id="address"
-                    required
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-3 mt-6">
-                <label
-                  htmlFor="address"
-                  className="block text-sm font-medium text-gray-700 required"
-                >
-                  Địa Chỉ Cơ Sở
-                </label>
-                <div className="mt-1">
-                  <Select
-                    name="district"
-                    placeholder={"Vui lòng chọn"}
-                    options={VNProvinces}
-                    // onChange={(e) => {
-                    //   setSelectedDistrict(e?.value ? e.value : null);
-                    // }}
-                  ></Select>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-            <div className="sm:col-span-6">
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700 required"
-              >
-                Mô Tả Cơ Sở
-              </label>
-              <div className="mt-1">
-                <textarea
-                  id="description"
-                  name="description"
-                  rows={5}
-                  required
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  defaultValue={""}
+              <InputImage
+                title={"Thêm hình ảnh cơ sở"}
+                required={true}
+                image={clinicImage}
+                setImage={setClinicImg}
+              />
+              <div className="flex justify-end">
+                <SubmitBtn
+                  type={load ? "button" : "submit"}
+                  content={load ? "Đang thêm..." : "Thêm mới"}
+                  size="md"
                 />
               </div>
-            </div>
-
-            <div className="sm:col-span-6">
-              <label
-                htmlFor="cover-photo"
-                className="block text-sm font-medium text-gray-700 required"
-              >
-                Thêm Hình Ảnh Cơ Sở
-              </label>
-              <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
-                {clinicImage ? (
-                  <div className="h-24 relative">
-                    <img
-                      src={clinicImage}
-                      className="h-full w-full rounded-lg  object-cover"
-                    />
-                    <div
-                      className="absolute h-7 w-7 -top-4 -right-4"
-                      onClick={() => setClinicImg(null)}
-                    >
-                      <XCircleIcon />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-1 text-center ">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
-                      stroke="currentColor"
-                      fill="none"
-                      viewBox="0 0 48 48"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    {/* <div className="flex text-sm text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
-                      >
-                        <span>Upload hình ảnh</span>
-                        <input
-                          id="cover-photo"
-                          name="cover-photo"
-                          type="file"
-                          multiple
-                          className="sr-only"
-                          onChange={(e) =>
-                            e.target.files && setClinicImg(e.target.files[0])
-                          }
-                        />
-                      </label>
-                      <p className="pl-1">(kéo hoặc thả)</p>
-                    </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, JPEG</p> */}
-                    <Widget
-                      publicKey={process.env.NEXT_PUBLIC_UPLOADCARE as string}
-                      clearable
-                      multiple={false}
-                      onChange={(file) => {
-                        if (file) {
-                          setClinicImg(convertImg(file.uuid!));
-                        }
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
+            </form>
           </div>
         </div>
-        <button
-          className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-          type="submit"
-        >
-          {load ? "ĐANG THÊM..." : "THÊM CƠ SỞ"}
-        </button>
-      </form>
+      </div>
     </>
   );
 }

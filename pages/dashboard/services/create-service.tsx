@@ -13,7 +13,41 @@ import convertImg from "../../../utils/helpers/convertImg";
 import router from "next/router";
 import { Widget } from "@uploadcare/react-widget";
 import { getAllNumberFromString } from "../../../utils/helpers/convertToVND";
+import InputForm from "../../../components/Form/InputForm";
+import SelectForm from "../../../components/Form/SelectForm";
+import TextArea from "../../../components/Form/TextArea";
+import InputImage from "../../../components/Form/InputImage";
+import SubmitBtn from "../../../components/Form/SubmitBtn";
+import InputPrice from "../../../components/Form/InputPrice";
 
+const InputFields = [
+  {
+    type: "text",
+    title: "Tên dịch vụ",
+    id: "name",
+    name: "name",
+    placeholder: "Ex: Chữa răng",
+    required: true,
+  },
+];
+const InputTextArea = {
+  type: "textarea",
+  title: "Mô Tả Dịch Vụ",
+  id: "description",
+  name: "description",
+  required: true,
+  rows: 5,
+};
+const InputSelect = {
+  title: "Chọn Danh Mục",
+  name: "category",
+  required: true,
+  placeholder: "Vui lòng chọn",
+};
+const InputPriceForm = {
+  title: "Nhập Giá Dịch Vụ",
+  name: "price",
+};
 export default function CreateService() {
   const [serviceImage, setServiceImage] = useState<string | null>(null);
   const categories: Category[] = useSelector((state: any) => state.category);
@@ -55,9 +89,10 @@ export default function CreateService() {
       return;
     }
     const _name = event.target.elements.name.value;
-    const _price =getAllNumberFromString(event.target.elements.price.value);
+    const _price = getAllNumberFromString(event.target.elements.price.value);
     const _category = event.target.elements.category.value;
     const _description = event.target.elements.description.value;
+
     let _serviceInfo = {
       name: _name,
       price: _price,
@@ -65,6 +100,7 @@ export default function CreateService() {
       description: _description,
       image: serviceImage,
     };
+
     let isValid = validateForm(_serviceInfo);
     if (!isValid) return;
     const { data, error } = await supabase
@@ -119,7 +155,88 @@ export default function CreateService() {
         <title>Thêm Dịch Vụ </title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      <div className="sm:flex sm:items-center max-w-[860px] m-auto mt-6">
+      <div className="flex flex-col gap-5">
+        <div className="flex justify-center">
+          <div className="sm:flex sm:justify-between sm:items-center w-2/3 ">
+            <div className="text-2xl font-bold text-slate-800">Thêm dịch vụ ✨</div>
+            <Link href="/dashboard/services">
+              <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                >
+                  TRỞ LẠI TRANG TRƯỚC
+                </button>
+              </div>
+            </Link>
+          </div>
+        </div>
+        {categories ? (
+          <div className="flex justify-center">
+            <div className="bg-white rounded-lg p-6 w-2/3">
+              <form className="flex flex-col gap-5" onSubmit={addNewService}>
+                {InputFields.map((item, index: number) => {
+                  return (
+                    <InputForm
+                      key={index}
+                      title={item.title}
+                      name={item.name}
+                      id={item.id}
+                      type={item.type}
+                      placeholder={item.placeholder}
+                      required={item.required}
+                    />
+                  );
+                })}
+                <div className="grid grid-cols-2 gap-2">
+                  <InputPrice
+                    title={InputPriceForm.title}
+                    name={InputPriceForm.name}
+                    type="price"
+                  />
+                  <SelectForm
+                    name={InputSelect.name}
+                    title={InputSelect.title}
+                    placeholder={InputSelect.placeholder}
+                    options={categories.map((item) => {
+                      return {
+                        label: item.name,
+                        value: item.id,
+                      };
+                    })}
+                    required={InputSelect.required}
+                  />
+                </div>
+                <TextArea
+                  title={InputTextArea.title}
+                  name={InputTextArea.name}
+                  id={InputTextArea.id}
+                  defaultValue=""
+                  required={true}
+                  row={5}
+                />
+
+                <InputImage
+                  title={"Thêm hình ảnh dịch vụ"}
+                  required={true}
+                  image={serviceImage}
+                  setImage={setServiceImage}
+                />
+                <div className="flex justify-end">
+                  <SubmitBtn
+                    type={load ? "button" : "submit"}
+                    content={load ? "Đang thêm..." : "Thêm mới"}
+                    size="md"
+                  />
+                </div>
+              </form>
+            </div>
+          </div>
+        ) : (
+          <div>Loading...</div>
+        )}
+      </div>
+      {/* <div className="sm:flex sm:items-center max-w-[860px] m-auto mt-6">
         <div className="sm:flex-auto">
           <h1 className="text-xl font-semibold text-gray-900">THÊM DỊCH VỤ MỚI</h1>
           <p className="mt-2 text-sm text-gray-700">
@@ -262,24 +379,7 @@ export default function CreateService() {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    {/* <div className="flex text-sm text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
-                      >
-                        <span>Upload hình ảnh</span>
-                        <input
-                          id="file-upload"
-                          name="file-upload"
-                          type="file"
-                          multiple
-                          className="sr-only"
-                          onChange={(e) => e.target.files && setImage(e.target.files[0])}
-                        />
-                      </label>
-                      <p className="pl-1">(kéo hoặc thả)</p>
-                    </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, JPEG</p> */}
+              
                     <Widget
                       publicKey={process.env.NEXT_PUBLIC_UPLOADCARE as string}
                       clearable
@@ -307,7 +407,7 @@ export default function CreateService() {
             *Lưu ý chọn Danh Mục cho dịch vụ!
           </p>
         </div>
-      </form>
+      </form> */}
     </>
   );
 }

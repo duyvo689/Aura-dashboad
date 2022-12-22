@@ -6,10 +6,45 @@ import { validatePhoneNumber } from "../../../utils/funtions";
 import { Clinic, Role } from "../../../utils/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/reducers";
+import InputForm from "../../../components/Form/InputForm";
+import SelectForm from "../../../components/Form/SelectForm";
+import SubmitBtn from "../../../components/Form/SubmitBtn";
 const ROLES_MAPPING = [
-  { name: "Bác sĩ", value: "doctor" },
-  { name: "Lễ Tân", value: "staff" },
-  { name: "Quản lý", value: "manager" },
+  { label: "Bác sĩ", value: "doctor" },
+  { label: "Lễ Tân", value: "staff" },
+  { label: "Quản lý", value: "manager" },
+];
+const InputFields = [
+  {
+    type: "text",
+    title: "Số điện thoại",
+    id: "phone",
+    name: "phone",
+    placeholder: "Ex: 09039213122",
+    required: true,
+  },
+  {
+    type: "text",
+    title: "Tên nhân sự",
+    id: "name",
+    name: "name",
+    placeholder: "Ex: Nguyễn Văn A",
+    required: true,
+  },
+];
+const InputSelect = [
+  {
+    title: "Chức vụ",
+    name: "role",
+    required: true,
+    placeholder: "Vui lòng chọn",
+  },
+  {
+    title: "Cơ sở làm việc",
+    name: "clinic",
+    required: true,
+    placeholder: "Vui lòng chọn",
+  },
 ];
 function CreateNewRoles() {
   const [load, setLoad] = useState(false);
@@ -130,91 +165,63 @@ function CreateNewRoles() {
     }
   }, [clinics]);
   return (
-    <div className="w-[30%]">
-      <form onSubmit={addNewRoles}>
-        <label
-          htmlFor="helper-text"
-          className="block mb-4 text-sm font-bold text-gray-900 dark:text-white"
-        >
-          SỐ ĐIỆN THOẠI
-        </label>
-        <input
-          type="text"
-          id="phone"
-          name="phone"
-          aria-describedby="helper-text-explanation"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="Số điện thoại"
-        />
-        <label
-          htmlFor="helper-text"
-          className="block mb-4 mt-6 text-sm font-bold text-gray-900 dark:text-white"
-        >
-          TÊN NHÂN SỰ
-        </label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          aria-describedby="helper-text-explanation"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="Nhập tên nhân sự"
-        />
-        <label
-          htmlFor="helper-text"
-          className="block mb-4 mt-6 text-sm font-bold text-gray-900 dark:text-white"
-        >
-          VỊ TRÍ
-        </label>
-        <select
-          name="role"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        >
-          {ROLES_MAPPING
-            ? ROLES_MAPPING.map((role: any, index: number) => {
-                return (
-                  <option value={role.value} key={index}>
-                    {role.name}
-                  </option>
-                );
-              })
-            : null}
-        </select>
-        <label
-          htmlFor="helper-text"
-          className="block mb-4 mt-6 text-sm font-bold text-gray-900 dark:text-white"
-        >
-          CƠ SỞ LÀM VIỆC
-        </label>
-        <select
-          name="clinic"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        >
-          {clinics && clinics.length > 0
-            ? clinics.map((clinic: any, index: number) => {
-                return (
-                  <option value={clinic.id} key={index}>
-                    {clinic.name}
-                  </option>
-                );
-              })
-            : null}
-        </select>
-        <div className="justify-end flex mt-4">
-          {!load ? (
-            <p className="text-white bg-gray-400 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">
-              THÊM NHÂN SỰ
-            </p>
-          ) : (
-            <button
-              type={"submit"}
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            >
-              {load ? "ĐANG THÊM..." : "THÊM DANH MỤC"}
-            </button>
-          )}
+    <div className="flex flex-col gap-5 items">
+      <div className="flex justify-center">
+        <div className="sm:flex sm:justify-between sm:items-center w-2/3">
+          <div className="text-2xl font-bold text-slate-800">Thêm nhân sự ✨</div>
         </div>
-      </form>
+      </div>
+      {clinics ? (
+        <div className="flex justify-center">
+          <div className="bg-white rounded-lg p-6 w-2/3 ">
+            <form onSubmit={addNewRoles} className="flex flex-col gap-5">
+              {InputFields.map((item, index) => {
+                return (
+                  <InputForm
+                    key={index}
+                    title={item.title}
+                    name={item.name}
+                    id={item.id}
+                    type={item.type}
+                    placeholder={item.placeholder}
+                    required={item.required}
+                  />
+                );
+              })}
+              {InputSelect.map((item, index) => {
+                return (
+                  <SelectForm
+                    key={index}
+                    name={item.name}
+                    title={item.title}
+                    placeholder={item.placeholder}
+                    options={
+                      item.name === "role"
+                        ? ROLES_MAPPING
+                        : clinics.map((clinic) => {
+                            return {
+                              label: clinic.name,
+                              value: clinic.id,
+                            };
+                          })
+                    }
+                    required={item.required}
+                  />
+                );
+              })}
+              <div className="flex justify-end">
+                <SubmitBtn
+                  type={load ? "button" : "submit"}
+                  content={load ? "Đang thêm..." : "Thêm nhân sự"}
+                  size="md"
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : (
+        <div>Loading...</div>
+      )}
     </div>
   );
 }

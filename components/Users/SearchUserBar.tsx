@@ -43,7 +43,7 @@ export default function SearchUserBar() {
           onChange={(e) => {
             setKeyword(e.target.value);
           }}
-          placeholder="Tìm kiếm số theo tên"
+          placeholder="Tìm kiếm số theo tên hoặc số điện thoại"
           className="form-input pl-9 text-slate-500 hover:text-slate-600 font-medium focus:border-slate-300 min-w-[700px]"
         />
         <div className="absolute inset-y-0 left-0 flex items-center pl-2">

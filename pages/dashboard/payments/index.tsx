@@ -205,9 +205,9 @@ function CategoryPage() {
                             {moment(item.created_at).format("DD/MM/YYYY")}
                           </td>
                           <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                            <div className="flex gap-3 justify-center items-center ">
+                            <div className="flex gap-3 justify-center  ">
                               <div
-                                className="cursor-pointer"
+                                className="cursor-pointer flex justify-center items-center"
                                 onClick={() => {
                                   setSelectedUpdateItem(item);
                                   setOpenModalUpdate(true);
@@ -215,15 +215,15 @@ function CategoryPage() {
                               >
                                 <EditIcon />
                               </div>
-                              <button
-                                className="text-red-500 cursor-pointer"
+                              <div
+                                className="cursor-pointer"
                                 onClick={() => {
                                   setSelectedDeleteId(item.id);
                                   setOpenModalDelete(true);
                                 }}
                               >
                                 <DeleteIcon />
-                              </button>
+                              </div>
                             </div>
                           </td>
                         </tr>

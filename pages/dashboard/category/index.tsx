@@ -13,13 +13,21 @@ import ModalUpdateCategory from "../../../components/ModalUpdateCategory";
 import CountRecord from "../../../components/CountRecord";
 import { Switch } from "@headlessui/react";
 import { EditIcon } from "../../../components/Icons/Form";
+import SubmitBtn from "../../../components/Form/SubmitBtn";
+import InputForm from "../../../components/Form/InputForm";
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
+const InputFields = {
+  type: "text",
+  title: "Tên danh mục",
+  id: "name",
+  name: "name",
+  placeholder: "Ex: Nha khoa",
+  required: true,
+};
 function CategoryPage() {
-  const [name, setName] = useState<string>("");
   const [load, setLoad] = useState(false);
-
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
   const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
   const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
@@ -46,27 +54,23 @@ function CategoryPage() {
   }, []);
 
   const addNewCategory = async (event: any) => {
-    try {
-      setLoad(true);
-      event.preventDefault();
-      const name = event.target.elements.name.value;
-      const { data, error } = await supabase
-        .from("categories")
-        .insert([{ name: name }])
-        .select()
-        .single();
-      if (error != null) {
-        toast.error(error.message);
-      } else {
-        category.push(data);
-        toast.success(`Đã thêm ${name}`);
-        setName("");
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoad(false);
+    setLoad(true);
+    event.preventDefault();
+    const name = event.target.elements.name.value;
+    const { data, error } = await supabase
+      .from("categories")
+      .insert([{ name: name }])
+      .select()
+      .single();
+    if (error != null) {
+      toast.error(error.message);
+    } else {
+      toast.success(`Đã thêm cở sở thành công`);
+      category.push(data);
+      dispatch(categoryAction("category", category));
+      event.target.reset();
     }
+    setLoad(false);
   };
 
   return (
@@ -86,29 +90,20 @@ function CategoryPage() {
                 THÊM DANH MỤC SẢN PHẨM
               </div>
               <form onSubmit={addNewCategory}>
-                <label
-                  htmlFor="name"
-                  className=" block mb-1 text-sm font-normal text-slate-400 required"
-                >
-                  Tên danh mục
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={name}
-                  aria-describedby="helper-text-explanation"
-                  className="form-input w-full"
-                  placeholder="Ex: Nha khoa"
-                  onChange={(e) => setName(e.target.value)}
+                <InputForm
+                  title={InputFields.title}
+                  name={InputFields.name}
+                  id={InputFields.id}
+                  type={InputFields.type}
+                  placeholder={InputFields.placeholder}
+                  required={InputFields.required}
                 />
                 <div className="justify-end flex mt-4">
-                  <button
-                    type={`${load ? "button" : "submit"}`}
-                    className="btn bg-indigo-500 hover:bg-indigo-600 text-white"
-                  >
-                    {load ? "Đang thêm..." : "Thêm danh mục"}
-                  </button>
+                  <SubmitBtn
+                    type={load ? "button" : "submit"}
+                    content={load ? "Đang thêm..." : "Thêm mới"}
+                    size="md"
+                  />
                 </div>
               </form>
             </div>
