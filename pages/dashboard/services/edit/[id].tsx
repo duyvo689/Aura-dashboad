@@ -252,25 +252,7 @@ export default function UpdateService() {
                               />
                             )}
                           </div>
-                          {/* <div className="flex text-sm text-gray-600">
-                            <label
-                              htmlFor="cover-photo"
-                              className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
-                            >
-                              <span className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                Đổi ảnh mới
-                              </span>
-                              <input
-                                id="cover-photo"
-                                name="cover-photo"
-                                type="file"
-                                className="sr-only"
-                                onChange={(e) =>
-                                  e.target.files && setNewServiceImg(e.target.files[0])
-                                }
-                              />
-                            </label>
-                          </div> */}
+
                           <Widget
                             publicKey={process.env.NEXT_PUBLIC_UPLOADCARE as string}
                             onChange={(info) => {

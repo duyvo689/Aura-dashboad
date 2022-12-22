@@ -6,8 +6,15 @@ interface Props {
   setImage: React.Dispatch<React.SetStateAction<string | null>>;
   title: string;
   required?: boolean;
+  defaultValue?: string;
 }
-const InputImage = ({ image, setImage, title, required = false }: Props) => {
+const InputImage = ({
+  image,
+  setImage,
+  title,
+  required = false,
+  defaultValue,
+}: Props) => {
   return (
     <div>
       <label

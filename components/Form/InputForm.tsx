@@ -3,10 +3,19 @@ interface Props {
   id: string;
   name: string;
   type: string;
-  placeholder: string;
+  placeholder?: string;
+  defaultValue?: string;
   required?: boolean;
 }
-const InputForm = ({ title, id, name, type, placeholder, required = false }: Props) => {
+const InputForm = ({
+  title,
+  id,
+  name,
+  type,
+  placeholder,
+  defaultValue,
+  required = false,
+}: Props) => {
   return (
     <div>
       <label
@@ -22,6 +31,7 @@ const InputForm = ({ title, id, name, type, placeholder, required = false }: Pro
         id={id}
         name={name}
         className="form-input w-full"
+        defaultValue={defaultValue}
         required={required}
         placeholder={placeholder}
       />

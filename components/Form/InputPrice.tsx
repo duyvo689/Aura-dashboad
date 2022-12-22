@@ -3,9 +3,10 @@ import { NumericFormat } from "react-number-format";
 interface Props {
   title: string;
   name: string;
+  defaultValue?: string;
   type: "percent" | "price";
 }
-const InputPrice = ({ title, name, type }: Props) => {
+const InputPrice = ({ title, name, type, defaultValue }: Props) => {
   return (
     <div>
       <label
@@ -18,6 +19,7 @@ const InputPrice = ({ title, name, type }: Props) => {
         <div className="mt-1">
           <NumericFormat
             name={name}
+            defaultValue={defaultValue}
             allowLeadingZeros
             className="form-input w-full"
             suffix={"%"}
