@@ -11,9 +11,9 @@ import { Switch } from "@headlessui/react";
 import ModalToggleActive from "../../../components/ModalToggleActive";
 import ModalUpdateRole from "../../../components/ModalUpdateRole";
 import FilterRolesBtn from "../../../components/Roles/actions/FilterRolesBtn";
-import Datepicker from "../../../components/actions/Datepicker";
 import CountRecord from "../../../components/CountRecord";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { EditIcon } from "../../../components/Icons/Form";
 const ROLES_MAPPING = [
   { name: "Bác sĩ", value: "doctor" },
   { name: "Lễ Tân", value: "staff" },
@@ -274,15 +274,15 @@ function RolesPage() {
                               {item.verify ? "Đã xác thực" : "Chưa xác thực"}
                             </div>
                           </td>
-                          <td className="relative whitespace-nowrap py-3 px-2 ">
+                          <td className="relative whitespace-nowrap py-3 px-2 flex items-center justify-center ">
                             <div
                               onClick={() => {
                                 setSelectedUpdateItem(item);
                                 setOpenModalUpdate(true);
                               }}
-                              className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                              className="cursor-pointer"
                             >
-                              Chỉnh sửa
+                              <EditIcon />
                             </div>
                           </td>
                         </tr>

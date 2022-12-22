@@ -16,6 +16,7 @@ import convertImg from "../../../utils/helpers/convertImg";
 import ModalDelete from "../../../components/ModalDelete";
 import Link from "next/link";
 import CountRecord from "../../../components/CountRecord";
+import { DeleteIcon, EditIcon } from "../../../components/Icons/Form";
 
 function BannerPage() {
   let banners: Banner[] = useSelector((state: RootState) => state.banners);
@@ -121,19 +122,17 @@ function BannerPage() {
                         <td className="relative whitespace-nowrap py-3 px-2">
                           <div className="flex gap-3 cursor-pointer justify-center">
                             <Link href={`/dashboard/banners/edit/${item?.id}`}>
-                              <div className="text-indigo-600 hover:text-indigo-900">
-                                Chỉnh sửa
-                                <span className="sr-only">, {item?.id}</span>
+                              <div className="">
+                                <EditIcon />
                               </div>
                             </Link>
                             <div
-                              className="text-red-500"
                               onClick={() => {
                                 setSelectedDeleteId(item?.id);
                                 setOpenModalDelete(true);
                               }}
                             >
-                              Xoá
+                              <DeleteIcon />
                             </div>
                           </div>
                         </td>
@@ -151,6 +150,14 @@ function BannerPage() {
         </div>
       ) : (
         <div>Loading...</div>
+      )}
+      {openModalDelete && selectedDeleteId && (
+        <ModalDelete
+          id={selectedDeleteId}
+          title="banner"
+          type="banners"
+          setOpenModalDelete={setOpenModalDelete}
+        />
       )}
     </>
   );

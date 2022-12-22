@@ -6,6 +6,7 @@ import react, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import CountRecord from "../../../components/CountRecord";
+import { EditIcon } from "../../../components/Icons/Form";
 import ModalDelete from "../../../components/ModalDelete";
 import ModalToggleActive from "../../../components/ModalToggleActive";
 import Pagination from "../../../components/Pagination";
@@ -243,8 +244,8 @@ export default function ServicePage() {
 
                           <td className="relative whitespace-nowrap py-3 px-2 ">
                             <Link href={`/dashboard/services/edit/${item.id}`}>
-                              <div className="text-indigo-600 hover:text-indigo-900 cursor-pointer text-center">
-                                Chỉnh sửa
+                              <div className="cursor-pointer flex justify-center items-center">
+                                <EditIcon />
                               </div>
                             </Link>
                           </td>

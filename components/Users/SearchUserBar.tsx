@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { User } from "../utils/types";
+import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { User } from "../../utils/types";
 import moment from "moment";
-import { supabase } from "../services/supaBaseClient";
+import { supabase } from "../../services/supaBaseClient";
 import Link from "next/link";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
-export default function SearchBar() {
+export default function SearchUserBar() {
   const [keyword, setKeyword] = useState("");
   const [filterUsers, setFilterUsers] = useState<User[] | null>(null);
   const getBookingByFilter = async () => {
@@ -33,35 +33,22 @@ export default function SearchBar() {
     };
   }, [keyword]);
   return (
-    <div className="mb-10">
-      <div className="relative max-w-[700px]">
-        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <svg
-            aria-hidden="true"
-            className="w-5 h-5 text-gray-500 dark:text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            ></path>
-          </svg>
-        </div>
+    <div>
+      <div className="relative">
         <input
-          type="search"
-          id="default-search"
+          type="text"
+          name="search"
+          id="search"
           value={keyword}
-          className="block w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="Tìm kiếm theo tên hoặc số điện thoại"
           onChange={(e) => {
             setKeyword(e.target.value);
           }}
+          placeholder="Tìm kiếm số theo tên"
+          className="form-input pl-9 text-slate-500 hover:text-slate-600 font-medium focus:border-slate-300 min-w-[700px]"
         />
+        <div className="absolute inset-y-0 left-0 flex items-center pl-2">
+          <MagnifyingGlassIcon stroke={"#64748b"} className="w-6 h-5" />
+        </div>
       </div>
       {filterUsers !== null && (
         <ul className="absolute z-50 mt-1 max-h-56 min-w-[700px] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">

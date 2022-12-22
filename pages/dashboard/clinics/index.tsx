@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import CountRecord from "../../../components/CountRecord";
+import { EditIcon } from "../../../components/Icons/Form";
 import ModalToggleActive from "../../../components/ModalToggleActive";
 import { clinicsAction } from "../../../redux/actions/ReduxAction";
 import { RootState } from "../../../redux/reducers";
@@ -184,9 +185,8 @@ export default function ClinicPage() {
                         <td className="relative whitespace-nowrap py-3 px-2">
                           <div className="flex gap-3 cursor-pointer justify-center">
                             <Link href={`/dashboard/clinics/edit/${item?.id}`}>
-                              <div className="text-indigo-600 hover:text-indigo-900">
-                                Chỉnh sửa
-                                <span className="sr-only">, {item?.id}</span>
+                              <div className="cursor-pointer">
+                                <EditIcon />
                               </div>
                             </Link>
                           </div>

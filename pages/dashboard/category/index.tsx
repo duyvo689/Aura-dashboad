@@ -12,6 +12,7 @@ import { RootState } from "../../../redux/reducers";
 import ModalUpdateCategory from "../../../components/ModalUpdateCategory";
 import CountRecord from "../../../components/CountRecord";
 import { Switch } from "@headlessui/react";
+import { EditIcon } from "../../../components/Icons/Form";
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
@@ -190,13 +191,13 @@ function CategoryPage() {
 
                           <td className="relative whitespace-nowrap py-3 px-2 ">
                             <div
-                              className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                              className="cursor-pointer flex justify-center items-center"
                               onClick={() => {
                                 setSelectedItemUpdate(item);
                                 setOpenModalUpdate(true);
                               }}
                             >
-                              Chỉnh sửa
+                              <EditIcon />
                             </div>
                           </td>
                         </tr>

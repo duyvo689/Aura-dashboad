@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { statusMapping, statusTypeColor } from "../../constants/crm";
 import { RootState } from "../../redux/reducers";
 import { CustomerStatus } from "../../utils/types";
+import { EditIcon } from "../Icons/Form";
 import ModalToggleActive from "../ModalToggleActive";
 import ModalUpdateCustomerStatus from "./ModalUpdateStatus";
 
@@ -63,9 +64,9 @@ function ItemCusStatus({ index, customerStatus }: Props) {
           onClick={() => {
             setOpenModalUpdate(true);
           }}
-          className="whitespace-nowrap font-medium text-indigo-600 dark:text-white bg-white cursor-pointer"
+          className="cursor-pointer flex justify-center items-center"
         >
-          Chỉnh sửa
+          <EditIcon />
         </div>
       </td>
       <td className={`${openModalUpdate || openModalToggle ? "block" : "hidden"}`}>

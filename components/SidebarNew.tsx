@@ -94,7 +94,7 @@ const navigationGroup: NavigationGroup[] = [
         active: "payments",
       },
       {
-        name: "Tình trạng KH",
+        name: "Tình trạng khách hàng",
         href: "/dashboard/customer-status",
         active: "customer-status",
       },

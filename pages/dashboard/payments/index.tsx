@@ -15,6 +15,7 @@ import convertImg from "../../../utils/helpers/convertImg";
 import { Widget } from "@uploadcare/react-widget";
 import { useRouter } from "next/router";
 import CountRecord from "../../../components/CountRecord";
+import { DeleteIcon, EditIcon } from "../../../components/Icons/Form";
 const UPLOADCARE_KEY = process.env.NEXT_PUBLIC_UPLOADCARE as string;
 
 function CategoryPage() {
@@ -204,25 +205,25 @@ function CategoryPage() {
                             {moment(item.created_at).format("DD/MM/YYYY")}
                           </td>
                           <td className="whitespace-nowrap text-center py-4 px-4 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                            <div className="flex gap-3 justify-center ">
+                            <div className="flex gap-3 justify-center items-center ">
                               <div
-                                className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                                className="cursor-pointer"
                                 onClick={() => {
                                   setSelectedUpdateItem(item);
                                   setOpenModalUpdate(true);
                                 }}
                               >
-                                Chỉnh sửa
+                                <EditIcon />
                               </div>
-                              <div
+                              <button
                                 className="text-red-500 cursor-pointer"
                                 onClick={() => {
                                   setSelectedDeleteId(item.id);
                                   setOpenModalDelete(true);
                                 }}
                               >
-                                Xoá
-                              </div>
+                                <DeleteIcon />
+                              </button>
                             </div>
                           </td>
                         </tr>
