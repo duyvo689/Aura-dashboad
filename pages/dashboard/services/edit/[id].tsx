@@ -13,6 +13,12 @@ import convertImg from "../../../../utils/helpers/convertImg";
 import router, { useRouter } from "next/router";
 import { Widget } from "@uploadcare/react-widget";
 import { XCircleIcon } from "@heroicons/react/24/outline";
+import InputForm from "../../../../components/Form/InputForm";
+import InputPrice from "../../../../components/Form/InputPrice";
+import SelectForm from "../../../../components/Form/SelectForm";
+import TextArea from "../../../../components/Form/TextArea";
+import InputImage from "../../../../components/Form/InputImage";
+import SubmitBtn from "../../../../components/Form/SubmitBtn";
 
 export default function UpdateService() {
   const { id } = useRouter().query;
@@ -34,6 +40,7 @@ export default function UpdateService() {
       return;
     } else if (service) {
       setService(service);
+      setNewServiceImg(service.image);
     }
   };
   const updateService = async (event: any) => {
@@ -116,166 +123,85 @@ export default function UpdateService() {
       </Head>
       <main>
         {service && categories ? (
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="sm:flex sm:items-center max-w-[860px] m-auto mt-6">
-              <div className="sm:flex-auto">
-                <h1 className="text-xl font-semibold text-gray-900">
-                  CẬP NHẬT DỊCH VỤ MỚI
-                </h1>
-                <p className="mt-2 text-sm text-gray-700">
-                  Cập nhật thông tin dịch vụ. Thông tin sẽ được hiển thị trên cả 3
-                  MiniApp.
-                </p>
-              </div>
-              <Link href="/dashboard/services">
-                <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                  <button
-                    type="button"
-                    className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                  >
-                    TRỞ LẠI TRANG TRƯỚC
-                  </button>
+          <div className="flex flex-col gap-5">
+            <div className="flex justify-center">
+              <div className="sm:flex sm:justify-between sm:items-center w-2/3 ">
+                <div className="text-2xl font-bold text-slate-800">
+                  Cập nhật dịch vụ ✨
                 </div>
-              </Link>
-            </div>
-            <form
-              id="myForm"
-              className="space-y-8 divide-gray-200 mb-20 max-w-[860px] m-auto"
-              onSubmit={updateService}
-            >
-              <div className="space-y-8 divide-gray-200">
-                <div>
-                  <div className="pt-6">
-                    <div className="sm:col-span-3">
-                      <label
-                        htmlFor="name"
-                        className="block text-sm font-medium text-gray-700 required"
-                      >
-                        Tên Dịch Vụ
-                      </label>
-                      <div className="mt-1">
-                        <input
-                          type="text"
-                          name="name"
-                          id="name"
-                          required
-                          defaultValue={service.name}
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        />
-                      </div>
-                    </div>
-                    <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                      <div className="sm:col-span-3">
-                        <label
-                          htmlFor="price"
-                          className="block text-sm font-medium text-gray-700 required"
-                        >
-                          Nhập Giá Dịch Vụ
-                        </label>
-                        <div className="mt-1">
-                          <input
-                            type="number"
-                            name="price"
-                            id="price"
-                            defaultValue={service.price}
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="sm:col-span-3">
-                        <label
-                          htmlFor="category"
-                          className="block text-sm font-medium text-gray-700 required"
-                        >
-                          Chọn Danh Mục
-                        </label>
-                        <div className="mt-1">
-                          <select
-                            id="category"
-                            name="category"
-                            defaultValue={service.category_id.id}
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          >
-                            {categories &&
-                              categories.length > 0 &&
-                              categories.map((item) => (
-                                <option key={item.id} value={item.id}>
-                                  {item.name}
-                                </option>
-                              ))}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                  <div className="sm:col-span-6">
-                    <label
-                      htmlFor="description"
-                      className="block text-sm font-medium text-gray-700 required"
+                <Link href="/dashboard/services">
+                  <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                     >
-                      Mô Tả Dịch Vụ
-                    </label>
-                    <div className="mt-1">
-                      <textarea
-                        id="description"
-                        name="description"
-                        rows={5}
-                        defaultValue={service.description}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      TRỞ LẠI TRANG TRƯỚC
+                    </button>
+                  </div>
+                </Link>
+              </div>
+            </div>
+            {categories ? (
+              <div className="flex justify-center">
+                <div className="bg-white rounded-lg p-6 w-2/3">
+                  <form className="flex flex-col gap-5" onSubmit={updateService}>
+                    <InputForm
+                      title="Tên dịch vụ"
+                      name="name"
+                      id="name"
+                      type="text"
+                      defaultValue={service.name}
+                    />
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <InputPrice
+                        title="Nhập Giá Dịch Vụ"
+                        name="price"
+                        defaultValue={service.price}
+                        type="price"
+                      />
+                      <SelectForm
+                        name="category"
+                        title="Chọn Danh Mục"
+                        defaultValue={{
+                          label: service.category_id.name,
+                          value: service.category_id.id,
+                        }}
+                        options={categories.map((item) => {
+                          return {
+                            label: item.name,
+                            value: item.id,
+                          };
+                        })}
                       />
                     </div>
-                  </div>
+                    <TextArea
+                      title="Mô Tả Dịch Vụ"
+                      name="description"
+                      id="description"
+                      defaultValue={service.description}
+                      row={5}
+                    />
 
-                  <div className="sm:col-span-6">
-                    <label
-                      htmlFor="cover-photo"
-                      className="block text-sm font-medium text-gray-700 required"
-                    >
-                      Hình Ảnh Dịch Vụ
-                    </label>
-                    <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
-                      {service && (
-                        <div className="flex items-end gap-3">
-                          <div className="h-24">
-                            {newServiceImg ? (
-                              <img
-                                src={newServiceImg}
-                                className="h-full w-full rounded-lg  object-cover"
-                              />
-                            ) : (
-                              <img
-                                src={service.image}
-                                className="h-full w-full rounded-lg  object-cover"
-                              />
-                            )}
-                          </div>
-
-                          <Widget
-                            publicKey={process.env.NEXT_PUBLIC_UPLOADCARE as string}
-                            onChange={(info) => {
-                              if (info && info.uuid) {
-                                setNewServiceImg(convertImg(info.uuid));
-                              }
-                            }}
-                          />
-                        </div>
-                      )}
+                    <InputImage
+                      title={"Thêm hình ảnh dịch vụ"}
+                      required={true}
+                      image={newServiceImg}
+                      setImage={setNewServiceImg}
+                    />
+                    <div className="flex justify-end">
+                      <SubmitBtn
+                        type={load ? "button" : "submit"}
+                        content={load ? "Đang cập nhật..." : "Cập nhật"}
+                        size="md"
+                      />
                     </div>
-                  </div>
+                  </form>
                 </div>
               </div>
-              <div className="flex gap-4 items-end">
-                <button
-                  className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                  type={load ? "button" : "submit"}
-                >
-                  {load ? "ĐANG CẬP NHẬT..." : "CẬP NHẬT DỊCH VỤ"}
-                </button>
-              </div>
-            </form>
+            ) : (
+              <div>Loading...</div>
+            )}
           </div>
         ) : (
           <div>Loading...</div>
