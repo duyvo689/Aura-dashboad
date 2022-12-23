@@ -1,3 +1,4 @@
+import moment from "moment";
 import { supabase } from "../../services/supaBaseClient";
 
 export const createImgId = () => {
@@ -46,3 +47,9 @@ export const validatePhoneNumber = (phone: string) => {
 
   return isValidPhoneNumber;
 };
+
+export const CompareTwoDates = (date1: any, date2: any) => {
+  let difference = moment(date1).isAfter(date2, 'day')
+  console.log(difference)
+  return difference
+}

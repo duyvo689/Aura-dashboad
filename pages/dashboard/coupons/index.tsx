@@ -8,11 +8,23 @@ import ModalToggleActive from "../../../components/ModalToggleActive";
 import { couponsAction } from "../../../redux/actions/ReduxAction";
 import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
+import { CompareTwoDates } from "../../../utils/funtions";
 import { convertVnd } from "../../../utils/helpers/convertToVND";
 import { Coupon } from "../../../utils/types";
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
+
+const listTagCoupon: any = [
+  { id: "newacc", value: "Tài khoản mới" },
+  { id: "birthday", value: "Ngày sinh nhật" },
+  { id: "silver", value: "Hạng bạc" },
+  { id: "diamond", value: "Hạng kim cương" },
+  { id: "gold", value: "Hạng vàng" },
+  { id: "platinum", value: "Platinum" },
+  { id: "client", value: "Khách hàng" },
+  { id: "orther", value: "Loại khác" },
+];
 function CouponsPage() {
   const coupons: Coupon[] = useSelector((state: RootState) => state.coupons);
   const [openModalToggle, setOpenModalToggle] = useState<boolean>(false);
@@ -29,7 +41,6 @@ function CouponsPage() {
       toast.error("Lỗi. Vui lòng tải lại trang");
       return;
     } else if (counpons) {
-      //   console.log(counpons);
       dispatch(couponsAction("coupons", counpons));
     }
   };
@@ -38,6 +49,14 @@ function CouponsPage() {
       getAllCoupon();
     }
   });
+
+  const convert = (text: string) => {
+    for (const element of listTagCoupon) {
+      if (element.id == text) {
+        return element.value;
+      }
+    }
+  };
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {coupons ? (
@@ -63,7 +82,7 @@ function CouponsPage() {
             </div>
           </div>
           <div className="mt-8 flex flex-col">
-            <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="my-2 mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                 <table className="min-w-full divide-y divide-gray-300">
                   <thead>
@@ -76,22 +95,23 @@ function CouponsPage() {
                       </th>
                       <th
                         scope="col"
+                        className="whitespace-nowrap py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Hình ảnh
+                      </th>
+                      <th
+                        scope="col"
                         className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                       >
                         Tên
                       </th>
                       <th
                         scope="col"
-                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                        className="whitespace-nowrap py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                       >
                         Giá trị
                       </th>
-                      <th
-                        scope="col"
-                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Hình ảnh
-                      </th>
+
                       <th
                         scope="col"
                         className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
@@ -100,21 +120,34 @@ function CouponsPage() {
                       </th>
                       <th
                         scope="col"
-                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                        className="whitespace-nowrap py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                       >
-                        Ngày bắt đầu
+                        Bắt đầu
                       </th>
                       <th
                         scope="col"
-                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                        className="whitespace-nowrap py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                       >
-                        Ngày kết thúc
+                        Kết thúc
                       </th>
                       <th
                         scope="col"
-                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                        className="whitespace-nowrap py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Hạn dùng
+                      </th>
+
+                      <th
+                        scope="col"
+                        className="whitespace-nowrap py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                       >
                         Trạng thái
+                      </th>
+                      <th
+                        scope="col"
+                        className="whitespace-nowrap py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Phân loại
                       </th>
                       <th
                         scope="col"
@@ -127,31 +160,50 @@ function CouponsPage() {
                   <tbody className="divide-y divide-gray-200">
                     {coupons.map((item, index: number) => (
                       <tr key={index}>
-                        <td className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                          {index}
+                        <td className="py-4  w-[10px] pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
+                          {index + 1}
                         </td>
-                        <td className="whitespace-normal py-4 px-3 text-sm text-gray-500">
-                          {item.name}
-                        </td>
-                        <td className="py-4 px-3 text-sm text-gray-500">
-                          {item?.price && `-${convertVnd(item.price)}`}
-                          {item?.percent && `-${item.percent}%`}
-                        </td>
-                        <td className="py-4 px-3 text-sm text-gray-500">
-                          <div className="w-24 h-16">
-                            <img className="w-full h-full rounded" src={item.image} />
+                        <td className="py-4  w-[5%]  px-3 text-sm text-gray-500">
+                          <div className="w-16 h-16">
+                            <img
+                              className="w-full h-full rounded-full"
+                              src={item.image}
+                            />
                           </div>
                         </td>
-                        <td className="py-4 px-3 text-sm text-gray-500 mint-ellipsis-three">
+                        <td className="whitespace-normal w-[15%] py-4 px-3 text-sm text-gray-500">
+                          {item.name}
+                        </td>
+                        <td className="py-4 px-3 font-semibold text-md text-gray-500 text-yellow-400">
+                          {item?.price && `- ${convertVnd(item.price)}`}
+                          {item?.percent && `- ${item.percent}%`}
+                        </td>
+
+                        <td className="py-4 px-3 text-sm text-gray-500 text-ellipsis overflow-hidden">
                           {item.description}
                         </td>
-                        <td className="py-4 px-3 text-sm text-gray-500">
-                          {moment(item.start_date).format("DD/MM/YYYY")}
+                        <td className="py-4 px-3  font-semibold text-sm text-green-600">
+                          {item.start_date
+                            ? moment(item.start_date).format("DD/MM/YYYY")
+                            : "..."}
+                        </td>
+                        <td className="py-4 px-3 font-semibold text-sm text-red-600">
+                          {item.end_date
+                            ? moment(item.end_date).format("DD/MM/YYYY")
+                            : "..."}
                         </td>
                         <td className="py-4 px-3 text-sm text-gray-500">
-                          {moment(item.end_date).format("DD/MM/YYYY")}
+                          {CompareTwoDates(Date.now(), item.end_date) ? (
+                            <div className="text-red-600 w-24 bg-red-300 rounded-full text-center p-1.5">
+                              Hết hạn
+                            </div>
+                          ) : (
+                            <div className="text-green-900 w-24 bg-green-300 rounded-full text-center p-1.5">
+                              Còn hạn
+                            </div>
+                          )}
                         </td>
-                        <td className="py-4 px-3 text-sm text-gray-500">
+                        <td className="py-4 px-3 font-semibold text-sm text-red-600">
                           <Switch
                             checked={item.active}
                             onClick={() => {
@@ -175,11 +227,19 @@ function CouponsPage() {
                             />
                           </Switch>
                         </td>
+                        <td className="py-4 px-3 font-medium text-sm">
+                          {convert(item.tag)}
+                        </td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
                           <div className="flex gap-3 ">
                             <Link href={`/dashboard/coupons/edit/${item.id}`}>
                               <div className="text-indigo-600 hover:text-indigo-900 cursor-pointer">
                                 Chỉnh sửa
+                              </div>
+                            </Link>
+                            <Link href={`/dashboard/coupons/detail/${item.id}`}>
+                              <div className="text-gray-600 hover:text-indigo-900 cursor-pointer">
+                                Chi tiết
                               </div>
                             </Link>
                           </div>
