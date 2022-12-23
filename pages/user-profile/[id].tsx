@@ -6,14 +6,14 @@ import BookingHistory from "../../components/UserProfile/BookingHistory";
 import Process from "../../components/UserProfile/Process";
 import UserInfo from "../../components/UserProfile/UserInfo";
 import { supabase } from "../../services/supaBaseClient";
-import { Booking, Checkout, Patient } from "../../utils/types";
+import { Booking, Checkout, Patient, User } from "../../utils/types";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 const UserProfilePage = () => {
   const { id } = useRouter().query;
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[] | null>(null);
-  const [user, setUser] = useState<Patient | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const fetchBookingOfUser = async (id: string) => {
     const { data: bookings, error } = await supabase
       .from("bookings")
@@ -31,7 +31,7 @@ const UserProfilePage = () => {
   const fetchCurrentUser = async (id: string) => {
     const { data: user, error } = await supabase
       .from("users")
-      .select(`*`)
+      .select("*,status(*),details_status(*),interact_type(*),interact_result(*)")
       .match({
         id: id,
       })
@@ -70,7 +70,17 @@ const UserProfilePage = () => {
         <title>Chi tiết người dùng</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      <main className="max-w-screen max-h-screen p-4">
+      {user && bookings ? (
+        <div className="flex flex-col gap-5">
+          <div className="text-2xl font-bold text-slate-800">Chi tiết người dùng ✨</div>
+          <div className="py-8 px-6 bg-white rounded-lg">
+            <UserInfo userInfo={user} />
+          </div>
+        </div>
+      ) : (
+        <div>Loadinng</div>
+      )}
+      {/* <main className="max-w-screen max-h-screen p-4">
         {user && bookings && (
           <div className="flex flex-col gap-10">
             <div
@@ -104,7 +114,7 @@ const UserProfilePage = () => {
             </div>
           </div>
         )}
-      </main>
+      </main> */}
     </>
   );
 };

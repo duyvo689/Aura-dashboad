@@ -9,7 +9,7 @@ interface Role {
   verify: boolean;
 }
 export interface Patient {
-  id: number;
+  id: string;
   created_at: string;
   avatar: string;
   name: string;
@@ -32,6 +32,7 @@ interface User {
   phone: string;
   avatar: string | null;
   name: string;
+  email: string | null;
   zalo_id: string | null;
   status: CustomerStatus | null;
   details_status: CustomerStatus | null;
