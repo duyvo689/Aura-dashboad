@@ -54,7 +54,9 @@ function CreateBanner() {
   const router = useRouter();
   const dispatch = useDispatch();
   const getAllBanner = async () => {
-    let { data: banners, error } = await supabase.from("banners").select("*");
+    let { data: banners, error } = await supabase
+      .from("banners")
+      .select("*,service_id(*),link(*)");
     if (error) {
       toast(error.message);
       return;
@@ -124,7 +126,7 @@ function CreateBanner() {
       const { data, error } = await supabase
         .from("banners")
         .insert([newBannerOption])
-        .select()
+        .select("*,service_id(*),link(*)")
         .single();
       if (error) {
         toast.error("Có lỗi xảy ra. Vui lòng thử lại.");

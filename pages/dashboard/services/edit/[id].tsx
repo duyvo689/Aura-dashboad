@@ -118,7 +118,7 @@ export default function UpdateService() {
   return (
     <>
       <Head>
-        <title>Thêm Dịch Vụ </title>
+        <title>Cập nhật dịch vụ</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
       <main>

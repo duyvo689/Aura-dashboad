@@ -6,6 +6,7 @@ interface Props {
   placeholder?: string;
   defaultValue?: string;
   required?: boolean;
+  readOnly?: boolean;
 }
 const InputForm = ({
   title,
@@ -15,6 +16,7 @@ const InputForm = ({
   placeholder,
   defaultValue,
   required = false,
+  readOnly = false,
 }: Props) => {
   return (
     <div>
@@ -34,6 +36,7 @@ const InputForm = ({
         defaultValue={defaultValue}
         required={required}
         placeholder={placeholder}
+        readOnly={readOnly}
       />
     </div>
   );
