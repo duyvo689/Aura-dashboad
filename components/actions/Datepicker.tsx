@@ -1,11 +1,15 @@
 import React from "react";
 import Flatpickr from "react-flatpickr";
 
-function Datepicker() {
+interface Props {
+  name: string;
+  defaultValue?: string;
+}
+function Datepicker({ name, defaultValue }: Props) {
   const options = {
     static: true,
     dateFormat: "M j, Y",
-    defaultDate: [new Date().setDate(new Date().getDate() - 6), new Date()],
+    defaultDate: [` ${defaultValue ? new Date(defaultValue) : new Date(Date.now())}`],
     prevArrow:
       '<svg class="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M5.4 10.8l1.4-1.4-4-4 4-4L5.4 0 0 5.4z" /></svg>',
     nextArrow:
@@ -21,6 +25,7 @@ function Datepicker() {
   return (
     <div className="relative">
       <Flatpickr
+        name={name}
         className="form-input pl-9 text-slate-500 hover:text-slate-600 font-medium focus:border-slate-300 w-60"
         options={options}
       />

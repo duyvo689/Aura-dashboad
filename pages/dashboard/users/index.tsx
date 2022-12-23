@@ -278,14 +278,8 @@ export default function Example() {
                 filterUser={filterUser}
               />
               <SearchBarUser />
-              {/* <FilterBar
-                customerStatusGroup={customerStatus.group}
-                setFilterUser={setFilterUser}
-                filterUser={users}
-              /> */}
             </div>
           </div>
-
           <div className="bg-white border border-slate-200 rounded-sm">
             <div className="w-full overflow-x-auto relative shadow-md sm:rounded-lg">
               <CountRecord amount={filterUser.length} title={"Danh sách người dùng"} />

@@ -34,6 +34,7 @@ function CustomerStatusPage() {
       return;
     }
     if (data) {
+      console.log(data);
       dispatch(customerStatusAction("customerStatus", data));
     }
   };
@@ -41,7 +42,7 @@ function CustomerStatusPage() {
     if (!customerStatus) {
       getAllCustomerStatus();
     }
-  }, []);
+  }, [customerStatus]);
 
   const addNewCustomerStatus = async (event: any) => {
     setLoad(true);

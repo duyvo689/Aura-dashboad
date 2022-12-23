@@ -17,6 +17,7 @@ import {
   Clinic,
   Coupon,
   CustomerStatus,
+  CustomerStatusReturn,
   Payment,
   Role,
   Service,
@@ -36,7 +37,7 @@ function ModalToggleActive({ id, title, type, setOpenModalToggle, status }: Prop
   const roles: Role[] = useSelector((state: RootState) => state.roles);
   const services: Service[] = useSelector((state: RootState) => state.services);
   const coupons: Coupon[] = useSelector((state: RootState) => state.coupons);
-  const customerStatus: CustomerStatus[] = useSelector(
+  const customerStatus: CustomerStatusReturn = useSelector(
     (state: RootState) => state.customerStatus
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -116,8 +117,9 @@ function ModalToggleActive({ id, title, type, setOpenModalToggle, status }: Prop
       } else if (data) {
         let index = coupons.findIndex((item) => item.id == id);
         coupons[index] = data;
-        toast.success("Thao tác thành công");
+        console.log(coupons);
         dispatch(couponsAction("coupons", coupons));
+        toast.success("Thao tác thành công");
       }
     }
     if (type === "verify") {
@@ -146,9 +148,9 @@ function ModalToggleActive({ id, title, type, setOpenModalToggle, status }: Prop
       if (error) {
         toast.error("Có lỗi xảy ra. Vui lòng thử lại");
       } else if (data) {
-        let index = customerStatus.findIndex((item) => item.id == id);
-        customerStatus[index] = data;
-        dispatch(customerStatusAction("customerStatus", [...customerStatus]));
+        let index = customerStatus.data.findIndex((item) => item.id == id);
+        customerStatus.data[index] = data;
+        dispatch(customerStatusAction("customerStatus", [...customerStatus.data]));
         toast.success("Thao tác thành công");
       }
     }

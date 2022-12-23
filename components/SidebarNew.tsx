@@ -285,7 +285,10 @@ function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
                           <ul className={`pl-9 mt-1 ${!open && "hidden"}`}>
                             {item.navigation.map((navigator, index: number) => {
                               return (
-                                <li className="mb-1 last:mb-0" key={index}>
+                                <li
+                                  className="mb-1 last:mb-0 cursor-pointer "
+                                  key={index}
+                                >
                                   <Link href={navigator.href}>
                                     <div
                                       className={`${

@@ -1,13 +1,22 @@
 import { NumericFormat } from "react-number-format";
-
+const MAX_VAL = 100;
 interface Props {
   title: string;
   name: string;
-  defaultValue?: number;
+  defaultValue?: number | null;
   type: "percent" | "price";
 }
+const limitRangePercent = (inputObj: any) => {
+  const { value } = inputObj;
+  if (value <= MAX_VAL) return true;
+  return false;
+};
+const limitRangePrice = (inputObj: any) => {
+  const { floatValue } = inputObj;
+  if (floatValue !== 0) return true;
+  return false;
+};
 const InputPrice = ({ title, name, type, defaultValue }: Props) => {
-  console.log(defaultValue);
   return (
     <div>
       <label
@@ -20,7 +29,9 @@ const InputPrice = ({ title, name, type, defaultValue }: Props) => {
         <div className="mt-1">
           <NumericFormat
             name={name}
+            isAllowed={limitRangePercent}
             defaultValue={defaultValue}
+            allowNegative={false}
             allowLeadingZeros
             className="form-input w-full"
             suffix={"%"}
@@ -31,7 +42,9 @@ const InputPrice = ({ title, name, type, defaultValue }: Props) => {
         <div className="relative mt-1 rounded-md">
           <NumericFormat
             name={name}
+            isAllowed={limitRangePrice}
             defaultValue={defaultValue}
+            allowNegative={false}
             allowLeadingZeros
             className="form-input w-full"
             thousandSeparator=","

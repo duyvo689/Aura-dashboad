@@ -1,18 +1,14 @@
 import { CustomerStatus, CustomerStatusReturn } from "../../utils/types";
 import _ from "lodash";
 interface CUSTOMERSTATUS {
-  customerStatus: CustomerStatus[];
+  customerStatus: CustomerStatusReturn;
   type: string;
 }
 
-const customerStatusRedux = (
-  state = null,
-  action: CUSTOMERSTATUS
-): CustomerStatusReturn | null => {
+const customerStatusRedux = (state = null, action: CUSTOMERSTATUS): any => {
   switch (action.type) {
     case "customerStatus":
       let grouped_data = _.groupBy(action.customerStatus, "type");
-
       return {
         group: {
           status: grouped_data?.status || [],
@@ -22,7 +18,6 @@ const customerStatusRedux = (
         },
         data: action.customerStatus,
       };
-
     default:
       return state;
   }

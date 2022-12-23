@@ -5,7 +5,6 @@ interface Props {
 }
 
 function SidebarLinkGroup({ children, activecondition }: any) {
-  console.log(activecondition);
   const [open, setOpen] = useState(activecondition);
 
   const handleClick = () => {

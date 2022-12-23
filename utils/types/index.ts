@@ -103,8 +103,20 @@ interface Coupon {
   start_date: string;
   end_date: string;
   description: string;
+  tag: string;
   active: boolean;
   service_id?: Service;
+}
+interface CouponUser {
+  id: string;
+  booking_id: string;
+  created_at: string;
+  user_id: Patient;
+  coupons_id: Coupon;
+  used: boolean;
+  start_date: string;
+  end_date: string;
+  active: boolean;
 }
 interface OpenModal {
   isOpen: boolean;
@@ -198,4 +210,5 @@ export type {
   CustomerStatusReturn,
   CustomerStatusGroup,
   OAPost,
+  CouponUser,
 };
