@@ -1,11 +1,16 @@
 import { Switch } from "@headlessui/react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
 import Link from "next/link";
 import react, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
+import CountRecord from "../../../components/CountRecord";
+import { EditIcon } from "../../../components/Icons/Form";
 import ModalDelete from "../../../components/ModalDelete";
 import ModalToggleActive from "../../../components/ModalToggleActive";
+import Pagination from "../../../components/Pagination";
+import FilterServiceBtn from "../../../components/Services/actions/FilterServiceButton";
 import { categoryAction, servicesAction } from "../../../redux/actions/ReduxAction";
 import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
@@ -47,6 +52,7 @@ export default function ServicePage() {
     }
   };
   const handlerSearch = (e: any) => {
+    console.log(e.target.value);
     if (e.target.value === "") {
       setFilterService(services);
     } else {
@@ -60,20 +66,20 @@ export default function ServicePage() {
     }
   };
 
-  const onChangeCategory = async (id: string) => {
-    if (id === "0") {
+  const onFilterByCategory = async (idList: string[]) => {
+    if (idList.length === 0) {
       setFilterService(services);
     } else {
-      setFilterService(() => {
-        const tmp = services.filter((service: Service) => {
-          return service.category_id.id === id;
-        });
-        return tmp;
+      const filterByCategory = services.filter((el) => {
+        if (!el.category_id) {
+          return false;
+        } else {
+          return idList.includes(el.category_id.id);
+        }
       });
+      console.log(filterByCategory);
+      setFilterService(filterByCategory);
     }
-  };
-  const onChangeActive = async (e: any) => {
-    console.log(e);
   };
   useEffect(() => {
     if (!categories) {
@@ -94,261 +100,185 @@ export default function ServicePage() {
         <title>Dịch Vụ </title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      {filterService ? (
-        <main className="px-4 sm:px-6 lg:px-8">
-          <div className="sm:flex sm:items-center">
-            <div className="sm:flex-auto">
-              <h1 className="text-xl font-semibold text-gray-900">THÔNG TIN DỊCH VỤ</h1>
-              <p className="mt-2 text-sm text-gray-700">
-                Quản lý tất cả các dịch vụ ở Aura ID.
-              </p>
-              <div className="mt-6">
-                <div className="relative mt-1 rounded-md shadow-sm">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"></div>
-                  <input
-                    type="text"
-                    name="search"
-                    id="search"
-                    className="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    placeholder="Tìm kiếm dich vụ"
-                    onChange={handlerSearch}
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center">
-                    <select
-                      onChange={(e) => onChangeCategory(e.target.value)}
-                      id="currency"
-                      name="currency"
-                      className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    >
-                      {categories && categories.length > 0 && (
-                        <>
-                          <option value={0}>Tất cả</option>
-                          {categories.map((item) => (
-                            <option key={item.id} value={item.id}>
-                              {item.name}
-                            </option>
-                          ))}
-                        </>
-                      )}
-                    </select>
-                  </div>
+      {filterService && categories ? (
+        <div className="flex flex-col gap-5">
+          <div className="sm:flex sm:justify-between sm:items-center">
+            <div className="text-2xl font-bold text-slate-800">Dịch vụ ✨</div>
+            <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+              <FilterServiceBtn categories={categories} onFilter={onFilterByCategory} />
+              <div className="relative">
+                <input
+                  type="text"
+                  name="search"
+                  id="search"
+                  onChange={handlerSearch}
+                  placeholder="Tìm kiếm số theo tên"
+                  className="form-input pl-9 text-slate-500 hover:text-slate-600 font-medium focus:border-slate-300 w-60"
+                />
+                <div className="absolute inset-y-0 left-0 flex items-center pl-2">
+                  <MagnifyingGlassIcon stroke={"#64748b"} className="w-6 h-5" />
                 </div>
               </div>
-            </div>
-            <Link href="/dashboard/services/create-service">
-              <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+              <button className="btn bg-indigo-500 hover:bg-indigo-600 text-white">
+                <svg
+                  className="w-4 h-4 fill-current opacity-50 shrink-0"
+                  viewBox="0 0 16 16"
                 >
-                  THÊM DỊCH VỤ
-                </button>
-              </div>
-            </Link>
+                  <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
+                </svg>
+                <Link href="/dashboard/services/create-service">
+                  <span className="hidden xs:block ml-2">Thêm dịch vụ</span>
+                </Link>
+              </button>
+            </div>
           </div>
-          <div className="mt-8 flex flex-col">
-            <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                <table className="min-w-full divide-y divide-gray-300">
-                  <thead>
-                    <tr>
-                      <th
-                        scope="col"
-                        className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
-                      >
-                        STT
-                      </th>
-                      <th
-                        scope="col"
-                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Tên
-                      </th>
-                      <th
-                        scope="col"
-                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Hình ảnh
-                      </th>
-                      <th
-                        scope="col"
-                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Giá tiền
-                      </th>
-                      <th
-                        scope="col"
-                        className="whitespace-nowrap py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Danh mục
-                      </th>
-                      <th
-                        scope="col"
-                        className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Mô tả
-                      </th>
-                      <th
-                        scope="col"
-                        className="whitespace-nowrap py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Trạng thái
-                      </th>
-
-                      <th
-                        scope="col"
-                        className="relative py-3.5 pl-3 pr-4 sm:pr-6 md:pr-0"
-                      >
-                        <span className="sr-only">Edit</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {filterService && filterService.length > 0 ? (
-                      filterService
-                        .slice((pagination - 1) * 10, pagination * 10)
-                        .map((service: Service, index: number) => (
-                          <tr key={index}>
-                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                              {index + 1}
-                            </td>
-                            <td className="whitespace-wrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">
-                              {service.name}
-                            </td>
-                            <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                              <div className="w-24 h-16">
-                                <img
-                                  className="w-full h-full rounded"
-                                  src={service.image}
-                                />
-                              </div>
-                            </td>
-                            <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                              {convertVnd(service.price)}
-                            </td>
-                            <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                              {service.category_id.name}
-                            </td>
-                            <td className="py-4 px-3 text-sm text-gray-500">
-                              <span className="mint-ellipsis-three">
-                                {service.description}
-                              </span>
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                              <Switch
-                                checked={service.active}
-                                onClick={() => {
-                                  setSelectedToggle({
-                                    id: service.id,
-                                    status: !service.active,
-                                  });
-                                  setOpenModalToggle(true);
-                                }}
-                                className={classNames(
-                                  service.active ? "bg-indigo-600" : "bg-gray-200",
-                                  "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                )}
-                              >
-                                <span
-                                  aria-hidden="true"
-                                  className={classNames(
-                                    service.active ? "translate-x-5" : "translate-x-0",
-                                    "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                                  )}
-                                />
-                              </Switch>
-                              {/* <span
-                              className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
-                                service.active
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-red-100 text-red-800"
-                              }`}
+          <div className="bg-white border border-slate-200 rounded-sm">
+            <div className="w-full overflow-x-auto relative shadow-md sm:rounded-lg">
+              <CountRecord amount={services.length} title={"Danh sách dịch vụ"} />
+              <table className="w-full text-sm  text-gray-500 dark:text-gray-400">
+                <thead className="bg-slate-100 text-slate-500 uppercase font-semibold text-xs border border-slate-200 ">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      STT
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4  "
+                    >
+                      Tên
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Hình ảnh
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Giá tiền
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4  "
+                    >
+                      Danh mục
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Mô tả
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Trạng thái
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Hành động
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm text-center">
+                  {filterService && filterService.length > 0 ? (
+                    filterService
+                      .slice((pagination - 1) * 10, pagination * 10)
+                      .map((item, index) => (
+                        <tr
+                          key={item.id}
+                          className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700"
+                        >
+                          <td className="whitespace-nowrap py-3 px-2 ">
+                            {(pagination - 1) * 10 + index + 1}
+                          </td>
+                          <td className="whitespace-nowrap py-3 px-2 ">{item.name}</td>
+                          <td className="whitespace-nowrap py-3 px-2 ">
+                            <div className="w-24 h-16">
+                              <img className="w-full h-full rounded" src={item.image} />
+                            </div>
+                          </td>
+                          <td className="whitespace-nowrap py-3 px-2 ">
+                            {convertVnd(item.price)}
+                          </td>
+                          <td className="whitespace-nowrap py-3 px-2 ">
+                            {item.category_id.name}
+                          </td>
+                          <td className="py-3 px-2 ">
+                            <span className="text-left min-ellipsis-two">
+                              {item.description}
+                            </span>
+                          </td>
+                          <td className="whitespace-nowrap text-center">
+                            <Switch
+                              checked={item.active}
+                              onClick={() => {
+                                setSelectedToggle({
+                                  id: item.id,
+                                  status: !item.active,
+                                });
+                                setOpenModalToggle(true);
+                              }}
+                              className={classNames(
+                                item.active ? "bg-indigo-600" : "bg-gray-200",
+                                "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                              )}
                             >
-                              {service.active ? "Đang hoạt động" : "Không hoạt động"}
-                            </span> */}
-                            </td>
-                            <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
-                              <div className="flex gap-3 ">
-                                <Link href={`/dashboard/services/edit/${service.id}`}>
-                                  <div className="text-indigo-600 hover:text-indigo-900 cursor-pointer">
-                                    Chỉnh sửa
-                                  </div>
-                                </Link>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                    ) : (
-                      <tr className=" block mt-4 text-left">
-                        Không tìm thấy dữ liệu phù hợp
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-                <nav
-                  className="flex items-center justify-between border-t border-gray-200 bg-white py-4"
-                  aria-label="Pagination"
-                >
-                  <div className="hidden sm:block">
-                    <p className="text-sm text-gray-700">
-                      Hiển{" "}
-                      <span className="font-medium"> {(pagination - 1) * 10 + 1}</span>{" "}
-                      đến{" "}
-                      <span className="font-medium">
-                        {pagination * 10 > filterService.length
-                          ? filterService.length
-                          : pagination * 10}
-                      </span>{" "}
-                      trên <span className="font-medium">{filterService.length}</span> kết
-                      quả
-                    </p>
-                  </div>
-                  <div className="flex flex-1 justify-between sm:justify-end">
-                    <button
-                      onClick={() => {
-                        setPagination((preState) => (preState <= 1 ? 1 : preState - 1));
-                      }}
-                      className={`  ${
-                        pagination > 1
-                          ? "relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-800"
-                          : "relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      Trước
-                    </button>
+                              <span
+                                aria-hidden="true"
+                                className={classNames(
+                                  item.active ? "translate-x-5" : "translate-x-0",
+                                  "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                )}
+                              />
+                            </Switch>
+                          </td>
 
-                    <button
-                      onClick={() => {
-                        setPagination((preState) =>
-                          preState * 10 > filterService.length ? preState : preState + 1
-                        );
-                      }}
-                      className={`${
-                        pagination * 10 < filterService.length
-                          ? "relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-800"
-                          : "relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      Sau
-                    </button>
-                  </div>
-                </nav>
-              </div>
+                          <td className="relative whitespace-nowrap py-3 px-2 ">
+                            <Link href={`/dashboard/services/edit/${item.id}`}>
+                              <div className="cursor-pointer flex justify-center items-center">
+                                <EditIcon />
+                              </div>
+                            </Link>
+                          </td>
+                        </tr>
+                      ))
+                  ) : (
+                    <tr className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700">
+                      <td className="whitespace-nowrap py-3 px-2 ">Không có dữ liệu</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
-
-          {openModalToggle && selectedToggle && (
-            <ModalToggleActive
-              id={selectedToggle.id}
-              status={selectedToggle.status}
-              title="dịch vụ"
-              type="services"
-              setOpenModalToggle={setOpenModalToggle}
-            />
-          )}
-        </main>
+          <Pagination
+            filteredData={filterService}
+            dataLength={filterService.length}
+            currentPage={pagination}
+            setNewPage={setPagination}
+          />
+        </div>
       ) : (
         <div>Loading...</div>
+      )}
+
+      {openModalToggle && selectedToggle && (
+        <ModalToggleActive
+          id={selectedToggle.id}
+          status={selectedToggle.status}
+          title="dịch vụ"
+          type="services"
+          setOpenModalToggle={setOpenModalToggle}
+        />
       )}
     </div>
   );

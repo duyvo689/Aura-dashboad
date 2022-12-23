@@ -1,63 +1,62 @@
-import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon, XCircleIcon } from "@heroicons/react/24/outline";
-import { Widget } from "@uploadcare/react-widget";
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { bannersAction } from "../../../redux/actions/ReduxAction";
+import {
+  bannersAction,
+  OAPostAction,
+  servicesAction,
+} from "../../../redux/actions/ReduxAction";
 import { RootState } from "../../../redux/reducers";
 import { supabase } from "../../../services/supaBaseClient";
-import UploadCareAPI from "../../../services/uploadCareAPI";
-import convertImg from "../../../utils/helpers/convertImg";
-import { Banner } from "../../../utils/types";
+import { Banner, OAPost, Service } from "../../../utils/types";
 const UPLOADCARE_KEY = process.env.NEXT_PUBLIC_UPLOADCARE as string;
+import SelectForm from "../../../components/Form/SelectForm";
+import InputImage from "../../../components/Form/InputImage";
+import SubmitBtn from "../../../components/Form/SubmitBtn";
+import InputForm from "../../../components/Form/InputForm";
+import Select from "react-select";
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
 }
 const bannerType = [
   {
-    name: "OA",
+    value: "OA",
+    label: "OA",
   },
-  { name: "Link" },
-  { name: "Dịch vụ" },
+  { value: "services", label: "Dịch vụ" },
 ];
-const renderTypeBanner = (type: string) => {
-  return (
-    <div className="space-y-6 sm:space-y-5">
-      <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
-        <label
-          htmlFor="username"
-          className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-        >
-          {type} (Nếu có)
-        </label>
-        <div className="mt-1 sm:col-span-2 sm:mt-0">
-          <div className="flex max-w-lg rounded-md shadow-sm">
-            <input
-              type="text"
-              name="link"
-              id="link"
-              placeholder={`Đường dẫn ${type} cho banner`}
-              className="block w-full flex-1  rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+const InputSelect = {
+  title: "Loại banner",
+  name: "type",
+  required: true,
+  placeholder: "Vui lòng chọn",
+  options: bannerType,
 };
+
 function CreateBanner() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [bannerImage, setBannerImage] = useState<string | null>(null);
-  const widgetApi = useRef<any>(null);
   const banners: Banner[] = useSelector((state: RootState) => state.banners);
-  const [selectedType, setSelectedType] = useState(bannerType[0]);
+  const oaPosts: OAPost[] = useSelector((state: RootState) => state.oaPosts);
+  const services: Service[] = useSelector((state: RootState) => state.services);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [bannerType, setBannerType] = useState<
+    | {
+        label: string;
+        value: string;
+        image: string;
+      }[]
+    | null
+  >(null);
   const router = useRouter();
   const dispatch = useDispatch();
   const getAllBanner = async () => {
-    let { data: banners, error } = await supabase.from("banners").select("*");
+    let { data: banners, error } = await supabase
+      .from("banners")
+      .select("*,service_id(*),link(*)");
     if (error) {
       toast(error.message);
       return;
@@ -66,27 +65,68 @@ function CreateBanner() {
       dispatch(bannersAction("banners", banners));
     }
   };
+  const getAllOAPost = async () => {
+    let { data: oa_post, error } = await supabase.from("oa_post").select("*");
+    if (error) {
+    } else if (oa_post) {
+      dispatch(OAPostAction("oaPosts", oa_post));
+    }
+  };
+  const getAllService = async () => {
+    let { data, error } = await supabase.from("services").select(`*,category_id(*)`);
+
+    if (error) {
+      toast(error.message);
+      return;
+    }
+    if (data) {
+      dispatch(servicesAction("services", data));
+    }
+  };
   useEffect(() => {
     if (!banners) {
       getAllBanner();
     }
   }, [banners]);
+  useEffect(() => {
+    if (!oaPosts) {
+      getAllOAPost();
+    }
+  }, [oaPosts]);
+  useEffect(() => {
+    if (!services) {
+      getAllService();
+    }
+  }, [services]);
   const addNewBanner = async (event: any) => {
     setIsLoading(true);
     event.preventDefault();
+    const link = event.target.link.value || null;
+    const type = event.target.type.value || null;
+
     if (!banners) {
+      setIsLoading(false);
       return;
     }
+    if (!link || !type) {
+      toast("Nhập thiếu dữ liệu");
+      setIsLoading(false);
+      return;
+    }
+
     if (!bannerImage) {
       toast("Vui lòng chọn hình ảnh");
     } else {
-      const link = event.target.elements.link.value;
-
-      // const _urlImg = await uploadImageProduct(image, "banners");
+      const newBannerOption = {
+        type: type,
+        link: type === "OA" ? link : null,
+        service_id: type === "services" ? link : null,
+        image_url: bannerImage,
+      };
       const { data, error } = await supabase
         .from("banners")
-        .insert([{ link: link, image_url: bannerImage }])
-        .select()
+        .insert([newBannerOption])
+        .select("*,service_id(*),link(*)")
         .single();
       if (error) {
         toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
@@ -99,198 +139,110 @@ function CreateBanner() {
     }
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    if (selectedType === null || !oaPosts || !services) return;
+    if (selectedType === "OA") {
+      setBannerType(
+        oaPosts.map((item) => {
+          return {
+            label: item.title,
+            value: item.id,
+            image: item.thumb,
+          };
+        })
+      );
+    }
+    if (selectedType === "services") {
+      setBannerType(
+        services.map((item) => {
+          return {
+            label: item.name,
+            value: item.id,
+            image: item.image,
+          };
+        })
+      );
+    }
+  }, [selectedType]);
   return (
-    <div className="px-4">
-      <form className="space-y-8 divide-y divide-gray-200" onSubmit={addNewBanner}>
-        <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
-          <div className="space-y-6 sm:space-y-5">
-            <div>
-              <h3 className="text-lg font-medium leading-6 text-gray-900">Tạo banner</h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                Tạo banner cho Aura ID App. Thông tin sẽ được hiển thị trên Aura ID app.
-              </p>
+    <>
+      <Head>
+        <title>Tạo mới banners</title>
+        <meta property="og:title" content="Chain List" key="title" />
+      </Head>
+      {oaPosts && services ? (
+        <div className="flex flex-col gap-5">
+          <div className="flex justify-center">
+            <div className="sm:flex sm:justify-between sm:items-center w-2/3 ">
+              <div className="text-2xl font-bold text-slate-800">Thêm banner ✨</div>
+              <Link href="/dashboard/banners">
+                <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                  >
+                    TRỞ LẠI TRANG TRƯỚC
+                  </button>
+                </div>
+              </Link>
             </div>
           </div>
-          <div className="space-y-6 sm:space-y-5">
-            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-              >
-                Loại
-              </label>
-              <div className="mt-1 sm:col-span-2 sm:mt-0">
-                <Listbox value={selectedType}>
-                  {({ open }) => (
-                    <div className="flex max-w-lg rounded-md shadow-sm">
-                      <div className="block w-full flex-1">
-                        <div className="relative mt-1">
-                          <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
-                            <span className="flex items-center">
-                              <span className="ml-3 block truncate">
-                                {selectedType.name}
-                              </span>
-                            </span>
-                            <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                              <ChevronUpDownIcon
-                                className="h-5 w-5 text-gray-400"
-                                aria-hidden="true"
-                              />
-                            </span>
-                          </Listbox.Button>
+          <div className="flex justify-center">
+            <div className="bg-white rounded-lg p-6 w-2/3">
+              <form className="flex flex-col gap-5" onSubmit={addNewBanner}>
+                <SelectForm
+                  name={InputSelect.name}
+                  title={InputSelect.title}
+                  placeholder={InputSelect.placeholder}
+                  options={InputSelect.options}
+                  required={InputSelect.required}
+                  myOnChange={(e: any) => {
+                    setSelectedType(e ? e.value : null);
+                    setBannerType(null);
+                  }}
+                />
 
-                          <Transition
-                            show={open}
-                            leave="transition ease-in duration-100"
-                            leaveFrom="opacity-100"
-                            leaveTo="opacity-0"
-                          >
-                            <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                              {bannerType.map((item, index: number) => (
-                                <Listbox.Option
-                                  key={index}
-                                  onClick={() => {
-                                    setSelectedType({ name: item.name });
-                                  }}
-                                  className={({ active }) =>
-                                    classNames(
-                                      active
-                                        ? "text-white bg-indigo-600"
-                                        : "text-gray-900",
-                                      "relative cursor-default select-none py-2 pl-3 pr-9"
-                                    )
-                                  }
-                                  value={item.name}
-                                >
-                                  {({ selected, active }) => (
-                                    <>
-                                      <div className="flex items-center">
-                                        <span
-                                          className={classNames(
-                                            selected ? "font-semibold" : "font-normal",
-                                            "ml-3 block truncate"
-                                          )}
-                                        >
-                                          {item.name}
-                                        </span>
-                                      </div>
-
-                                      {selected ? (
-                                        <span
-                                          className={classNames(
-                                            active ? "text-white" : "text-indigo-600",
-                                            "absolute inset-y-0 right-0 flex items-center pr-4"
-                                          )}
-                                        >
-                                          <CheckIcon
-                                            className="h-5 w-5"
-                                            aria-hidden="true"
-                                          />
-                                        </span>
-                                      ) : null}
-                                    </>
-                                  )}
-                                </Listbox.Option>
-                              ))}
-                            </Listbox.Options>
-                          </Transition>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </Listbox>
-              </div>
-            </div>
-          </div>
-          {selectedType && renderTypeBanner(selectedType.name)}
-
-          <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
-            <label
-              htmlFor="cover-photo"
-              className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 required"
-            >
-              Hình ảnh banner
-            </label>
-            <div className="mt-1 sm:col-span-2 sm:mt-0">
-              <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
-                {bannerImage ? (
-                  <div className="h-24 relative">
-                    <img
-                      src={bannerImage}
-                      className="h-full w-full rounded-lg  object-cover"
-                    />
-
-                    <div
-                      className="absolute h-7 w-7 -top-4 -right-4 cursor-pointer"
-                      onClick={() => setBannerImage(null)}
-                    >
-                      <XCircleIcon />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-1 text-center">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
-                      stroke="currentColor"
-                      fill="none"
-                      viewBox="0 0 48 48"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    {/* <div className="flex text-sm text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
-                      >
-                        <span>Upload hình ảnh</span>
-                        <input
-                          id="file-upload"
-                          name="file-upload"
-                          type="file"
-                          className="sr-only"
-                          onChange={(e) =>
-                            e.target.files && setBannerImage(e.target.files[0])
-                          }
+                {bannerType && (
+                  <Select
+                    id="link"
+                    name="link"
+                    placeholder="Chọn đường dẫn liên kết"
+                    options={bannerType}
+                    formatOptionLabel={(bannerType) => (
+                      <div className="flex gap-2 items-center">
+                        <img
+                          src={bannerType.image}
+                          className="w-10 h-10 rounded-full"
+                          alt="country-image"
                         />
-                      </label>
-                      <p className="pl-1">(kéo hoặc thả)</p>
-                    </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF</p> */}
-                    <Widget
-                      ref={widgetApi}
-                      publicKey={UPLOADCARE_KEY}
-                      clearable
-                      multiple={false}
-                      onChange={(file) => {
-                        if (file) {
-                          setBannerImage(convertImg(file.uuid!));
-                        }
-                      }}
-                    />
-                  </div>
+                        <span className="text-sm font-normal">{bannerType.label}</span>
+                      </div>
+                    )}
+                  ></Select>
                 )}
-              </div>
+
+                <InputImage
+                  title={"Thêm hình ảnh cơ sở"}
+                  required={true}
+                  image={bannerImage}
+                  setImage={setBannerImage}
+                />
+                <div className="flex justify-end">
+                  <SubmitBtn
+                    type={isLoading ? "button" : "submit"}
+                    content={isLoading ? "Đang thêm..." : "Thêm mới"}
+                    size="md"
+                  />
+                </div>
+              </form>
             </div>
           </div>
         </div>
-        <div className="pt-5">
-          <div className="flex justify-end">
-            <button
-              type={isLoading ? "button" : "submit"}
-              className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              {isLoading ? "Đang tạo..." : "Tạo mới"}
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
+      ) : (
+        <div>Loading...</div>
+      )}
+    </>
   );
 }
 export default CreateBanner;

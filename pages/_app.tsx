@@ -16,8 +16,21 @@ import Auth from "../auth/index";
 // import "tippy.js/dist/tippy.css";
 import { Toaster } from "react-hot-toast";
 import Script from "next/script";
+import { ErrorBoundary } from "react-error-boundary";
+
+function ErrorFallback({ error }: any) {
+  return (
+    <div role="alert">
+      <p>Something went wrong:</p>
+      <pre>{error.message}</pre>
+      {/* <button onClick={resetErrorBoundary}>Try again</button> */}
+    </div>
+  );
+}
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
+    // <ErrorBoundary FallbackComponent={ErrorFallback}>
     <Provider store={store}>
       <Auth>
         <Layout>
@@ -27,5 +40,6 @@ export default function App({ Component, pageProps }: AppProps) {
       </Auth>
       <Script src="https://unpkg.com/flowbite@1.5.4/dist/flowbite.js"></Script>
     </Provider>
+    // </ErrorBoundary>
   );
 }

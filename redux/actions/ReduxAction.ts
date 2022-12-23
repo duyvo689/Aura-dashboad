@@ -9,6 +9,7 @@ import {
   Coupon,
   CustomerStatus,
   Doctor,
+  OAPost,
 } from "../../utils/types";
 const rolesAction = (type: any, roles: Role[] | null) => {
   return {
@@ -83,6 +84,12 @@ const doctorAction = (type: any, doctors: Doctor[] | null) => {
     doctors,
   };
 };
+const OAPostAction = (type: any, oaPost: OAPost[] | null) => {
+  return {
+    type,
+    oaPost,
+  };
+};
 export {
   usersAction,
   bannersAction,
@@ -96,4 +103,5 @@ export {
   couponsAction,
   customerStatusAction,
   doctorAction,
+  OAPostAction,
 };

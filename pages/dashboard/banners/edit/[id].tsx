@@ -1,20 +1,28 @@
-/* eslint-disable jsx-a11y/alt-text */
-/* eslint-disable @next/next/no-img-element */
 import { Widget } from "@uploadcare/react-widget";
+import Link from "next/link";
 import router, { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { bannersAction } from "../../../../redux/actions/ReduxAction";
+import InputForm from "../../../../components/Form/InputForm";
+import InputImage from "../../../../components/Form/InputImage";
+import SelectFormImg from "../../../../components/Form/SelectFormImg";
+import SubmitBtn from "../../../../components/Form/SubmitBtn";
+import {
+  bannersAction,
+  OAPostAction,
+  servicesAction,
+} from "../../../../redux/actions/ReduxAction";
 import { RootState } from "../../../../redux/reducers";
 import { supabase } from "../../../../services/supaBaseClient";
 import UploadCareAPI from "../../../../services/uploadCareAPI";
 import convertImg from "../../../../utils/helpers/convertImg";
-import { Banner } from "../../../../utils/types";
+import { Banner, OAPost, Service } from "../../../../utils/types";
 const UPLOADCARE_KEY = process.env.NEXT_PUBLIC_UPLOADCARE as string;
 function UpdateBanner() {
   const { id } = useRouter().query;
-  const widgetApi = useRef<any>(null);
+  const oaPosts: OAPost[] = useSelector((state: RootState) => state.oaPosts);
+  const services: Service[] = useSelector((state: RootState) => state.services);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [newBannerImg, setNewBannerImg] = useState<string | null>(null);
   const banners: Banner[] = useSelector((state: RootState) => state.banners);
@@ -23,7 +31,7 @@ function UpdateBanner() {
   const fetchBannerById = async () => {
     let { data: banner, error } = await supabase
       .from("banners")
-      .select("*")
+      .select("*,service_id(*),link(*)")
       .eq("id", id)
       .single();
     if (error) {
@@ -31,10 +39,13 @@ function UpdateBanner() {
       return;
     } else if (banner) {
       setBanner(banner);
+      setNewBannerImg(banner.image_url);
     }
   };
   const getAllBanner = async () => {
-    let { data: banners, error } = await supabase.from("banners").select("*");
+    let { data: banners, error } = await supabase
+      .from("banners")
+      .select("*,service_id(*),link(*)");
     if (error) {
       toast("Lỗi. Thử lại.");
       return;
@@ -44,6 +55,24 @@ function UpdateBanner() {
       dispatch(bannersAction("banners", banners));
     }
   };
+  const getAllOAPost = async () => {
+    let { data: oa_post, error } = await supabase.from("oa_post").select("*");
+    if (error) {
+    } else if (oa_post) {
+      dispatch(OAPostAction("oaPosts", oa_post));
+    }
+  };
+  const getAllService = async () => {
+    let { data, error } = await supabase.from("services").select(`*,category_id(*)`);
+
+    if (error) {
+      toast(error.message);
+      return;
+    }
+    if (data) {
+      dispatch(servicesAction("services", data));
+    }
+  };
   const updateBanner = async (event: any) => {
     setIsLoading(true);
     event.preventDefault();
@@ -51,16 +80,22 @@ function UpdateBanner() {
       return;
     } else {
       let updateImage = banner.image_url; //default
-      const link = event.target.elements.link.value;
+      const link = event.target.link.value;
+
       if (newBannerImg) {
         updateImage = newBannerImg;
       }
-      // const _urlImg = await uploadImageProduct(image, "banners");
+      const updateBannerOption = {
+        link: banner.link ? link : null,
+        service_id: banner.service_id ? link : null,
+        image_url: updateImage,
+      };
+
       const { data, error } = await supabase
         .from("banners")
-        .update({ link: link, image_url: updateImage })
+        .update(updateBannerOption)
         .eq("id", id)
-        .select()
+        .select("*,service_id(*),link(*)")
         .single();
       if (error) {
         toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
@@ -82,110 +117,98 @@ function UpdateBanner() {
     if (!banners) {
       getAllBanner();
     }
-  }, []);
+  }, [banners]);
+  useEffect(() => {
+    if (!oaPosts) {
+      getAllOAPost();
+    }
+  }, [oaPosts]);
+  useEffect(() => {
+    if (!services) {
+      getAllService();
+    }
+  }, [services]);
   return (
     <div className="px-4">
-      {banner ? (
-        <form className="space-y-8 divide-y divide-gray-200" onSubmit={updateBanner}>
-          <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
-            <div className="space-y-6 sm:space-y-5">
-              <div>
-                <h3 className="text-lg font-medium leading-6 text-gray-900">
-                  Cập nhật dữ liệu cho banner
-                </h3>
-                <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                  Thông tin sẽ được hiển thị trên Aura ID app.
-                </p>
-              </div>
-            </div>
-            <div className="space-y-6 sm:space-y-5">
-              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
-                <label
-                  htmlFor="username"
-                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                >
-                  Link liên kết (Nếu có)
-                </label>
-                <div className="mt-1 sm:col-span-2 sm:mt-0">
-                  <div className="flex max-w-lg rounded-md shadow-sm">
-                    <input
-                      type="text"
-                      name="link"
-                      id="link"
-                      defaultValue={banner.link}
-                      placeholder="Đường dẫn liên kết cho banner"
-                      className="block w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
+      {banner && services && oaPosts ? (
+        <div className="flex flex-col gap-5">
+          <div className="flex justify-center">
+            <div className="sm:flex sm:justify-between sm:items-center w-2/3 ">
+              <div className="text-2xl font-bold text-slate-800">Cập nhật banner ✨</div>
+              <Link href="/dashboard/banners">
+                <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                  >
+                    TRỞ LẠI TRANG TRƯỚC
+                  </button>
                 </div>
-              </div>
-            </div>
-            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
-              <label
-                htmlFor="cover-photo"
-                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 required"
-              >
-                Hình ảnh banner
-              </label>
-              <div className="mt-1 sm:col-span-2 sm:mt-0">
-                <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
-                  {banner && (
-                    <div className="flex items-end gap-3">
-                      <div className="h-24">
-                        {newBannerImg ? (
-                          <img
-                            src={newBannerImg}
-                            className="h-full w-full rounded-lg  object-cover"
-                          />
-                        ) : (
-                          <img
-                            src={banner.image_url}
-                            className="h-full w-full rounded-lg  object-cover"
-                          />
-                        )}
-                      </div>
-                      <div className="flex text-sm text-gray-600">
-                        <label
-                          htmlFor="file-upload"
-                          className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
-                        >
-                          {/* <span
-                            onClick={() => widgetApi.current.openDialog()}
-                            className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                          >
-                            Đổi ảnh mới
-                          </span> */}
-
-                          <Widget
-                            ref={widgetApi}
-                            publicKey={UPLOADCARE_KEY}
-                            clearable
-                            multiple={false}
-                            onChange={(file) => {
-                              if (file) {
-                                setNewBannerImg(convertImg(file.uuid!));
-                              }
-                            }}
-                          />
-                        </label>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+              </Link>
             </div>
           </div>
-          <div className="pt-5">
-            <div className="flex justify-end">
-              <button
-                type={isLoading ? "button" : "submit"}
-                className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                {isLoading ? "Đang cập nhật..." : "Cập nhật"}
-              </button>
+          <div className="flex justify-center">
+            <div className="bg-white rounded-lg p-6 w-2/3">
+              <div className="block font-bold text-base mb-1 text-slate-600">
+                {`Loại: ${banner.type === "OA" ? "OA" : "Dịch vụ"}`}
+              </div>
+              <form className="flex flex-col gap-5" onSubmit={updateBanner}>
+                <SelectFormImg
+                  name="link"
+                  title="Link liên kết banner"
+                  placeholder="Vui lòng chọn"
+                  options={
+                    banner.service_id
+                      ? services.map((item) => {
+                          return {
+                            label: item.name,
+                            value: item.id,
+                            image: item.image,
+                          };
+                        })
+                      : banner.link
+                      ? oaPosts.map((item) => {
+                          return {
+                            label: item.title,
+                            value: item.id,
+                            image: item.thumb,
+                          };
+                        })
+                      : []
+                  }
+                  defaultValue={
+                    banner.service_id
+                      ? {
+                          label: banner.service_id.name,
+                          value: banner.service_id.id,
+                          image: banner.service_id.image,
+                        }
+                      : banner.link
+                      ? {
+                          label: banner.link.title,
+                          value: banner.link.id,
+                          image: banner.link.thumb,
+                        }
+                      : null
+                  }
+                />
+                <InputImage
+                  title={"Đổi hình ảnh cơ sở"}
+                  required={true}
+                  image={newBannerImg}
+                  setImage={setNewBannerImg}
+                />
+                <div className="flex justify-end">
+                  <SubmitBtn
+                    type={isLoading ? "button" : "submit"}
+                    content={isLoading ? "Đang cập nhật..." : "Cập nhật"}
+                    size="md"
+                  />
+                </div>
+              </form>
             </div>
           </div>
-        </form>
+        </div>
       ) : (
         <div>Loading...</div>
       )}

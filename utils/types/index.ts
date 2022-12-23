@@ -50,7 +50,9 @@ interface Banner {
   id: string;
   created_at: string;
   image_url: string;
-  link: string;
+  link: OAPost | null;
+  type: "OA" | "service";
+  service_id: Service | null;
 }
 interface Clinic {
   id: string;
@@ -176,6 +178,20 @@ interface CustomerStatusReturn {
   group: CustomerStatusGroup;
   data: CustomerStatus[];
 }
+interface OAPost {
+  id: string;
+  created_at: string;
+  status: string;
+  thumb: string;
+  title: string;
+  total_share: number;
+  total_view: number;
+  type: string;
+  create_date: number;
+  update_date: number;
+  link_view: string;
+  likes: string[];
+}
 export type {
   Checkout,
   Coupon,
@@ -191,5 +207,6 @@ export type {
   Booking,
   CustomerStatus,
   CustomerStatusReturn,
-  CustomerStatusGroup,CouponUser,
+  CustomerStatusGroup,
+  OAPost, CouponUser,
 };

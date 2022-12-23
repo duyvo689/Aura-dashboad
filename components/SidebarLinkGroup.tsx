@@ -5,6 +5,7 @@ interface Props {
 }
 
 function SidebarLinkGroup({ children, activecondition }: any) {
+  console.log(activecondition);
   const [open, setOpen] = useState(activecondition);
 
   const handleClick = () => {
@@ -12,13 +13,13 @@ function SidebarLinkGroup({ children, activecondition }: any) {
   };
 
   return (
-    <li
+    <div
       className={`px-3 py-2 rounded-sm mb-0.5 last:mb-0 ${
         activecondition && "bg-slate-900"
       }`}
     >
       {children(handleClick, open)}
-    </li>
+    </div>
   );
 }
 

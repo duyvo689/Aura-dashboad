@@ -178,8 +178,7 @@ function CouponsPage() {
                           {item?.price && `- ${convertVnd(item.price)}`}
                           {item?.percent && `- ${item.percent}%`}
                         </td>
-
-                        <td className="py-4 px-3 text-sm text-gray-500 text-ellipsis overflow-hidden">
+                        <td className="py-4 px-3 text-sm text-gray-500 min-ellipsis-two">
                           {item.description}
                         </td>
                         <td className="py-4 px-3  font-semibold text-sm text-green-600">

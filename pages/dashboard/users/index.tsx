@@ -17,7 +17,7 @@ import { DocumentArrowDownIcon } from "@heroicons/react/24/outline";
 
 import { io } from "socket.io-client";
 import { mainApi } from "../../../api/endpoint";
-import ItemUser from "../../../components/ItemUser";
+import ItemUser from "../../../components/Users/ItemUser";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/reducers";
 import {
@@ -32,10 +32,12 @@ function classNames(...classes: any) {
 }
 import * as React from "react";
 
-import SearchBar from "../../../components/SearchBar";
+import SearchBarUser from "../../../components/Users/SearchUserBar";
 
-import FilterBar from "../../../components/FilterBar";
-
+import Link from "next/link";
+import CountRecord from "../../../components/CountRecord";
+import Pagination from "../../../components/Pagination";
+import FilterUserBar from "../../../components/Users/FilterUserBar";
 export default function Example() {
   const users: User[] = useSelector((state: RootState) => state.users);
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
@@ -45,6 +47,7 @@ export default function Example() {
     (state: RootState) => state.customerStatus
   );
   const [filterUser, setFilterUser] = useState<User[] | null>(null);
+  const [pagination, setPagination] = useState(1);
   const dispatch = useDispatch();
   const [socket, setSocket] = useState<any | null>(null);
   const getAllClinic = async () => {
@@ -153,18 +156,19 @@ export default function Example() {
     }
   }, [socket, users]);
   useEffect(() => {
-    if (users !== null) {
+    if (users) {
       setFilterUser(users);
     }
   }, [users]);
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 mt-6 h-screen">
+    <>
       <Head>
         <title>Người Dùng</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      {filterUser && customerStatus ? (
+
+      {/* {filterUser && customerStatus ? (
         <main className="flex flex-col gap-4 ">
           <div className="sm:flex sm:items-center">
             <div className="sm:flex-auto">
@@ -262,7 +266,116 @@ export default function Example() {
         </main>
       ) : (
         <div>Loading...</div>
+      )} */}
+      {filterUser && customerStatus ? (
+        <div className="flex flex-col gap-5">
+          <div className="sm:flex sm:justify-between sm:items-center">
+            <div className="text-2xl font-bold text-slate-800">Người dùng ✨</div>
+            <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+              <FilterUserBar
+                customerStatusGroup={customerStatus.group}
+                setFilterUser={setFilterUser}
+                filterUser={filterUser}
+              />
+              <SearchBarUser />
+              {/* <FilterBar
+                customerStatusGroup={customerStatus.group}
+                setFilterUser={setFilterUser}
+                filterUser={users}
+              /> */}
+            </div>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-sm">
+            <div className="w-full overflow-x-auto relative shadow-md sm:rounded-lg">
+              <CountRecord amount={filterUser.length} title={"Danh sách người dùng"} />
+              <table className="w-full text-sm text-gray-500 dark:text-gray-400">
+                <thead className="bg-slate-100 text-slate-500 uppercase font-semibold text-xs border border-slate-200 text-left ">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Tên khách hàng
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Số điện thoại
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Chi nhánh
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Trạng thái KH
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Nhân viên LiveChat
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Nguồn khách
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      Trạng thái chi tiết
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4 "
+                    >
+                      <span className="sr-only">Hành động</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm text-left">
+                  {filterUser.length > 0 ? (
+                    clinics &&
+                    filterUser
+                      .slice((pagination - 1) * 10, pagination * 10)
+                      .map((item, index) => {
+                        return (
+                          <ItemUser
+                            key={index}
+                            user={item}
+                            customerStatusGroup={customerStatus.group}
+                            clinics={clinics}
+                          />
+                        );
+                      })
+                  ) : (
+                    <tr className="bg-white hover:bg-gray-100 border-b  dark:bg-gray-900 dark:border-gray-700 text-left">
+                      <td className="whitespace-nowrap py-3 px-2 ">Không có dữ liệu</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <Pagination
+            filteredData={filterUser}
+            dataLength={filterUser.length}
+            currentPage={pagination}
+            setNewPage={setPagination}
+          />
+        </div>
+      ) : (
+        <div>Loading...</div>
       )}
-    </div>
+    </>
   );
 }
