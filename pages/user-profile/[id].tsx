@@ -99,9 +99,9 @@ const UserProfilePage = () => {
           <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
             <UserInfo userInfo={user} />
           </div>
-          {/* <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
+          <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
             <ZNSMetric />
-          </div> */}
+          </div>
           <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
             <PromotionMetric couponsOfUser={couponsOfUser} />
           </div>
