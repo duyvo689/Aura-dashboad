@@ -72,7 +72,6 @@ const navigations: Navigation[] = [
     name: "Quản lý đặt hẹn",
     href: "/dashboard/bookings",
     icon: (pathname: string) => {
-      console.log(pathname);
       return <CalendarIcon pathname={pathname} />;
     },
     pathName: "bookings",

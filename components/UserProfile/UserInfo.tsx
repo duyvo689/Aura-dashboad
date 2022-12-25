@@ -3,6 +3,7 @@ import BronzeMedal from "../../public/ranking/Bronze-Medal";
 import BronzeMedalIcon from "../../public/ranking/Bronze-Medal";
 import GoldMedal from "../../public/ranking/Gold-Medal";
 import SilverMedal from "../../public/ranking/Silver-Medal";
+import { convertVnd } from "../../utils/helpers/convertToVND";
 import { Patient, User } from "../../utils/types";
 
 interface Props {
@@ -11,29 +12,31 @@ interface Props {
 const UserDetails = ({ label, value }: { label: string; value: string }) => {
   return (
     <div className="flex flex-col gap-1">
-      <div className="text-slate-400 text-sm font-semibold">{label}</div>
-      <div className="text-base font-bold text-slate-600">{value}</div>
+      <div className="text-slate-400 text-xs font-semibold">{label}</div>
+      <div className="text-sm font-bold text-slate-600">{value}</div>
     </div>
   );
 };
 function UserInfo({ userInfo }: Props) {
   return (
     <div className="flex flex-col gap-4 w-full">
-      <div className="uppercase text-sm text-slate-400">Thông tin chi tiết</div>
+      <div className="uppercase text-sm text-slate-400 font-semibold">
+        Thông tin khách hàng
+      </div>
       <div className="grid grid-cols-3 gap-2">
         <div className="flex gap-2">
           <img
             src={userInfo.avatar ? userInfo.avatar : "../images/default-avatar.png"}
-            className="w-28 h-28 rounded-lg"
+            className="w-28 h-28 rounded-full"
             alt="User Profile"
           />
           <div className="flex flex-col justify-between">
             <UserDetails label={"Name"} value={userInfo.name} />
-            <div className="flex flex-col gap-1">
-              <div className="text-slate-400 text-sm font-semibold">Nguồn khách</div>
-              <div className="flex gap-2">
+            <div className="flex flex-col ">
+              <div className="text-slate-400 text-xs font-semibold">Nguồn khách</div>
+              <div className="flex gap-1">
                 {userInfo.customer_resource && (
-                  <button className="bg-sky-200 py-1 px-2 text-sky-500 rounded-lg text-xs">
+                  <button className="bg-blue-100 py-1 px-2 text-blue-400 rounded-lg text-xs font-bold">
                     Facebook
                   </button>
                 )}
@@ -60,17 +63,17 @@ function UserInfo({ userInfo }: Props) {
         </div>
         <div className="flex flex-col justify-between">
           <UserDetails label={"ID"} value={userInfo.id} />
-          {/* <UserDetails label={"Name"} value={userInfo.name} /> */}
+          <UserDetails label={"Tổng chi tiêu"} value={convertVnd(3000000)} />
         </div>
-        {/* <div className="text-sm ">
+        {/* <div className="text-xs ">
           <div className="text-[#6b7280]">Email Address</div>
           <div className="font-medium">{userInfo.email || "Chưa cập nhật"}</div>
         </div>
-        <div className="text-sm ">
+        <div className="text-xs ">
           <div className="text-[#6b7280]">Địa chỉ</div>
           <div className="font-medium">{userInfo.address || "Chưa cập nhật"}</div>
         </div>
-        <div className="text-sm ">
+        <div className="text-xs ">
           <div className="text-[#6b7280]">Số điện thoại</div>
           <div className="font-medium">{userInfo.phone}</div>
         </div>

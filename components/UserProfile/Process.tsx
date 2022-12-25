@@ -5,18 +5,26 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../services/supaBaseClient";
 import { ListStatusBooking } from "../../utils/helpers/constant";
 import { convertVnd } from "../../utils/helpers/convertToVND";
-import { Booking, Checkout, Patient } from "../../utils/types";
+import { Booking, Checkout, Patient, User } from "../../utils/types";
 interface Props {
   booking: Booking;
-  user: Patient;
+  user: User;
   checkout: Checkout | null;
 }
-function Process({ booking, user, checkout }: Props) {
-  console.log(checkout);
+const RenderBookingDetails = ({ label, value }: { label: string; value: string }) => {
   return (
-    <div className="p-6 drop-shadow-md border rounded-lg w-full">
-      <div className="flex flex-col gap-6">
-        <div className="flex  items-center gap-2">
+    <div className="flex items-center gap-2">
+      <div className="text-slate-400 text-sm font-semibold ">{label}:</div>
+      <div className="text-sm font-bold text-slate-600">{value}</div>
+    </div>
+  );
+};
+function Process({ booking, user, checkout }: Props) {
+  return (
+    <div className="flex flex-col gap-4 ">
+      <div className="text-base font-bold text-slate-400">Đặt hẹn gần nhất</div>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2 text-base font-bold text-slate-600">
           <img
             className="w-10 h-10 rounded-full"
             src={user.avatar ? user.avatar : "../images/default-avatar.png"}
@@ -31,23 +39,14 @@ function Process({ booking, user, checkout }: Props) {
             </div>
           </div>
         </div>
-        <div>
-          <div>
-            Mã đặt hẹn: <span className="font-bold"> #{booking.id}</span>
-          </div>
-          <div>
-            Trạng thái:
-            <span className="font-bold">
-              {" "}
-              {ListStatusBooking[booking.status - 1].title}
-            </span>
-          </div>
-          <div>
-            Cơ sở: <span className="font-bold">{booking?.clinic_id?.name}</span>
-          </div>
-          <div>
-            Địa chỉ: <span className="font-bold"> {booking?.clinic_id?.address} </span>
-          </div>
+        <div className="flex flex-col gap-2">
+          <RenderBookingDetails label={"Mã đặt hẹn"} value={`#${booking.id}`} />
+          <RenderBookingDetails
+            label={"Trạng thái"}
+            value={`#${ListStatusBooking[booking.status - 1].title}`}
+          />
+          <RenderBookingDetails label={"Cơ sở"} value={booking?.clinic_id?.name} />
+          <RenderBookingDetails label={"Địa chỉ"} value={booking?.clinic_id?.address} />
           {checkout && (
             <div className="mt-2">
               Tổng tiền thanh toán:
@@ -61,20 +60,19 @@ function Process({ booking, user, checkout }: Props) {
           )}
         </div>
         {booking.service_id && booking.service_id.length > 0 && (
-          <div className="flex flex-col gap-2">
-            <div>Dịch vụ:</div>
+          <div className="flex flex-col gap-2 ">
+            <div className="text-base font-bold text-slate-600">Dịch vụ:</div>
             <div className="flex flex-col gap-4">
               {booking.service_id.map((item, index) => {
                 return (
                   <div key={index} className="flex items-center gap-2">
                     <img className="w-12 h-12 rounded-full" src={item.image} />
                     <div className="flex flex-col gap-1">
-                      <div>
-                        Tên dịch vụ: <span className="font-bold"> {item.name}</span>
-                      </div>
-                      <div>
-                        Giá: <span className="font-bold"> {convertVnd(item.price)}</span>
-                      </div>
+                      <RenderBookingDetails label={"Tên dịch vụ"} value={item.name} />
+                      <RenderBookingDetails
+                        label={"Giá"}
+                        value={convertVnd(item.price)}
+                      />
                     </div>
                   </div>
                 );
@@ -84,7 +82,7 @@ function Process({ booking, user, checkout }: Props) {
         )}
         {booking.doctor_id && booking.doctor_id.length > 0 && (
           <div className="flex flex-col gap-2">
-            <div>Bác sĩ:</div>
+            <div className="text-base font-bold text-slate-600">Bác sĩ:</div>
             <div className="flex flex-col gap-4">
               {booking.doctor_id.map((item, index) => {
                 return (
@@ -94,12 +92,8 @@ function Process({ booking, user, checkout }: Props) {
                       src={item.avatar ? item.avatar : "../images/default-avatar.png"}
                     />
                     <div className="flex flex-col gap-1">
-                      <div>
-                        Họ tên: <span className="font-bold"> {item.name}</span>
-                      </div>
-                      <div>
-                        Số điện thoại: <span className="font-bold"> {item.phone}</span>
-                      </div>
+                      <RenderBookingDetails label={"Họ tên"} value={item.name} />
+                      <RenderBookingDetails label={"Số điện thoại"} value={item.phone} />
                     </div>
                   </div>
                 );
@@ -109,7 +103,7 @@ function Process({ booking, user, checkout }: Props) {
         )}
         {booking.description && booking.description !== "" && (
           <div>
-            <div className="font-bold">Ghi chú</div>
+            <div className="text-base font-bold text-slate-600">Ghi chú</div>
             <div>{booking.description}</div>
           </div>
         )}

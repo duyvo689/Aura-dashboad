@@ -6,28 +6,37 @@ import { Booking } from "../../utils/types";
 interface Props {
   bookings: Booking[];
 }
+const RenderBookingDetails = ({ label, value }: { label: string; value: string }) => {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="text-slate-400 text-sm font-semibold ">{label}:</div>
+      <div className="text-sm font-bold text-slate-600">{value}</div>
+    </div>
+  );
+};
 function BookingHistory({ bookings }: Props) {
   const [amount, setAmount] = useState(4);
   const filtered = bookings.length > 0 ? bookings.slice(0, amount) : [];
   return (
-    <div>
-      <div className="text-base font-bold">Lịch sử đặt hẹn</div>
+    <div className="flex flex-col gap-4">
+      <div className="text-base font-bold text-slate-400">Lịch sử đặt hẹn</div>
       <div className="flex flex-col divide-y">
         {filtered.map((item, index) => {
           return (
-            <div key={index} className="flex flex-col gap-2  py-4">
+            <div key={index} className="flex flex-col gap-2">
               <div className="flex gap-4 items-center">
-                <img className="w-12 h-8" src={item.clinic_id.avatar} />
-                <div className="flex flex-col gap-1">
-                  <div className="text-base font-semibold">Mã đặt hẹn #{item.id}</div>
-                  <div className="text-sm">Vào lúc: {item.time_type}</div>
-                  <div className="text-sm">
-                    Ngày: {moment(item.date).format("YYYY-MM-DD")}
-                  </div>
+                <img className="w-20 h-16 rounded-lg" src={item.clinic_id.avatar} />
+                <div className="flex flex-col">
+                  <RenderBookingDetails label={"Mã đặt hẹn"} value={`#${item.id}`} />
+                  <RenderBookingDetails label={"Vào lúc"} value={item.time_type} />
+                  <RenderBookingDetails
+                    label={"Ngày"}
+                    value={moment(item.date).format("DD-MM-YYYY")}
+                  />
                 </div>
               </div>
               <div className="flex justify-between">
-                <div className="text-sm">
+                <div className="text-sm font-semibold">
                   Trạng thái:
                   <span
                     className={`${

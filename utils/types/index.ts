@@ -109,13 +109,13 @@ interface Coupon {
 }
 interface CouponUser {
   id: string;
-  booking_id: string;
+  booking_id?: string;
   created_at: string;
   user_id: Patient;
   coupons_id: Coupon;
   used: boolean;
-  start_date: string;
-  end_date: string;
+  start_date?: string;
+  end_date?: string;
   active: boolean;
 }
 interface OpenModal {
