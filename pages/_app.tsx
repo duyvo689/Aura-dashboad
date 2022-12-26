@@ -32,12 +32,12 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     // <ErrorBoundary FallbackComponent={ErrorFallback}>
     <Provider store={store}>
-      <Auth>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-        <Toaster position="top-center" reverseOrder={false} />
-      </Auth>
+      {/* <Auth> */}
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+      <Toaster position="top-center" reverseOrder={false} />
+      {/* </Auth> */}
       <Script src="https://unpkg.com/flowbite@1.5.4/dist/flowbite.js"></Script>
     </Provider>
     // </ErrorBoundary>
