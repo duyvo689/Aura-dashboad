@@ -10,6 +10,7 @@ import {
   CustomerStatus,
   Doctor,
   OAPost,
+  AppUserInfo,
 } from "../../utils/types";
 const rolesAction = (type: any, roles: Role[] | null) => {
   return {
@@ -35,7 +36,7 @@ const bannersAction = (type: any, banners: any[] | null) => {
     banners,
   };
 };
-const adminAction = (type: any, admin: any | null) => {
+const adminAction = (type: any, admin: AppUserInfo | null) => {
   return {
     type,
     admin,

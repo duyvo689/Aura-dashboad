@@ -10,7 +10,8 @@ export default function Layout({ children }: any) {
       {pathname.split("/")[1] !== "" &&
       pathname.split("/")[1] !== "sign-up" &&
       pathname.split("/")[1] !== "check-mail" &&
-      pathname.split("/")[1] !== "forgot-password" ? (
+      pathname.split("/")[1] !== "forgot-password" &&
+      pathname.split("/")[1] !== "phone-login" ? (
         <div className="flex h-screen overflow-hidden">
           <SidebarNew sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">

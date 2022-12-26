@@ -1,7 +1,7 @@
-// import { Admin } from "../../types/types";
+import { AppUserInfo } from "../../utils/types";
 
 interface ADMIN {
-  admin: any;
+  admin: AppUserInfo;
   type: string;
 }
 

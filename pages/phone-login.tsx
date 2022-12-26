@@ -5,7 +5,7 @@ import Router from "next/router";
 
 import { Input } from "../components/input";
 import { ButtonDefault, ButtonLoadding } from "../components/button";
-import { SIGNIN_FORM } from "../constants/input";
+import { SIGNIN_FORM, SIGNIN_FORM_PHONE } from "../constants/input";
 import { useDispatch, useSelector } from "react-redux";
 import router from "next/router";
 // import { IUSER } from "../types/types";
@@ -16,36 +16,41 @@ import { adminAction } from "../redux/actions/ReduxAction";
 import mainLogo from "../public/images/mainlogo.svg";
 import { supabase } from "../services/supaBaseClient";
 import toast from "react-hot-toast";
-import { AppUserInfo, MainAdmin } from "../utils/types";
+import { AuthAPI } from "../api";
+import { Staff } from "../utils/types";
+import { AxiosResponse } from "axios";
 export interface LoginProps {}
 
 export default function SignInPage(props: LoginProps) {
-  // const provider = new GoogleAuthProvider();
-  // const auth = getAuth(app);
-  // const user: IUSER = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const signIn = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: e.target.email.value,
-      password: e.target.password.value,
-    });
-    setIsLoading(false);
-    if (error?.message) {
-      setMessage(error?.message);
-    }
-    if (data && data.user) {
-      dispatch(adminAction("admin", data.user as any as AppUserInfo));
+    const response = await AuthAPI.loginWithPhone(
+      e.target.phone.value,
+      e.target.password.value
+    );
+
+    if (response && response.data.status === "Success") {
+      console.log(response.data);
+      dispatch(
+        adminAction("admin", { type: "staff", user: response.data.data as any as Staff })
+      );
+
+      localStorage.setItem("accessToken", response.data.token);
       router.push(`/dashboard/users`);
+    } else {
+      toast.error(response.data.message);
     }
+
+    setIsLoading(false);
   };
   return (
-    <div className="  h-full min-h-screen max-h-screen md:overflow-hidden overflow-y-auto md:pt-0 pt-20 relative flex flex-col justify-center items-center ">
+    <div className="h-full min-h-screen max-h-screen md:overflow-hidden overflow-y-auto md:pt-0 pt-20 relative flex flex-col justify-center items-center ">
       <Head>
-        <title>Sign in</title>
+        <title>Đăng nhập với số điện thoại</title>
         <meta property="og:title" content="Sign in page" key="title" />
       </Head>
       <section>
@@ -57,7 +62,7 @@ export default function SignInPage(props: LoginProps) {
               </div>
               <form className="flex-col flex gap-4" onSubmit={signIn}>
                 <div className="grid grid-cols-1 gap-4">
-                  {SIGNIN_FORM.map((input: any, index: number) => {
+                  {SIGNIN_FORM_PHONE.map((input: any, index: number) => {
                     return <Input input={input} key={index} />;
                   })}
                 </div>
@@ -70,37 +75,25 @@ export default function SignInPage(props: LoginProps) {
                   </div>
                 ) : null}
                 {isLoading ? (
-                  <ButtonLoadding title={"Signing in..."} />
+                  <ButtonLoadding title={"Đang đăng nhập..."} />
                 ) : (
-                  <ButtonDefault title={"Sign in"} />
+                  <ButtonDefault title={"Đăng nhập"} />
                 )}
                 {/* <Link href="/forgot-password"> */}
-                <div
+                {/* <div
                   onClick={() => {
                     toast.success("Tính năng đang phát triển");
                   }}
                   className="mt-9 text-black text-center block mb-14"
                 >
                   Forgot your password ?
-                </div>
+                </div> */}
                 {/* </Link> */}
               </form>
             </div>
           </div>
         </div>
       </section>
-      <div className="flex justify-center items-center md:absolute bottom-0 py-8">
-        {`Don't have an account?`}
-        <Link href="/sign-up" className="text-black ml-4">
-          <button
-            type="button"
-            className="flex items-center border px-6 py-2 rounded-lg"
-            style={{ borderColor: "rgba(0,0,0,.15)" }}
-          >
-            <span>Sign up</span>
-          </button>
-        </Link>
-      </div>
     </div>
   );
 }

@@ -193,6 +193,25 @@ interface OAPost {
   link_view: string;
   likes: string[];
 }
+export interface Staff {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  avatar?: string | null;
+  phone?: string;
+  address?: string | null;
+  point?: number;
+  zalo_id?: string;
+  clinic_id?: Clinic;
+  created_at?: string;
+}
+export interface MainAdmin {
+  email: string;
+}
+interface AppUserInfo {
+  type: string;
+  user: Staff;
+}
 export type {
   Checkout,
   Coupon,
@@ -211,4 +230,5 @@ export type {
   CustomerStatusGroup,
   OAPost,
   CouponUser,
+  AppUserInfo,
 };

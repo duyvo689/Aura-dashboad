@@ -28,7 +28,7 @@ const SIGNIN_FORM = [
   {
     // title: "Email",
     _type: "email",
-    placeholder: "E-mail@gmail.com",
+    placeholder: "Email",
     _name: "email",
   },
   {
@@ -36,6 +36,20 @@ const SIGNIN_FORM = [
     _type: "password",
     _name: "password",
     placeholder: "Password",
+  },
+];
+const SIGNIN_FORM_PHONE = [
+  {
+    // title: "Email",
+    _type: "text",
+    placeholder: "Số điện thoại",
+    _name: "phone",
+  },
+  {
+    // title: "Password",
+    _type: "password",
+    _name: "password",
+    placeholder: "Mật khẩu",
   },
 ];
 const FORGOT_PASSWORD_FORM = [
@@ -55,4 +69,10 @@ const CONFIRM_EMAIL_FORM = [
     require: true,
   },
 ];
-export { SIGNUP_FORM, SIGNIN_FORM, FORGOT_PASSWORD_FORM, CONFIRM_EMAIL_FORM };
+export {
+  SIGNUP_FORM,
+  SIGNIN_FORM,
+  FORGOT_PASSWORD_FORM,
+  CONFIRM_EMAIL_FORM,
+  SIGNIN_FORM_PHONE,
+};

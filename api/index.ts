@@ -1,2 +1,3 @@
 import PaymeAPI from "./paymeApi";
-export { PaymeAPI };
+import AuthAPI from "./authApi";
+export { PaymeAPI, AuthAPI };

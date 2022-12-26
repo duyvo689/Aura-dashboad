@@ -37,14 +37,6 @@ interface NavigationGroup {
 }
 const navigations: Navigation[] = [
   {
-    name: "Quản lý nhân sự",
-    href: "/dashboard/roles",
-    icon: (pathname: string) => {
-      return <TaskIcon pathname={pathname} />;
-    },
-    pathName: "roles",
-  },
-  {
     name: "Quản lý người dùng",
     href: "/dashboard/users",
     icon: (pathname: string) => {
@@ -52,6 +44,15 @@ const navigations: Navigation[] = [
     },
     pathName: "users",
   },
+  {
+    name: "Quản lý nhân sự",
+    href: "/dashboard/roles",
+    icon: (pathname: string) => {
+      return <TaskIcon pathname={pathname} />;
+    },
+    pathName: "roles",
+  },
+
   {
     name: " Quản lý phòng khám",
     href: "/dashboard/clinics",
