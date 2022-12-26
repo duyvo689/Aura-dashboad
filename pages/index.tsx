@@ -38,7 +38,10 @@ export default function SignInPage(props: LoginProps) {
       setMessage(error?.message);
     }
     if (data && data.user) {
-      dispatch(adminAction("admin", data.user as any as AppUserInfo));
+      console.log(data.user);
+      dispatch(
+        adminAction("admin", { type: "admin", user: data.user as any as MainAdmin })
+      );
       router.push(`/dashboard/users`);
     }
   };
@@ -70,20 +73,20 @@ export default function SignInPage(props: LoginProps) {
                   </div>
                 ) : null}
                 {isLoading ? (
-                  <ButtonLoadding title={"Signing in..."} />
+                  <ButtonLoadding title={"Đang đăng nhập..."} />
                 ) : (
-                  <ButtonDefault title={"Sign in"} />
+                  <ButtonDefault title={"Đăng nhập"} />
                 )}
-                {/* <Link href="/forgot-password"> */}
-                <div
-                  onClick={() => {
-                    toast.success("Tính năng đang phát triển");
-                  }}
-                  className="mt-9 text-black text-center block mb-14"
-                >
-                  Forgot your password ?
-                </div>
-                {/* </Link> */}
+                <Link href="/phone-login">
+                  <div
+                    // onClick={() => {
+                    //   toast.success("Tính năng đang phát triển");
+                    // }}
+                    className="btn bg-black mt-9 text-white text-center block mb-14 cursor-pointer"
+                  >
+                    Đăng nhập với số điện thoại
+                  </div>
+                </Link>
               </form>
             </div>
           </div>

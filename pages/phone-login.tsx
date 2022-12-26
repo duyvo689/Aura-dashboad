@@ -28,6 +28,11 @@ export default function SignInPage(props: LoginProps) {
   const signIn = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
+    if (e.target.phone.value === "" || e.target.password.value === "") {
+      toast.error("Nhập thiếu dữ liệu. Kiểm tra lại");
+      setIsLoading(false);
+      return;
+    }
     const response = await AuthAPI.loginWithPhone(
       e.target.phone.value,
       e.target.password.value
@@ -79,6 +84,16 @@ export default function SignInPage(props: LoginProps) {
                 ) : (
                   <ButtonDefault title={"Đăng nhập"} />
                 )}
+                <Link href="/">
+                  <div
+                    // onClick={() => {
+                    //   toast.success("Tính năng đang phát triển");
+                    // }}
+                    className="btn bg-black mt-9 text-white text-center block mb-14 cursor-pointer"
+                  >
+                    Đăng nhập email
+                  </div>
+                </Link>
                 {/* <Link href="/forgot-password"> */}
                 {/* <div
                   onClick={() => {

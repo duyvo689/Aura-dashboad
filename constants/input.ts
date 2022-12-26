@@ -35,7 +35,7 @@ const SIGNIN_FORM = [
     // title: "Password",
     _type: "password",
     _name: "password",
-    placeholder: "Password",
+    placeholder: "Mật khẩu",
   },
 ];
 const SIGNIN_FORM_PHONE = [

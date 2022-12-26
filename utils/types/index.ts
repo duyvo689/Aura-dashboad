@@ -210,7 +210,7 @@ export interface MainAdmin {
 }
 interface AppUserInfo {
   type: string;
-  user: Staff;
+  user: Staff | MainAdmin;
 }
 export type {
   Checkout,
