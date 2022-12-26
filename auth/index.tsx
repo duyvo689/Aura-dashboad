@@ -42,7 +42,7 @@ function AuthRoute({ children }: any) {
       }
     }
   }, []);
-  useEffect(() => {}, [appUserInfo]);
+  // useEffect(() => {}, [appUserInfo]);
   return <>{auth === false ? <div>Check Login</div> : appUserInfo && <>{children}</>}</>;
 }
 
