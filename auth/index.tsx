@@ -41,10 +41,16 @@ function AuthRoute({ children }: any) {
       }
     }
   }, []);
-  console.log(appUserInfo);
+
+  // useEffect(() => {
+  //   if (appUserInfo === null) {
+  //     router.push("/");
+  //   }
+  // }, [appUserInfo]);
+
   return (
     <>
-      {appUserInfo.type === "admin" ? (
+      {appUserInfo && appUserInfo.type === "admin" ? (
         <>{children}</>
       ) : (
         <>
