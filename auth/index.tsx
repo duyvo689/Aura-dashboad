@@ -24,7 +24,6 @@ function AuthRoute({ children }: any) {
       router.push("/");
     }
   };
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       setAuth(true);
