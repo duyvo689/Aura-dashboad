@@ -31,13 +31,14 @@ export default function ServicePage() {
   const [filterService, setFilterService] = useState<Service[] | null>(null);
   const dispatch = useDispatch();
   const getAllService = async () => {
-    let { data, error } = await supabase.from("services").select(`*,category_id(*)`);
+    let { data, error } = await supabase.from("services").select("*,category_id(*)");
 
     if (error) {
       toast(error.message);
       return;
     }
     if (data) {
+      console.log(data);
       dispatch(servicesAction("services", data));
     }
   };
@@ -77,7 +78,6 @@ export default function ServicePage() {
           return idList.includes(el.category_id.id);
         }
       });
-      console.log(filterByCategory);
       setFilterService(filterByCategory);
     }
   };
@@ -94,6 +94,7 @@ export default function ServicePage() {
       setFilterService(services);
     }
   }, [services]);
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <Head>
