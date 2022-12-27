@@ -71,7 +71,6 @@ const UserProfilePage = () => {
     if (error) {
       toast.error("Có lỗi xảy ra. Vui lòng thử lại");
     } else if (coupons_user) {
-      console.log(coupons_user);
       setCouponsOfUser(coupons_user);
     }
     setIsLoading(false);
@@ -97,10 +96,10 @@ const UserProfilePage = () => {
         <div className="flex flex-col gap-4">
           <div className="text-2xl font-bold text-slate-800">Chi tiết người dùng ✨</div>
           <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
-            <UserInfo userInfo={user} />
+            <UserInfo userInfo={user} bookings={bookings} />
           </div>
           <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
-            <ZNSMetric />
+            <ZNSMetric znsReceived={user.zns_received} />
           </div>
           <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
             <PromotionMetric couponsOfUser={couponsOfUser} />
@@ -109,18 +108,19 @@ const UserProfilePage = () => {
             <BookingMetrics bookings={bookings} />
           </div>
           {bookings.length > 0 && (
-            <div className="grid grid-flow-col gap-2">
-              <div className="col-span-9 border border-slate-200 py-4 px-6 bg-white rounded-lg">
+            <div className="grid grid-cols-3">
+              <div className=" border border-slate-200 py-4 px-6 bg-white rounded-lg">
                 <Process booking={bookings[0]} user={user} checkout={checkout} />
               </div>
-              <div className="col-span-3 border border-slate-200 py-4 px-6 bg-white rounded-lg">
+              <div></div>
+              <div className="border border-slate-200 py-4 px-6 bg-white rounded-lg">
                 <BookingHistory bookings={bookings} />
               </div>
             </div>
           )}
         </div>
       ) : (
-        <div>Loadinng</div>
+        <div>Loading</div>
       )}
       {/* <main className="max-w-screen max-h-screen p-4">
         {user && bookings && (

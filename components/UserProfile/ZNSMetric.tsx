@@ -10,11 +10,14 @@ const RenderMetricDetails = ({ label, value }: { label: string; value: string })
     </div>
   );
 };
-const ZNSMetric = () => {
+interface Props {
+  znsReceived: number;
+}
+const ZNSMetric = ({ znsReceived }: Props) => {
   const values = [
     {
       label: "Số lượng ZNS được nhận",
-      value: "30",
+      value: znsReceived.toString(),
     },
     {
       label: "Số lượng mở tin nhắn",

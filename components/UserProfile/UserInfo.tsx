@@ -4,10 +4,11 @@ import BronzeMedalIcon from "../../public/ranking/Bronze-Medal";
 import GoldMedal from "../../public/ranking/Gold-Medal";
 import SilverMedal from "../../public/ranking/Silver-Medal";
 import { convertVnd } from "../../utils/helpers/convertToVND";
-import { Patient, User } from "../../utils/types";
+import { Booking, User } from "../../utils/types";
 
 interface Props {
   userInfo: User;
+  bookings: Booking[];
 }
 const UserDetails = ({ label, value }: { label: string; value: string }) => {
   return (
@@ -17,7 +18,15 @@ const UserDetails = ({ label, value }: { label: string; value: string }) => {
     </div>
   );
 };
-function UserInfo({ userInfo }: Props) {
+function UserInfo({ userInfo, bookings }: Props) {
+  const totalSpeding = bookings
+    .filter((item) => item.status === 7)
+    .reduce((accomulator, currentValue) => {
+      return (
+        accomulator +
+        currentValue.service_id.reduce((amount, item) => amount + item.price, 0)
+      );
+    }, 0);
   return (
     <div className="flex flex-col gap-4 w-full">
       <div className="uppercase text-sm text-slate-400 font-semibold">
@@ -63,7 +72,7 @@ function UserInfo({ userInfo }: Props) {
         </div>
         <div className="flex flex-col justify-between">
           <UserDetails label={"ID"} value={userInfo.id} />
-          <UserDetails label={"Tổng chi tiêu"} value={convertVnd(3000000)} />
+          <UserDetails label={"Tổng chi tiêu"} value={convertVnd(totalSpeding)} />
         </div>
         {/* <div className="text-xs ">
           <div className="text-[#6b7280]">Email Address</div>

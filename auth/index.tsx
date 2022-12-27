@@ -31,7 +31,7 @@ function AuthRoute({ children }: any) {
       if (localStorage.getItem("accessToken") !== null) {
         getUserByToken();
         if (pathname.split("/")[1] !== "dashboard") {
-          router.push("/dashboard/game");
+          router.push("/dashboard/users");
         }
       } else {
         setAuth(true);

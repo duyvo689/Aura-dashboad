@@ -46,6 +46,7 @@ interface User {
   customer_resource: string | null;
   gender: string | null;
   clinic: string | null;
+  zns_received: number;
 }
 interface Banner {
   id: string;
