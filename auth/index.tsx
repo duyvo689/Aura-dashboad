@@ -19,34 +19,28 @@ function AuthRoute({ children }: any) {
       dispatch(
         adminAction("admin", { type: "staff", user: response.data.data as any as Staff })
       );
+      setAuth(true);
     } else {
+      setAuth(true);
       localStorage.removeItem("accessToken");
       router.push("/");
     }
   };
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setAuth(true);
       if (localStorage.getItem("accessToken") !== null) {
         getUserByToken();
-        if (pathname.split("/")[1] !== "dashboard") {
+        if (pathname.split("/")[1] === "") {
           router.push("/dashboard/users");
         }
       } else {
         setAuth(true);
-        if (pathname.split("/")[1] === "dashboard") {
+        if (pathname.split("/")[1] !== "") {
           router.push("/");
         }
       }
     }
   }, []);
-
-  // useEffect(() => {
-  //   if (appUserInfo === null) {
-  //     router.push("/");
-  //   }
-  // }, [appUserInfo]);
-
   return (
     <>
       {appUserInfo && appUserInfo.type === "admin" ? (

@@ -182,3 +182,9 @@ border-color:#2684FF !important
 .custom-calendar .Calendar__monthYear {
   font-weight:600;
 }
+/** OmiNote **/
+
+.form-note textarea:focus {
+  outline: none !important;
+  box-shadow: none !important
+}

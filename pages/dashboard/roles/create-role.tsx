@@ -9,6 +9,7 @@ import { RootState } from "../../../redux/reducers";
 import InputForm from "../../../components/Form/InputForm";
 import SelectForm from "../../../components/Form/SelectForm";
 import SubmitBtn from "../../../components/Form/SubmitBtn";
+import { useRouter } from "next/router";
 const ROLES_MAPPING = [
   { label: "Bác sĩ", value: "doctor" },
   { label: "Lễ Tân", value: "staff" },
@@ -31,6 +32,14 @@ const InputFields = [
     placeholder: "Ex: Nguyễn Văn A",
     required: true,
   },
+  {
+    type: "email",
+    title: "Email",
+    id: "email",
+    name: "email",
+    placeholder: "Ex: nguyenvana@gmail.com",
+    required: true,
+  },
 ];
 const InputSelect = [
   {
@@ -50,6 +59,7 @@ function CreateNewRoles() {
   const [load, setLoad] = useState(false);
   const roles: Role[] = useSelector((state: RootState) => state.roles);
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);
+  const router = useRouter();
   const dispatch = useDispatch();
   const createPersonnel = async (table: string, info: any) => {
     const { data, error } = await supabase.from(`${table}s`).insert([info]);
@@ -80,9 +90,16 @@ function CreateNewRoles() {
       const _role = event.target.elements.role.value;
       const _clinic = event.target.elements.clinic.value;
       const _name = event.target.elements.name.value;
+      const _email = event.target.elements.email.value;
       const flagPhone = validatePhoneNumber(_phone);
       if (!flagPhone) {
         toast.error(`Số điện thoại không đúng`);
+        setLoad(false);
+        return;
+      }
+      if (!_role || !_clinic || !_name || !_phone || !_email) {
+        toast.error(`Nhập thiếu dữ liệu.`);
+        setLoad(false);
         return;
       }
       const _infoRole = {
@@ -96,6 +113,7 @@ function CreateNewRoles() {
       const _infoPersonnel = {
         clinic_id: _clinic,
         phone: _phone,
+        email: _email,
       };
       const flagRole = await checkCreateRoles(_phone, _role);
       if (!flagRole) {
@@ -121,6 +139,7 @@ function CreateNewRoles() {
     } catch (error) {
       console.log(error);
     } finally {
+      router.push("/dashboard/roles");
       setLoad(false);
     }
   };

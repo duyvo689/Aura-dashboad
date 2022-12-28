@@ -161,6 +161,7 @@ function RolesPage() {
                     >
                       STT
                     </th>
+
                     <th
                       scope="col"
                       className="py-3 px-2 whitespace-nowrap first:px-4 last:px-4  "

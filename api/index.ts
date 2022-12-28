@@ -1,3 +1,4 @@
 import PaymeAPI from "./paymeApi";
 import AuthAPI from "./authApi";
-export { PaymeAPI, AuthAPI };
+import OmiAPI from "./omiCallApi";
+export { PaymeAPI, AuthAPI, OmiAPI };

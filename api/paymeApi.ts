@@ -1,12 +1,8 @@
 import requestAPI from "./requestApi";
 
 const URL_PAYME = "/api/v1/payme";
-class GameAPI {
-  static async createQR(
-    bookingID: string,
-    amount: number,
-    customerName: string
-  ) {
+class PaymeAPI {
+  static async createQR(bookingID: string, amount: number, customerName: string) {
     try {
       const response = await requestAPI({
         url: `${URL_PAYME}/createQR`,
@@ -23,4 +19,4 @@ class GameAPI {
     }
   }
 }
-export default GameAPI;
+export default PaymeAPI;

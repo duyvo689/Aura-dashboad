@@ -197,7 +197,7 @@ interface OAPost {
 export interface Staff {
   id: string;
   name?: string | null;
-  email?: string | null;
+  email: string;
   avatar?: string | null;
   phone?: string;
   address?: string | null;
@@ -212,6 +212,11 @@ export interface MainAdmin {
 interface AppUserInfo {
   type: string;
   user: Staff | MainAdmin;
+}
+interface OmiInfo {
+  domain: string;
+  sip_user: string;
+  password: string;
 }
 export type {
   Checkout,
@@ -232,4 +237,5 @@ export type {
   OAPost,
   CouponUser,
   AppUserInfo,
+  OmiInfo,
 };

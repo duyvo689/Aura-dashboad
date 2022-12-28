@@ -28,6 +28,7 @@ function ModalUpdateRole({ title, role, setOpenModalUpdate }: Props) {
     e.preventDefault();
     const _name = e.target.name.value;
     const _clinic_id = e.target.clinic.value;
+    const _email = e.target.email.value;
     setIsLoading(true);
     const { data, error } = await supabase
       .from("roles")
@@ -125,7 +126,7 @@ function ModalUpdateRole({ title, role, setOpenModalUpdate }: Props) {
               </button>
             </div>
             <form onSubmit={updateRole}>
-              <div className="p-6 space-y-6">
+              <div className="p-4 space-y-6">
                 <div>
                   <label
                     htmlFor="name"
@@ -144,7 +145,26 @@ function ModalUpdateRole({ title, role, setOpenModalUpdate }: Props) {
                   </div>
                 </div>
               </div>
-              <div className="p-6 space-y-6">
+              <div className="p-4 space-y-6">
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-left text-base font-semibold text-gray-700"
+                  >
+                    Email
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="email"
+                      name="email"
+                      id="email"
+                      defaultValue={""}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="p-4 space-y-6">
                 <div>
                   <label
                     htmlFor="clinic"
