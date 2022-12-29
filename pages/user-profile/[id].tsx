@@ -9,13 +9,12 @@ import { supabase } from "../../services/supaBaseClient";
 import {
   AppUserInfo,
   Booking,
+  CallData,
   Checkout,
   CouponUser,
   OmiInfo,
-  Patient,
   User,
 } from "../../utils/types";
-import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import ZNSMetric from "../../components/UserProfile/ZNSMetric";
 import PromotionMetric from "../../components/UserProfile/PromotionMetric";
@@ -23,16 +22,17 @@ import BookingMetrics from "../../components/UserProfile/BookingMetric";
 import { RootState } from "../../redux/reducers";
 import { useSelector } from "react-redux";
 import { OmiAPI } from "../../api";
+import CallDataInfo from "../../components/UserProfile/CallDataInfo";
 const UserProfilePage = () => {
   const { id } = useRouter().query;
   const appUserInfo: AppUserInfo = useSelector((state: RootState) => state.admin);
-  console.log(appUserInfo);
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [couponsOfUser, setCouponsOfUser] = useState<CouponUser[] | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [omiInfo, setOmiInfo] = useState<OmiInfo | null>(null);
+  const [callData, setCallData] = useState<CallData[] | null>(null);
   const fetchBookingOfUser = async (id: string) => {
     setIsLoading(true);
     const { data: bookings, error } = await supabase
@@ -94,6 +94,18 @@ const UserProfilePage = () => {
       fetchCheckoutOfBoking(bookings[0].id);
     }
   }, [bookings]);
+  const fetchCallDataOfUser = async (phone: string) => {
+    const { data: omi_calls } = await supabase
+      .from("omi_calls")
+      .select("*,staff_id(*)")
+      .match({ customer_phone: phone })
+      .order("created_date", { ascending: false });
+    if (omi_calls) {
+      console.log(omi_calls);
+      setCallData(omi_calls);
+    }
+  };
+  //init omicall
   const callOmi = async (domain: string, username: string, password: string) => {
     if (typeof window === "undefined") return;
     let config = {
@@ -103,7 +115,7 @@ const UserProfilePage = () => {
       language: "vi", // Ngôn ngữ giao diện dialog,
       ringtoneVolume: 0.5,
       options: {
-        showNoteInput: false, // hiển thị input note mặc định để lưu vào Omi, sẽ submit qua callback "saveCallInfo" khi cuộc gọi đã kết thúc và dialog call được đóng
+        showNoteInput: true, // hiển thị input note mặc định để lưu vào Omi, sẽ submit qua callback "saveCallInfo" khi cuộc gọi đã kết thúc và dialog call được đóng
         hideCallButton: false, // ẩn hiển thị nút toggle dialog nhập số để gọi ra mặc định
         showContactLoading: false, // hiển thị loading ở dialog gọi khi có cuộc gọi đến, dùng kết hợp với function omiSDK.updateContactInfo để hiển thị avatar và tên của số điện thoại gọi đến
         // maskedPhoneNumberFormat: ["start", 4, "*"], // => ****749346
@@ -190,7 +202,7 @@ const UserProfilePage = () => {
         saveCallInfo: (data: any) => {
           // data:any = { callId, note, ...formData:any };
           // Sự kiện xảy ra khi cuộc gọi đã có đổ chuông hoặc cuộc gọi tới, khi user có nhập note input mặc định hoặc form input custom
-          // console.log('on save call info:', data:any);
+          console.log("on save call info:", data);
         },
       },
     };
@@ -212,13 +224,17 @@ const UserProfilePage = () => {
     const response = await OmiAPI.getOmiInfo(email);
     setOmiInfo(response.data);
   };
-
   useEffect(() => {
     if (!id) return;
     if (bookings === null) fetchBookingOfUser(id as string);
     if (user === null) fetchCurrentUser(id as string);
     if (couponsOfUser === null) fetchCouponsOfUser(id as string);
   }, [id]);
+  useEffect(() => {
+    if (!user) return;
+    fetchCallDataOfUser(user.phone);
+  }, [user]);
+  //init omicall
   const initFlag = useRef(false);
   useEffect(() => {
     if (!appUserInfo) return;
@@ -237,7 +253,7 @@ const UserProfilePage = () => {
         <title>Chi tiết người dùng</title>
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
-      {user && couponsOfUser && bookings ? (
+      {user && couponsOfUser && bookings && callData ? (
         <div className="flex flex-col gap-4">
           <div className="text-2xl font-bold text-slate-800">Chi tiết người dùng ✨</div>
           <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
@@ -257,20 +273,30 @@ const UserProfilePage = () => {
             controls
           ></audio>
           <div></div> */}
-          {bookings.length > 0 && (
-            <div className="grid grid-cols-3">
-              <div className=" border border-slate-200 py-4 px-6 bg-white rounded-lg">
+
+          <div className="grid grid-flow-col">
+            {/* <div className="border border-slate-200 py-4 px-6 bg-white rounded-lg">
+              {bookings.length > 0 ? (
                 <Process booking={bookings[0]} user={user} checkout={checkout} />
-              </div>
-              <div></div>
-              <div className="border border-slate-200 py-4 px-6 bg-white rounded-lg">
-                <BookingHistory bookings={bookings} />
-              </div>
+              ) : (
+                <div className="flex flex-col gap-4 ">
+                  <div className="text-base font-bold text-slate-400">
+                    Đặt hẹn gần nhất
+                  </div>
+                  <div>Chưa có dữ liệu</div>
+                </div>
+              )}
+            </div> */}
+            <div className="border-slate-200 py-4 px-6 bg-white rounded-lg col-span-8">
+              <CallDataInfo callData={callData} />
             </div>
-          )}
+            <div className="border border-slate-200 py-4 px-6 bg-white rounded-lg col-span-4">
+              <BookingHistory bookings={bookings} />
+            </div>
+          </div>
         </div>
       ) : (
-        <div>Loading</div>
+        <div>Loading...</div>
       )}
     </>
   );

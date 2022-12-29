@@ -8,10 +8,7 @@ import { ButtonDefault, ButtonLoadding } from "../components/button";
 import { SIGNIN_FORM, SIGNIN_FORM_PHONE } from "../constants/input";
 import { useDispatch, useSelector } from "react-redux";
 import router from "next/router";
-// import { IUSER } from "../types/types";
-// import FullLogo from "../public/full-logo-header.svg";
-// import LogoResposive from "../public/full-logo.svg";
-// import { AdminAPI } from "../services/api";
+
 import { adminAction } from "../redux/actions/ReduxAction";
 import mainLogo from "../public/images/mainlogo.svg";
 import { supabase } from "../services/supaBaseClient";

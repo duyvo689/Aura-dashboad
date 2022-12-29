@@ -38,12 +38,13 @@ function UserMenu() {
     localStorage.removeItem("accessToken");
   };
   useEffect(() => {
+    if (!appUserInfo) return;
     if (appUserInfo.type === "staff") {
       setCurrentStaff(appUserInfo.user as any as Staff);
     } else {
       setCurrentAdmin(appUserInfo.user as any as MainAdmin);
     }
-  }, []);
+  }, [appUserInfo]);
   return (
     <>
       {currentStaff && (

@@ -218,6 +218,20 @@ interface OmiInfo {
   sip_user: string;
   password: string;
 }
+interface CallData {
+  id: string;
+  created_at: string;
+  staff_id: Staff;
+  created_date: number; // timestamp create in omi,
+  price: number;
+  record_seconds: number;
+  record_file: string;
+  sync: boolean;
+  customer_phone: string;
+  customer_phone_provider: string;
+  from_phone: string;
+  disposition: "cancelled" | "answered";
+}
 export type {
   Checkout,
   Coupon,
@@ -238,4 +252,5 @@ export type {
   CouponUser,
   AppUserInfo,
   OmiInfo,
+  CallData,
 };
