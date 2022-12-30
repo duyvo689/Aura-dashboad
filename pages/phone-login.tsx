@@ -72,8 +72,9 @@ export default function SignInPage() {
       <main className="max-h-screen max-w-screen grid grid-cols-2">
         <div className="w-full">
           <div className="flex flex-col min-h-screen h-full">
-            <div className="flex justify-start h-16 p-4">
-              <img className="h-full" src={mainLogo.src} alt="main logo" />
+            <div className="flex justify-start items-center p-4 gap-4 h-16">
+              <img className="h-full" src={mainLogo.src} alt="Aura logo" />
+              <img className="w-24" src="../SheCom.png" alt="SheCom logo" />
             </div>
             <div className="flex-1 flex items-center ">
               <div className="max-w-sm xl:max-w-lg w-full px-4 py-9 mx-auto">
