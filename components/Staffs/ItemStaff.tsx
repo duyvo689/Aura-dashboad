@@ -36,7 +36,7 @@ const ItemStaff = ({ item }: { item: Staff }) => {
       {openModalUpdate && (
         <td>
           <ModalUpdateStaff
-            title={"Cập nhật thông tin users"}
+            title={"thông tin người dùng"}
             staff={item}
             setOpenModalUpdate={setOpenModalUpdate}
           />
