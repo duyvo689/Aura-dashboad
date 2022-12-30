@@ -1,9 +1,7 @@
 import Head from "next/head";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import BookingHistory from "../../components/UserProfile/BookingHistory";
-import Process from "../../components/UserProfile/Process";
 import UserInfo from "../../components/UserProfile/UserInfo";
 import { supabase } from "../../services/supaBaseClient";
 import {
@@ -23,6 +21,8 @@ import { RootState } from "../../redux/reducers";
 import { useSelector } from "react-redux";
 import { OmiAPI } from "../../api";
 import CallDataInfo from "../../components/UserProfile/CallDataInfo";
+import SearchBarUser from "../../components/Users/SearchUserBar";
+import Link from "next/link";
 const UserProfilePage = () => {
   const { id } = useRouter().query;
   const appUserInfo: AppUserInfo = useSelector((state: RootState) => state.admin);
@@ -254,28 +254,40 @@ const UserProfilePage = () => {
         <meta property="og:title" content="Chain List" key="title" />
       </Head>
       {user && couponsOfUser && bookings && callData ? (
-        <div className="flex flex-col gap-4">
-          <div className="text-2xl font-bold text-slate-800">Chi tiết người dùng ✨</div>
-          <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
-            <UserInfo userInfo={user} bookings={bookings} />
+        <div className="flex flex-col gap-5">
+          <div className="sm:flex sm:justify-between sm:items-center">
+            <div className="text-2xl font-bold text-slate-800">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+              >
+                TRỞ LẠI TRANG TRƯỚC
+              </button>
+            </div>
+            <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+              <SearchBarUser />
+            </div>
           </div>
-          <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
-            <ZNSMetric znsReceived={user.zns_received} />
-          </div>
-          <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
-            <PromotionMetric couponsOfUser={couponsOfUser} />
-          </div>
-          <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
-            <BookingMetrics bookings={bookings} />
-          </div>
-          {/* <audio
-            src="https://public-v1-stg.omicrm.com/third_party/recording/uc?id=UWJ5N2JRdTlHa0NJUzEvZktxTlNDZmVlVEVuMkgzUTZNZWpDTDdsVlZQNnBXZWk4QjZTVWxPTlhiWkhYaDR4VGtQZ003anpsS01rMm9OUFJ0RnVOU2c9PQ=="
-            controls
-          ></audio>
-          <div></div> */}
+          <div className="flex flex-col gap-4">
+            <div className="text-2xl font-bold text-slate-800">
+              Chi tiết người dùng ✨
+            </div>
+            <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
+              <UserInfo userInfo={user} bookings={bookings} />
+            </div>
+            <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
+              <ZNSMetric znsReceived={user.zns_received} />
+            </div>
+            <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
+              <PromotionMetric couponsOfUser={couponsOfUser} />
+            </div>
+            <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
+              <BookingMetrics bookings={bookings} />
+            </div>
 
-          <div className="grid grid-flow-col">
-            {/* <div className="border border-slate-200 py-4 px-6 bg-white rounded-lg">
+            <div className="grid grid-flow-col">
+              {/* <div className="border border-slate-200 py-4 px-6 bg-white rounded-lg">
               {bookings.length > 0 ? (
                 <Process booking={bookings[0]} user={user} checkout={checkout} />
               ) : (
@@ -287,11 +299,12 @@ const UserProfilePage = () => {
                 </div>
               )}
             </div> */}
-            <div className="border-slate-200 py-4 px-6 bg-white rounded-lg col-span-8">
-              <CallDataInfo callData={callData} />
-            </div>
-            <div className="border border-slate-200 py-4 px-6 bg-white rounded-lg col-span-4">
-              <BookingHistory bookings={bookings} />
+              <div className="border-slate-200 py-4 px-6 bg-white rounded-lg col-span-8">
+                <CallDataInfo callData={callData} />
+              </div>
+              <div className="border border-slate-200 py-4 px-6 bg-white rounded-lg col-span-4">
+                <BookingHistory bookings={bookings} />
+              </div>
             </div>
           </div>
         </div>

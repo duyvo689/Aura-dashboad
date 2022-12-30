@@ -1,22 +1,16 @@
-import { Button, Table } from "flowbite-react";
-import moment from "moment";
 import Head from "next/head";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { supabase } from "../../../services/supaBaseClient";
 import {
   Clinic,
-  CustomerStatus,
   CustomerStatusReturn,
   Doctor,
   Service,
   User,
 } from "../../../utils/types";
 import { CSVLink } from "react-csv";
-import { DocumentArrowDownIcon } from "@heroicons/react/24/outline";
-
 import { io } from "socket.io-client";
-import { mainApi } from "../../../api/endpoint";
 import ItemUser from "../../../components/Users/ItemUser";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/reducers";
@@ -34,10 +28,10 @@ import * as React from "react";
 
 import SearchBarUser from "../../../components/Users/SearchUserBar";
 
-import Link from "next/link";
 import CountRecord from "../../../components/CountRecord";
 import Pagination from "../../../components/Pagination";
 import FilterUserBar from "../../../components/Users/FilterUserBar";
+import { mainApi } from "../../../api/endpoint";
 export default function Example() {
   const users: User[] = useSelector((state: RootState) => state.users);
   const clinics: Clinic[] = useSelector((state: RootState) => state.clinics);

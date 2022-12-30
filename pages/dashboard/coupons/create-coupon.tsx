@@ -19,7 +19,7 @@ import TextArea from "../../../components/Form/TextArea";
 import InputImage from "../../../components/Form/InputImage";
 import SubmitBtn from "../../../components/Form/SubmitBtn";
 import Datepicker from "../../../components/actions/Datepicker";
-
+import { useRouter } from "next/router";
 const listRank = [
   { value: "silver", label: "Hạng bạc" },
   { value: "gold", label: "Hạng vàng" },
@@ -59,7 +59,7 @@ export default function CreateCoupon() {
   const [client, setClient] = useState<User | null>();
   const [typeCoupon, setTypeCoupon] = useState<string>("");
   const [rankClient, setRankClient] = useState<string>("");
-
+  const router = useRouter();
   const dispatch = useDispatch();
   function validateForm(form: any) {
     let fields = [
@@ -148,6 +148,7 @@ export default function CreateCoupon() {
         toast.success(`Đã thêm coupon thành công`);
         coupons.push(data);
         dispatch(couponsAction("coupons", coupons));
+        router.push("/dasboard/coupons");
       }
       //Nếu chọn birthday || tài khoản mới
       if (typeCoupon == "birthday" || typeCoupon == "newacc") {
@@ -167,6 +168,7 @@ export default function CreateCoupon() {
         toast.success(`Đã thêm coupon thành công`);
         coupons.push(data);
         dispatch(couponsAction("coupons", coupons));
+        router.push("/dasboard/coupons");
       }
       //Nếu chọn hạng thành viên
       if (typeCoupon == "rank") {
@@ -187,6 +189,7 @@ export default function CreateCoupon() {
         toast.success(`Đã thêm coupon thành công`);
         coupons.push(data);
         dispatch(couponsAction("coupons", coupons));
+        router.push("/dasboard/coupons");
       }
       //Nếu chọn Khách hàng => tạo coupon trong bảng coupons tiếp tạo coupons trong bảng coupons_user
       if (typeCoupon == "client") {
@@ -255,13 +258,12 @@ export default function CreateCoupon() {
               .single();
             if (err_coupon_user) {
               toast.error(err_coupon_user.message);
+            } else {
+              router.push("/dasboard/coupons");
             }
           }
         }
       }
-      setCouponImage(null);
-      setPricePercent(null);
-      // event.target.reset();
     } catch (error) {
     } finally {
       setLoad(false);
@@ -284,7 +286,6 @@ export default function CreateCoupon() {
       getAllCoupon();
     }
   }, [coupons]);
-  console.log(coupons);
   return (
     <>
       <Head>
