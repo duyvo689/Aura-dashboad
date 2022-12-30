@@ -61,7 +61,7 @@ const DoctorPage = () => {
       {filterDoctor ? (
         <div className="flex flex-col gap-5">
           <div className="sm:flex sm:justify-between sm:items-center">
-            <div className="text-2xl font-bold text-slate-800">Người dùng ✨</div>
+            <div className="text-2xl font-bold text-slate-800">Bác sĩ ✨</div>
             <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
               <div className="relative">
                 <input
