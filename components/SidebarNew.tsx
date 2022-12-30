@@ -37,24 +37,16 @@ interface NavigationGroup {
 }
 const navigations: Navigation[] = [
   {
-    name: "Quản lý người dùng",
+    name: "Danh sách người dùng",
     href: "/dashboard/users",
     icon: (pathname: string) => {
       return <CommunityIcon pathname={pathname} />;
     },
     pathName: "users",
   },
-  {
-    name: "Quản lý nhân sự",
-    href: "/dashboard/roles",
-    icon: (pathname: string) => {
-      return <TaskIcon pathname={pathname} />;
-    },
-    pathName: "roles",
-  },
 
   {
-    name: " Quản lý phòng khám",
+    name: "Danh sách phòng khám",
     href: "/dashboard/clinics",
     icon: (pathname: string) => {
       return <EComerceIcon pathname={pathname} />;
@@ -62,7 +54,7 @@ const navigations: Navigation[] = [
     pathName: "clinics",
   },
   {
-    name: "Quản lý dịch vụ",
+    name: "Danh sách dịch vụ",
     href: "/dashboard/services",
     icon: (pathname: string) => {
       return <CampainIcon pathname={pathname} />;
@@ -70,7 +62,7 @@ const navigations: Navigation[] = [
     pathName: "services",
   },
   {
-    name: "Quản lý đặt hẹn",
+    name: "Danh sách đặt hẹn",
     href: "/dashboard/bookings",
     icon: (pathname: string) => {
       return <CalendarIcon pathname={pathname} />;
@@ -79,6 +71,22 @@ const navigations: Navigation[] = [
   },
 ];
 const navigationGroup: NavigationGroup[] = [
+  {
+    title: "Quản lý nhân sự",
+    active: ["staffs", "doctors"],
+    navigation: [
+      {
+        name: "Danh sách nhân viên",
+        href: "/dashboard/staffs",
+        active: "staffs",
+      },
+      {
+        name: "Danh sách bác sĩ",
+        href: "/dashboard/doctors",
+        active: "doctors",
+      },
+    ],
+  },
   {
     title: "Cài đặt",
     active: ["category", "payments", "customer-status", "coupons", "banners"],
@@ -111,6 +119,7 @@ const navigationGroup: NavigationGroup[] = [
     ],
   },
 ];
+
 function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
   const { pathname } = useRouter();
 
@@ -223,40 +232,69 @@ function SidebarNew({ sidebarOpen, setSidebarOpen }: Props) {
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center">
-                                <svg className="shrink-0 h-6 w-6" viewBox="0 0 24 24">
-                                  <path
-                                    className={`fill-current ${
-                                      item.active.includes(pathname.split("/")[2])
-                                        ? "text-indigo-500"
-                                        : "text-slate-600 "
-                                    }`}
-                                    d="M19.714 14.7l-7.007 7.007-1.414-1.414 7.007-7.007c-.195-.4-.298-.84-.3-1.286a3 3 0 113 3 2.969 2.969 0 01-1.286-.3z"
-                                  />
-                                  <path
-                                    className={`fill-current  ${
-                                      item.active.includes(pathname.split("/")[2])
-                                        ? "text-indigo-300"
-                                        : "text-slate-400"
-                                    }`}
-                                    d="M10.714 18.3c.4-.195.84-.298 1.286-.3a3 3 0 11-3 3c.002-.446.105-.885.3-1.286l-6.007-6.007 1.414-1.414 6.007 6.007z"
-                                  />
-                                  <path
-                                    className={`fill-current  ${
-                                      item.active.includes(pathname.split("/")[2])
-                                        ? "text-indigo-500"
-                                        : "text-slate-600"
-                                    }`}
-                                    d="M5.7 10.714c.195.4.298.84.3 1.286a3 3 0 11-3-3c.446.002.885.105 1.286.3l7.007-7.007 1.414 1.414L5.7 10.714z"
-                                  />
-                                  <path
-                                    className={`fill-current ${
-                                      item.active.includes(pathname.split("/")[2])
-                                        ? "text-indigo-300"
-                                        : "text-slate-400"
-                                    }`}
-                                    d="M19.707 9.292a3.012 3.012 0 00-1.415 1.415L13.286 5.7c-.4.195-.84.298-1.286.3a3 3 0 113-3 2.969 2.969 0 01-.3 1.286l5.007 5.006z"
-                                  />
-                                </svg>
+                                {item.title === "Cài đặt" ? (
+                                  <svg className="shrink-0 h-6 w-6" viewBox="0 0 24 24">
+                                    <path
+                                      className={`fill-current ${
+                                        item.active.includes(pathname.split("/")[2])
+                                          ? "text-indigo-500"
+                                          : "text-slate-600 "
+                                      }`}
+                                      d="M19.714 14.7l-7.007 7.007-1.414-1.414 7.007-7.007c-.195-.4-.298-.84-.3-1.286a3 3 0 113 3 2.969 2.969 0 01-1.286-.3z"
+                                    />
+                                    <path
+                                      className={`fill-current  ${
+                                        item.active.includes(pathname.split("/")[2])
+                                          ? "text-indigo-300"
+                                          : "text-slate-400"
+                                      }`}
+                                      d="M10.714 18.3c.4-.195.84-.298 1.286-.3a3 3 0 11-3 3c.002-.446.105-.885.3-1.286l-6.007-6.007 1.414-1.414 6.007 6.007z"
+                                    />
+                                    <path
+                                      className={`fill-current  ${
+                                        item.active.includes(pathname.split("/")[2])
+                                          ? "text-indigo-500"
+                                          : "text-slate-600"
+                                      }`}
+                                      d="M5.7 10.714c.195.4.298.84.3 1.286a3 3 0 11-3-3c.446.002.885.105 1.286.3l7.007-7.007 1.414 1.414L5.7 10.714z"
+                                    />
+                                    <path
+                                      className={`fill-current ${
+                                        item.active.includes(pathname.split("/")[2])
+                                          ? "text-indigo-300"
+                                          : "text-slate-400"
+                                      }`}
+                                      d="M19.707 9.292a3.012 3.012 0 00-1.415 1.415L13.286 5.7c-.4.195-.84.298-1.286.3a3 3 0 113-3 2.969 2.969 0 01-.3 1.286l5.007 5.006z"
+                                    />
+                                  </svg>
+                                ) : (
+                                  <svg className="shrink-0 h-6 w-6" viewBox="0 0 24 24">
+                                    <path
+                                      className={`fill-current ${
+                                        item.active.includes(pathname.split("/")[2])
+                                          ? "text-indigo-500"
+                                          : "text-slate-600 "
+                                      }`}
+                                      d="M8 1v2H3v19h18V3h-5V1h7v23H1V1z"
+                                    />
+                                    <path
+                                      className={`fill-current ${
+                                        item.active.includes(pathname.split("/")[2])
+                                          ? "text-indigo-500"
+                                          : "text-slate-600"
+                                      }`}
+                                      d="M1 1h22v23H1z"
+                                    />
+                                    <path
+                                      className={`fill-current  ${
+                                        item.active.includes(pathname.split("/")[2])
+                                          ? "text-indigo-300"
+                                          : "text-slate-400"
+                                      }`}
+                                      d="M15 10.586L16.414 12 11 17.414 7.586 14 9 12.586l2 2zM5 0h14v4H5z"
+                                    />
+                                  </svg>
+                                )}
                                 <span
                                   className={`${
                                     item.active.includes(pathname.split("/")[2])

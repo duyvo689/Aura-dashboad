@@ -22,7 +22,6 @@ import { useSelector } from "react-redux";
 import { OmiAPI } from "../../api";
 import CallDataInfo from "../../components/UserProfile/CallDataInfo";
 import SearchBarUser from "../../components/Users/SearchUserBar";
-import Link from "next/link";
 const UserProfilePage = () => {
   const { id } = useRouter().query;
   const appUserInfo: AppUserInfo = useSelector((state: RootState) => state.admin);
@@ -101,7 +100,6 @@ const UserProfilePage = () => {
       .match({ customer_phone: phone })
       .order("created_date", { ascending: false });
     if (omi_calls) {
-      console.log(omi_calls);
       setCallData(omi_calls);
     }
   };
@@ -240,7 +238,7 @@ const UserProfilePage = () => {
     if (!appUserInfo) return;
     if (!initFlag.current) {
       initFlag.current = true;
-      getOmiInfo("sonnt.it8301@gmail.com");
+      if (appUserInfo.user.email) getOmiInfo(appUserInfo.user.email);
     }
   }, [appUserInfo]);
   useEffect(() => {

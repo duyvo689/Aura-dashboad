@@ -8,7 +8,9 @@ const Pagination = ({ filteredData, dataLength, currentPage, setNewPage }: Props
   return (
     <div className="flex justify-between items-center">
       <div className="text-sm text-slate-500 ">
-        {`Hiển thị ${currentPage * 10} trên ${dataLength} kết quả`}
+        {dataLength < 10
+          ? `Hiển thị ${dataLength} kết quả`
+          : `Hiển thị ${currentPage * 10} trên ${dataLength} kết quả`}
       </div>
       <div className="flex gap-3">
         <button

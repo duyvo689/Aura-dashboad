@@ -197,9 +197,9 @@ interface OAPost {
 export interface Staff {
   id: string;
   name?: string | null;
-  email: string;
+  email?: string;
   avatar?: string | null;
-  phone?: string;
+  phone: string;
   address?: string | null;
   point?: number;
   zalo_id?: string;
