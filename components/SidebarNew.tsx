@@ -73,7 +73,7 @@ const navigations: Navigation[] = [
 const navigationGroup: NavigationGroup[] = [
   {
     title: "Quản lý nhân sự",
-    active: ["staffs", "doctors"],
+    active: ["staffs", "doctors", "roles"],
     navigation: [
       {
         name: "Danh sách nhân viên",
@@ -84,6 +84,11 @@ const navigationGroup: NavigationGroup[] = [
         name: "Danh sách bác sĩ",
         href: "/dashboard/doctors",
         active: "doctors",
+      },
+      {
+        name: "Quản lý phân quyền",
+        href: "/dashboard/roles",
+        active: "roles",
       },
     ],
   },
