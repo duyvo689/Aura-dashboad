@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { AppUserInfo, MainAdmin, Staff } from "../../utils/types";
 import router from "next/router";
 import ModalUpdatePassword from "./ModalUpdatePassword";
+import { supabase } from "../../services/supaBaseClient";
 
 function UserMenu() {
   const appUserInfo: AppUserInfo = useSelector((state: RootState) => state.admin);
@@ -33,9 +34,14 @@ function UserMenu() {
     }, [ref]);
   }
   useOutsideAlerter(trigger);
-  const logOut = async () => {
+  const logOutStaff = async () => {
     router.push("/phone-login");
     localStorage.removeItem("accessToken");
+  };
+  const logOutAdmin = async () => {
+    const { error } = await supabase.auth.signOut();
+    console.log(error);
+    router.push("/");
   };
   useEffect(() => {
     if (!appUserInfo) return;
@@ -111,8 +117,8 @@ function UserMenu() {
                     Cập nhật mật khẩu
                   </div>
                 </li>
-                <li onClick={logOut}>
-                  <div className="font-medium text-sm text-indigo-500 hover:text-indigo-600 flex items-center py-1 px-3">
+                <li onClick={logOutStaff} className="cursor-pointer">
+                  <div className="font-medium text-sm text-indigo-500 hover:text-indigo-600 flex items-center py-1 px-3 ">
                     Đăng xuất
                   </div>
                 </li>
@@ -173,11 +179,7 @@ function UserMenu() {
                 <div className="text-xs text-slate-500 italic">Admin</div>
               </div>
               <ul>
-                <li
-                  onClick={() => {
-                    router.push("/");
-                  }}
-                >
+                <li onClick={logOutAdmin} className="cursor-pointer">
                   <div className="font-medium text-sm text-indigo-500 hover:text-indigo-600 flex items-center py-1 px-3">
                     Đăng xuất
                   </div>

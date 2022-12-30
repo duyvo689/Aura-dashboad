@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { adminAction } from "../redux/actions/ReduxAction";
 import { supabase } from "../services/supaBaseClient";
-import { AppUserInfo, Staff } from "../utils/types";
+import { AppUserInfo, MainAdmin, Staff } from "../utils/types";
 import { RootState } from "../redux/reducers";
 import { AuthAPI } from "../api";
 import toast from "react-hot-toast";
@@ -13,7 +13,9 @@ function AuthRoute({ children }: any) {
   const router = useRouter();
   const pathname = router.pathname;
   const [auth, setAuth] = useState(false);
+
   const getUserByToken = async () => {
+    ///
     const response = await AuthAPI.getStaffInfo();
     if (response && response.data.status === "Success") {
       dispatch(
@@ -23,21 +25,50 @@ function AuthRoute({ children }: any) {
     } else {
       setAuth(true);
       localStorage.removeItem("accessToken");
+      router.push("/phone-login");
+    }
+  };
+  const getUserAdmin = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      dispatch(
+        adminAction("admin", {
+          type: "admin",
+          user: {
+            email: user.email,
+            name: user.user_metadata.user_name,
+          } as any as MainAdmin,
+        })
+      );
+      setAuth(true);
+    } else {
+      setAuth(true);
       router.push("/");
     }
   };
   useEffect(() => {
     if (typeof window !== "undefined") {
-      if (localStorage.getItem("accessToken") !== null) {
-        getUserByToken();
-        if (pathname.split("/")[1] === "") {
-          router.push("/dashboard/users");
+      if (localStorage.getItem("isPhoneLogin") === "true") {
+        if (localStorage.getItem("accessToken") !== null) {
+          getUserByToken();
+          if (pathname.split("/")[1] === "") {
+            router.push("/dashboard/users");
+          }
+        } else {
+          setAuth(true);
+          if (pathname.split("/")[1] !== "") {
+            router.push("/");
+          }
         }
-      } else {
+      } else if (!localStorage.getItem("isPhoneLogin")) {
         setAuth(true);
         if (pathname.split("/")[1] !== "") {
           router.push("/");
         }
+      } else {
+        getUserAdmin();
       }
     }
   }, []);

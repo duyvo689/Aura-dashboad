@@ -9,6 +9,7 @@ interface Props {
   readOnly?: boolean;
   myOnChange?: (e: any) => void;
 }
+
 const InputForm = ({
   title,
   id,

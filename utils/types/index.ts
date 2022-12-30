@@ -208,6 +208,7 @@ export interface Staff {
 }
 export interface MainAdmin {
   email: string;
+  name: string;
 }
 interface AppUserInfo {
   type: string;

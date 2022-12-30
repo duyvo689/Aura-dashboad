@@ -8,7 +8,7 @@ export default function Document() {
         <link href="https://fonts.googleapis.com/css?family=Inter" rel="stylesheet" />
         <script
           defer
-          omi-sdk
+          omi-sdk="true"
           type="text/javascript"
           src="https://cdn.omicrm.com/sdk/2.0.0/sdk.min.js"
         ></script>

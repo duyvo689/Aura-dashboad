@@ -20,11 +20,10 @@ class StorageAPI {
     const fileName = file.name.replace("wav", "mp3");
     let formData = new FormData();
     formData.append("file", file);
-    console.log(accessKey);
     try {
       const response = await axios({
         method: "PUT",
-        url: `https://hcm01.vstorage.vngcloud.vn/v1/AUTH_16700a411c8e4e3da18b8b42dbca2890/AudioStorage/${fileName}`,
+        url: `${process.env.NEXT_PUBLIC_STORAGE_URL}/${fileName}`,
         data: formData,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -32,7 +31,7 @@ class StorageAPI {
         },
       });
       if (response && response.status === 201) {
-        return `https://hcm01.vstorage.vngcloud.vn/v1/AUTH_16700a411c8e4e3da18b8b42dbca2890/AudioStorage/${fileName}`;
+        return `${process.env.NEXT_PUBLIC_STORAGE_URL}/${fileName}`;
       } else {
         return null;
       }
