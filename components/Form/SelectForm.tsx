@@ -4,16 +4,19 @@ import Select from "react-select";
 interface Props {
   title: string;
   name: string;
-  defaultValue?: {
-    label: string;
-    value: string;
-  } | null;
+  defaultValue?:
+    | {
+        label: string;
+        value: string;
+      }[]
+    | null;
   required?: boolean;
   placeholder?: string;
   options: {
     label: string;
     value: string;
   }[];
+  isMulti?: boolean;
   myOnChange?: any;
 }
 const SelectForm = ({
@@ -24,6 +27,7 @@ const SelectForm = ({
   required = false,
   myOnChange,
   defaultValue = null,
+  isMulti = false,
 }: Props) => {
   return (
     <div>
@@ -39,7 +43,8 @@ const SelectForm = ({
         <Select
           id={name}
           name={name}
-          defaultValue={defaultValue}
+          isMulti={isMulti}
+          defaultValue={isMulti ? defaultValue : defaultValue && defaultValue[0]}
           placeholder={placeholder}
           options={options}
           onChange={myOnChange}

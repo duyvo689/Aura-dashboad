@@ -22,6 +22,10 @@ import { useSelector } from "react-redux";
 import { OmiAPI } from "../../api";
 import CallDataInfo from "../../components/UserProfile/CallDataInfo";
 import SearchBarUser from "../../components/Users/SearchUserBar";
+import Classify from "../../components/UserProfile/Classify";
+import ModalUpdateTag from "../../components/UserProfile/ModalUpdateTag";
+import AttachFile from "../../components/UserProfile/AttachFile";
+import Rating from "../../components/UserProfile/Rating";
 const UserProfilePage = () => {
   const { id } = useRouter().query;
   const appUserInfo: AppUserInfo = useSelector((state: RootState) => state.admin);
@@ -32,6 +36,8 @@ const UserProfilePage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [omiInfo, setOmiInfo] = useState<OmiInfo | null>(null);
   const [callData, setCallData] = useState<CallData[] | null>(null);
+  const [openModalUpdateTag, setOpenModalUpdateTag] = useState(false);
+  const [newUpdateUser, setNewUpdateUser] = useState<User | null>(null);
   const fetchBookingOfUser = async (id: string) => {
     setIsLoading(true);
     const { data: bookings, error } = await supabase
@@ -274,6 +280,15 @@ const UserProfilePage = () => {
             <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
               <UserInfo userInfo={user} bookings={bookings} />
             </div>
+            <div className="grid grid-cols-3 gap-2">
+              <Classify
+                setOpenModalUpdateTag={setOpenModalUpdateTag}
+                tags={newUpdateUser?.tags || user.tags}
+                group={newUpdateUser?.group || user.group}
+              />
+              {/* <AttachFile />
+              <Rating /> */}
+            </div>
             <div className="py-4 px-6 bg-white rounded-lg border border-slate-200">
               <ZNSMetric znsReceived={user.zns_received} />
             </div>
@@ -305,6 +320,15 @@ const UserProfilePage = () => {
               </div>
             </div>
           </div>
+          {openModalUpdateTag ? (
+            <ModalUpdateTag
+              userId={user.id}
+              setOpenModal={setOpenModalUpdateTag}
+              tags={newUpdateUser?.tags || user.tags}
+              group={newUpdateUser?.group || user.group}
+              setNewUpdateUser={setNewUpdateUser}
+            />
+          ) : null}
         </div>
       ) : (
         <div>Loading...</div>

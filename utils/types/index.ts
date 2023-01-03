@@ -47,6 +47,18 @@ interface User {
   gender: string | null;
   clinic: string | null;
   zns_received: number;
+  tags:
+    | {
+        id: string;
+        name: string;
+      }[]
+    | null;
+  group:
+    | {
+        id: string;
+        name: string;
+      }[]
+    | null;
 }
 interface Banner {
   id: string;

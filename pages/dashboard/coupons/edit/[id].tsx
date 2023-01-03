@@ -154,8 +154,8 @@ function EditCoupon() {
                   title="Chọn giá trị"
                   defaultValue={
                     coupon.price
-                      ? { value: "price", label: "Coupon giảm theo giá" }
-                      : { value: "percent", label: "Coupon giảm theo phần trăm" }
+                      ? [{ value: "price", label: "Coupon giảm theo giá" }]
+                      : [{ value: "percent", label: "Coupon giảm theo phần trăm" }]
                   }
                   options={listPercentPrice}
                   myOnChange={(e: any) => {

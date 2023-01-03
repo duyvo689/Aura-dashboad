@@ -53,7 +53,6 @@ export default function ServicePage() {
     }
   };
   const handlerSearch = (e: any) => {
-    console.log(e.target.value);
     if (e.target.value === "") {
       setFilterService(services);
     } else {
