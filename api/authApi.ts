@@ -50,5 +50,6 @@ class AuthAPI {
       return error.response;
     }
   }
+  
 }
 export default AuthAPI;
