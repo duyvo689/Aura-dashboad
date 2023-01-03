@@ -163,10 +163,12 @@ export default function UpdateService() {
                       <SelectForm
                         name="category"
                         title="Chọn Danh Mục"
-                        defaultValue={{
-                          label: service.category_id.name,
-                          value: service.category_id.id,
-                        }}
+                        defaultValue={[
+                          {
+                            label: service.category_id.name,
+                            value: service.category_id.id,
+                          },
+                        ]}
                         options={categories.map((item) => {
                           return {
                             label: item.name,

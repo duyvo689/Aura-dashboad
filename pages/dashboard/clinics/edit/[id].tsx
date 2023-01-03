@@ -147,7 +147,7 @@ function UpdateClinic() {
                   title="Thành phố"
                   defaultValue={
                     clinic.district
-                      ? { label: clinic.district, value: clinic.district }
+                      ? [{ label: clinic.district, value: clinic.district }]
                       : null
                   }
                   options={VNProvinces}
